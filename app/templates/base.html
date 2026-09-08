@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_name }}</title>
+    <link rel="stylesheet" href="/static/css/style.css?v=1.0.21">
+    <script defer src="/static/js/app.js?v=1.0.11"></script>
+    <script>
+        // Global Client-side Pagination Function
+        window.paginateTable = function(tableId, itemsPerPage = 5) {
+            const table = document.getElementById(tableId);
+            if (!table) return;
+            
+            const tbody = table.querySelector("tbody");
+            if (!tbody) return;
+            
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            
+            let pagContainer = table.parentNode.nextElementSibling;
+            if (pagContainer && pagContainer.classList.contains("pagination-container")) {
+                pagContainer.innerHTML = "";
+                if (rows.length <= itemsPerPage) {
+                    pagContainer.style.display = "none";
+                    rows.forEach(r => r.style.display = "");
+                    return;
+                }
+                pagContainer.style.display = "flex";
+            } else if (rows.length > itemsPerPage) {
+                pagContainer = document.createElement("div");
+                pagContainer.className = "pagination-container";
+                table.parentNode.after(pagContainer);
+            } else {
+                return;
+            }
+            
+            let currentPage = parseInt(sessionStorage.getItem("page_" + tableId)) || 1;
+            const totalPages = Math.ceil(rows.length / itemsPerPage);
+            
+            function updatePage() {
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+                sessionStorage.setItem("page_" + tableId, currentPage);
+                
+                rows.forEach((row, idx) => {
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+                    if (idx >= start && idx < end) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+                renderControls();
+            }
+            
+            function renderControls() {
+                pagContainer.innerHTML = "";
+                
+                // Prev button
+                const prevBtn = document.createElement("button");
+                prevBtn.type = "button";
+                prevBtn.className = "page-btn";
+                prevBtn.innerHTML = "&laquo; 上一页";
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.addEventListener("click", () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updatePage();
+                    }
+                });
+                pagContainer.appendChild(prevBtn);
+                
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement("button");
+                    pageBtn.type = "button";
+                    pageBtn.className = "page-btn" + (i === currentPage ? " active" : "");
+                    pageBtn.textContent = i;
+                    pageBtn.addEventListener("click", () => {
+                        currentPage = i;
+                        updatePage();
+                    });
+                    pagContainer.appendChild(pageBtn);
+                }
+                
+                // Next button
+                const nextBtn = document.createElement("button");
+                nextBtn.type = "button";
+                nextBtn.className = "page-btn";
+                nextBtn.innerHTML = "下一页 &raquo;";
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.addEventListener("click", () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        updatePage();
+                    }
+                });
+                pagContainer.appendChild(nextBtn);
+            }
+            
+            updatePage();
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidebar = document.getElementById("appSidebar");
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+
+            function setSidebarOpen(open) {
+                if (!sidebar || !sidebarToggle || !sidebarBackdrop) return;
+                sidebar.classList.toggle("is-open", open);
+                sidebarBackdrop.classList.toggle("is-visible", open);
+                document.body.classList.toggle("sidebar-open", open);
+                sidebarToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener("click", () => {
+                    setSidebarOpen(!sidebar.classList.contains("is-open"));
+                });
+            }
+            if (sidebarBackdrop) {
+                sidebarBackdrop.addEventListener("click", () => setSidebarOpen(false));
+            }
+            document.addEventListener("keydown", event => {
+                if (event.key === "Escape") setSidebarOpen(false);
+            });
+
+            // Setup page resets on sidebar navigation links click
+            document.querySelectorAll(".sidebar-nav a").forEach(link => {
+                link.addEventListener("click", () => {
+                    setSidebarOpen(false);
+                    Object.keys(sessionStorage).forEach(key => {
+                        if (key.startsWith("page_") || key === "cards_current_page") {
+                            sessionStorage.removeItem(key);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    <style>
+        /* PJAX Loading Styles */
+        .content-area {
+            transition: opacity 0.15s ease-in-out;
+        }
+        .content-area.pjax-loading {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        
+        /* Shimmer Skeletons */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+            } else {
+                return;
+            }
+            
+            let currentPage = parseInt(sessionStorage.getItem("page_" + tableId)) || 1;
+            const totalPages = Math.ceil(rows.length / itemsPerPage);
+            
+            function updatePage() {
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+                sessionStorage.setItem("page_" + tableId, currentPage);
+                
+                rows.forEach((row, idx) => {
+                    const start = (currentPage - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+                    if (idx >= start && idx < end) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+                renderControls();
+            }
+            
+            function renderControls() {
+                pagContainer.innerHTML = "";
+                
+                // Prev button
+                const prevBtn = document.createElement("button");
+                prevBtn.type = "button";
+                prevBtn.className = "page-btn";
+                prevBtn.innerHTML = "&laquo; 上一页";
+                prevBtn.disabled = currentPage === 1;
+                prevBtn.addEventListener("click", () => {
+                    if (currentPage > 1) {
+                        currentPage--;
+                        updatePage();
+                    }
+                });
+                pagContainer.appendChild(prevBtn);
+                
+                // Page numbers
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageBtn = document.createElement("button");
+                    pageBtn.type = "button";
+                    pageBtn.className = "page-btn" + (i === currentPage ? " active" : "");
+                    pageBtn.textContent = i;
+                    pageBtn.addEventListener("click", () => {
+                        currentPage = i;
+                        updatePage();
+                    });
+                    pagContainer.appendChild(pageBtn);
+                }
+                
+                // Next button
+                const nextBtn = document.createElement("button");
+                nextBtn.type = "button";
+                nextBtn.className = "page-btn";
+                nextBtn.innerHTML = "下一页 &raquo;";
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.addEventListener("click", () => {
+                    if (currentPage < totalPages) {
+                        currentPage++;
+                        updatePage();
+                    }
+                });
+                pagContainer.appendChild(nextBtn);
+            }
+            
+            updatePage();
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const sidebar = document.getElementById("appSidebar");
+            const sidebarToggle = document.getElementById("sidebarToggle");
+            const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+
+            function setSidebarOpen(open) {
+                if (!sidebar || !sidebarToggle || !sidebarBackdrop) return;
+                sidebar.classList.toggle("is-open", open);
+                sidebarBackdrop.classList.toggle("is-visible", open);
+                document.body.classList.toggle("sidebar-open", open);
+                sidebarToggle.setAttribute("aria-expanded", open ? "true" : "false");
+            }
+
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener("click", () => {
+                    setSidebarOpen(!sidebar.classList.contains("is-open"));
+                });
+            }
+            if (sidebarBackdrop) {
+                sidebarBackdrop.addEventListener("click", () => setSidebarOpen(false));
+            }
+            document.addEventListener("keydown", event => {
+                if (event.key === "Escape") setSidebarOpen(false);
+            });
+
+            // Setup page resets on sidebar navigation links click
+            document.querySelectorAll(".sidebar-nav a").forEach(link => {
+                link.addEventListener("click", () => {
+                    setSidebarOpen(false);
+                    Object.keys(sessionStorage).forEach(key => {
+                        if (key.startsWith("page_") || key === "cards_current_page") {
+                            sessionStorage.removeItem(key);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    <style>
+        /* PJAX Loading Styles */
+        .content-area {
+            transition: opacity 0.15s ease-in-out;
+        }
+        .content-area.pjax-loading {
+            opacity: 0.35;
+            pointer-events: none;
+        }
+        
+        /* Shimmer Skeletons */
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+        .skeleton {
+            background: linear-gradient(90deg, #f1f3f5 25%, #e9ecef 50%, #f1f3f5 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+            display: inline-block;
+            color: transparent !important;
+        }
+        .skeleton-text {
+            height: 14px;
+            margin: 6px 0;
+            width: 100%;
+        }
+        .skeleton-title {
+            height: 24px;
+            margin: 10px 0;
+            width: 60%;
+        }
+        .skeleton-block {
+            display: block;
+            height: 120px;
+            width: 100%;
+        }
+        .skeleton-inline {
+            width: 60px;
+            height: 16px;
+        }
+        .skeleton-btn {
+            width: 100px;
+            height: 36px;
+            border-radius: 12px;
+        }
+
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar" id="appSidebar">
+            <div class="sidebar-head">
+                <a class="brand" href="/">FinBoard</a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/" class="{{ 'active' if active_page == 'dashboard' else '' }}">股票总览</a>
+                <a href="/daily-briefing" class="{{ 'active' if active_page == 'daily-briefing' else '' }}">每日简报</a>
+                <a href="/holdings" class="{{ 'active' if active_page == 'holdings' else '' }}">持仓记录</a>
+                <a href="/cards" class="{{ 'active' if active_page == 'cards' else '' }}">境外工具</a>
+                <a href="/wallet-cards" class="{{ 'active' if active_page == 'wallet-cards' else '' }}">境外卡片</a>
+                <a href="/phones" class="{{ 'active' if active_page == 'phones' else '' }}">境外号码</a>
+                <a href="/ai-monitor" class="{{ 'active' if active_page == 'ai-monitor' else '' }}">AI监控</a>
+            </nav>
+
+            <section class="sidebar-card" id="analysisHistoryCard" style="display: none; margin-top: 16px;">
+                <div class="sidebar-card-head" style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>分析历史</h3>
+                    <button id="clearHistoryBtn" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 500; padding: 4px 8px; border-radius: 6px; transition: all 0.2s;">清空</button>
+                </div>
+                <div class="history-list" id="sidebarHistoryList" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; max-height: 182px; overflow-y: auto; padding-right: 4px; scrollbar-width: thin;">
+                    <!-- History items will be inserted here dynamically -->
+                </div>
+            </section>
+
+            <section class="sidebar-card">
+                <div class="sidebar-card-head">
+                    <h3>快速查看</h3>
+                </div>
+                <form action="/stock" method="get" class="sidebar-form" id="quickLookForm">
+                    <label>
+                        <span>股票市场</span>
+                        <select name="market">
+                            {% for market_code, market_name in market_labels.items() %}
+                            <option value="{{ market_code }}">{{ market_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>
+                        <span>股票代码</span>
+                        <input type="text" name="symbol" placeholder="AAPL / 600519 / 0700" required>
+                    </label>
+                    <button type="submit" id="quickLookSubmitBtn">获取分析数据</button>
+                    <div class="progress-container" id="quickLookProgress" style="display: none;">
+                        <div class="progress-bar-track">
+                            <div class="progress-bar-fill"></div>
+                        </div>
+                        <div class="progress-text">正在从数据源拉取并分析数据...</div>
+                    </div>
+                </form>
+            </section>
+
+            <section class="sidebar-card">
+                <div class="sidebar-card-head">
+                    <h3>数据源选择</h3>
+                </div>
+                <div class="sidebar-form" style="display: flex; flex-direction: column; gap: 10px;">
+                    <label style="margin: 0;">
+                        <span>美股/ETF 数据源</span>
+                        <select id="dataSourceSelectUS" style="width: 100%; margin-top: 4px;">
+                            <option value="auto" {% if pref_us == "auto" %}selected{% endif %}>自动混合 (智能优先)</option>
+                            <option value="yahoo" {% if pref_us == "yahoo" %}selected{% endif %}>Yahoo Finance (默认)</option>
+                            <option value="twelve_data" {% if pref_us == "twelve_data" %}selected{% endif %} {% if provider_status.twelve_data == "未配置" %}disabled{% endif %}>Twelve Data{% if provider_status.twelve_data == "未配置" %} (暂无){% endif %}</option>
+                            <option value="finnhub" {% if pref_us == "finnhub" %}selected{% endif %} {% if provider_status.finnhub == "未配置" %}disabled{% endif %}>Finnhub{% if provider_status.finnhub == "未配置" %} (暂无){% endif %}</option>
+                            <option value="tencent" {% if pref_us == "tencent" %}selected{% endif %}>腾讯财经</option>
+                        </select>
+                    </label>
+                    <label style="margin: 0;">
+                        <span>大A (CN) 数据源</span>
+                        <select id="dataSourceSelectCN" style="width: 100%; margin-top: 4px;">
+                            <option value="auto" {% if pref_cn == "auto" %}selected{% endif %}>自动混合 (智能优先)</option>
+                            <option value="tencent" {% if pref_cn == "tencent" %}selected{% endif %}>腾讯财经 (默认)</option>
+                            <option value="yahoo" {% if pref_cn == "yahoo" %}selected{% endif %}>Yahoo Finance</option>
+                        </select>
+                    </label>
+                    <label style="margin: 0;">
+                        <span>港股 (HK) 数据源</span>
+                        <select id="dataSourceSelectHK" style="width: 100%; margin-top: 4px;">
+                            <option value="auto" {% if pref_hk == "auto" %}selected{% endif %}>自动混合 (智能优先)</option>
+                            <option value="tencent" {% if pref_hk == "tencent" %}selected{% endif %}>腾讯财经 (默认)</option>
+                            <option value="yahoo" {% if pref_hk == "yahoo" %}selected{% endif %}>Yahoo Finance</option>
+                        </select>
+                    </label>
+                    <button type="button" id="applyDataSourceBtn" style="margin-top: 6px; padding: 10px 14px; border-radius: 10px; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; cursor: pointer; text-align: center; font-size: 14px; font-weight: bold; border: 0; line-height: 1.2; width: 100%; transition: all 0.2s;">应用数据源</button>
+                </div>
+            </section>
+
+            <div id="dynamic-sidebar-content">
+                {% block sidebar_content %}{% endblock %}
+            </div>
+
+            <section class="sidebar-card">
+                <div class="sidebar-card-head">
+                    <h3>刷新间隔</h3>
+                </div>
+                <div class="sidebar-form">
+                    <label>
+                        <span>设置间隔时间 (秒)</span>
+                        <div style="display: flex; gap: 8px; align-items: center; margin-top: 6px;">
+                            <input type="number" id="refreshIntervalInput" min="0" max="3600" step="any" value="30" style="flex: 1; padding: 10px 12px; border-radius: 10px; border: 1px solid #dbe0e7; width: 100%;">
+                            <button type="button" id="applyIntervalBtn" style="padding: 10px 14px; border-radius: 10px; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; cursor: pointer; white-space: nowrap; font-size: 14px; border: 0; line-height: 1.2;">应用</button>
+                        </div>
+                    </label>
+                </div>
+            </section>
+        </aside>
+
+        <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        <div class="main-shell">
+            <header class="page-topbar">
+                <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-controls="appSidebar" aria-expanded="false" aria-label="打开导航菜单">☰</button>
+                <h1 class="page-title">{{ page_title or app_name }}</h1>
+                {% block page_actions %}{% endblock %}
+            </header>
+
+            {% if notice %}
+            <div class="banner banner-notice" id="noticeBanner" role="status" aria-live="polite" style="display: flex; justify-content: space-between; align-items: center; transition: opacity 0.5s ease; opacity: 1;">
+                <span>{{ notice }}</span>
+                <button type="button" onclick="const b = document.getElementById('noticeBanner'); if(b){b.style.opacity='0'; setTimeout(()=>b.style.display='none', 500);}" style="background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; line-height: 1; padding: 0 4px;">&times;</button>
+            </div>
+            {% endif %}
+            {% if error %}
+            <div class="banner banner-error" id="errorBanner" role="alert" style="display: flex; justify-content: space-between; align-items: center; transition: opacity 0.5s ease; opacity: 1;">
+                <span>{{ error }}</span>
+                <button type="button" onclick="const b = document.getElementById('errorBanner'); if(b){b.style.opacity='0'; setTimeout(()=>b.style.display='none', 500);}" style="background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; line-height: 1; padding: 0 4px;">&times;</button>
+            </div>
+            {% endif %}
+
+            <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const notice = document.getElementById("noticeBanner");
+                const error = document.getElementById("errorBanner");
+                if (notice) {
+                    setTimeout(() => {
+                        notice.style.opacity = "0";
+                        setTimeout(() => notice.style.display = "none", 500);
+                    }, 3000);
+                }
+                if (error) {
+                    setTimeout(() => {
+                        error.style.opacity = "0";
+                        setTimeout(() => error.style.display = "none", 500);
+                    }, 5000);
+                }
+            });
+            </script>
+
+            <main class="content-area">
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+<!-- Global Stock Card Detail Modal -->
+<div id="stock-card-modal-overlay" class="modal-overlay" onclick="window.closeStockCardModal(event)">
+    <div class="modal-dialog-card" onclick="event.stopPropagation()">
+        <div class="modal-card-header">
+            <div class="modal-card-title-group">
+                <span id="modal-card-icon">🏷️</span>
+                <span id="modal-card-title">股票深度评估报告</span>
+            </div>
+            <button type="button" class="modal-close-btn" onclick="window.closeStockCardModal()">&times;</button>
+        </div>
+        <div id="modal-card-body" class="modal-card-body">
+            <div class="modal-loading-spinner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 0;">
+                <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1a73e8;border-radius:50%;animation:spinModal 0.8s linear infinite;"></div>
+                <p style="margin-top:16px;color:#5f6368;font-size:14px;font-weight:600;">正在加载分析卡片正文...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeInModal 0.2s ease-out;
+}
+
+.modal-dialog-card {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 960px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: slideUpModal 0.2s ease-out;
+}
+
+.modal-card-header {
+    padding: 16px 24px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-card-title-group {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a73e8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    color: #64748b;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 10px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.modal-card-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUpModal {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes spinModal {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
+
+<script>
+window.openStockCardModal = function(date, ticker) {
+    const overlay = document.getElementById('stock-card-modal-overlay');
+    const titleEl = document.getElementById('modal-card-title');
+    const bodyEl = document.getElementById('modal-card-body');
+    
+    if (!overlay || !bodyEl) return;
+    
+    titleEl.textContent = `${ticker} 当日深度评估报告 (${date})`;
+    bodyEl.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 0;">
+            <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1a73e8;border-radius:50%;animation:spinModal 0.8s linear infinite;"></div>
+            <p style="margin-top:16px;color:#5f6368;font-size:14px;font-weight:600;">正在提取 ${ticker} 完整评估分析卡片...</p>
+        </div>
+    `;
+    
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    fetch(`/api/briefing/stock-card?date=${encodeURIComponent(date)}&ticker=${encodeURIComponent(ticker)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success' && data.html) {
+                bodyEl.innerHTML = data.html;
+            } else {
+                bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#c5221f;font-weight:600;">⚠️ 未能提取到 ${ticker} 在 ${date} 的详细评估卡片</div>`;
+            }
+        })
+        .catch(err => {
+            bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#c5221f;font-weight:600;">⚠️ 加载出错: ${err.message}</div>`;
+        });
+};
+
+window.closeStockCardModal = function(event) {
+    if (event && event.target && !event.target.classList.contains('modal-overlay') && !event.target.classList.contains('modal-close-btn')) {
+        return;
+    }
+    const overlay = document.getElementById('stock-card-modal-overlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+};
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        window.closeStockCardModal();
+    }
+});
+</script>
+
+<link rel="stylesheet" href="/static/css/layout_stability.css?v=1.0.13">
+<script defer src="/static/js/layout_stability.js?v=1.0.4"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+.empty-state {
+    padding: 40px;
+    text-align: center;
+    background: var(--bg);
+    border-radius: 12px;
+    color: var(--muted);
+    border: 1px dashed var(--line);
+    margin: 20px 0;
+    font-size: 15px;
+}
+.grid-form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 16px;
+}
+@media (max-width: 768px) {
+    .grid-form-row {
+        grid-template-columns: 1fr;
+    }
+}
+.badge-status {
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}
+.badge-status-active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+}
+.badge-status-pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+}
+.badge-status-closed {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+}
+.badge-country {
+    background: rgba(255, 107, 87, 0.1);
+    color: #ff6b57;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: bold;
+}

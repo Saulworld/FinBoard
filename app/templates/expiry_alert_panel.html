@@ -1,0 +1,29 @@
+{% if expiry_alerts %}
+<section class="board-card" style="border: 1px solid rgba(220, 38, 38, 0.2); background: linear-gradient(135deg, rgba(254, 242, 242, 0.6) 0%, rgba(254, 252, 252, 0.8) 100%);">
+    {% if alert_collapsible %}<details class="expiry-disclosure"><summary class="card-head">{% else %}<div class="card-head" style="margin-bottom: 12px;">{% endif %}
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">⚠️</span>
+            <h2 style="color: #dc2626; margin: 0; font-size: 18px;">{{ alert_title }}</h2>
+        </div>
+        <span style="background: #fee2e2; color: #dc2626; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold;">
+            {{ expiry_alerts|length }} 个待处理
+        </span>
+    {% if alert_collapsible %}</summary>{% else %}</div>{% endif %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 12px;">
+        {% for alert in expiry_alerts %}
+        <div style="background: white; border: 1px solid var(--line); border-radius: 12px; padding: 12px 16px; display: flex; flex-direction: column; gap: 4px; box-shadow: var(--shadow-sm); position: relative;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: bold; color: var(--text); font-size: 14px;">{% if alert.country %}{{ alert.country }} - {% endif %}{{ alert.name }}</span>
+                <span style="background: #fef3c7; color: #d97706; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: bold;">{{ alert.label }}</span>
+            </div>
+            <div style="font-size: 16px; font-weight: bold; color: #ff4a3d; margin: 2px 0;">{{ alert.phone }}</div>
+            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--muted); margin-top: 4px;">
+                <span>到期日期: {{ alert.expiry_date }}</span>
+                <a href="{{ alert_link }}{% if alert_kind == 'wallet' %}?card_id={{ alert.id }}{% endif %}" style="color: #1a73e8; font-weight: bold; text-decoration: none; font-size: 12px;">{{ alert_action }} ➔</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% if alert_collapsible %}</details>{% endif %}
+</section>
+{% endif %}

@@ -1,0 +1,120 @@
+/* Shared desktop layout: content scrolls inside bounded data regions. */
+.main-shell, .sidebar, .table-wrap, .wallet-modal-dialog {
+    scrollbar-gutter: stable;
+}
+.content-area, .content-area > *, .board-card,
+.content-split > *, .detail-grid > *, .metric-strip > *,
+.quote-stats > *, .summary-board { min-width: 0; }
+.content-area { overflow-wrap: anywhere; }
+input, select, textarea { min-width: 0; max-width: 100%; }
+.metric-strip strong, .quote-main strong, .quote-stat-card strong,
+.summary-row strong { font-variant-numeric: tabular-nums; }
+.metric-strip strong, .quote-stat-card strong, .summary-row strong {
+    display: block; white-space: nowrap; overflow-x: auto; max-width: 100%;
+}
+.stable-table-region { height: var(--table-region-height, 390px); overflow: auto; }
+.table-wrap:has(> #holdingsTable) {
+    height: auto; min-height: 447px;
+    overflow-x: auto; scrollbar-gutter: auto; overflow-anchor: none;
+}
+#holdingsTable td { height: 80px; }
+.table-wrap.compact-table-region:has(> #holdingsTable) { min-height: 0; }
+.stable-table { table-layout: fixed; min-width: var(--table-min-width); }
+.stable-table thead { position: sticky; top: 0; z-index: 2; background: var(--card, white); }
+.stable-table th { box-sizing: border-box; height: 46px; white-space: nowrap; }
+.stable-table td { height: 64px; padding: 8px 10px; box-sizing: border-box; }
+.stable-cell-content {
+    height: 47px; overflow: auto; overflow-wrap: anywhere;
+    align-content: center; scrollbar-width: thin;
+}
+.stable-cell-content > * { max-width: 100%; }
+.table-wrap { min-width: 0; max-width: 100%; }
+.pagination-container { min-height: 40px; }
+.modal > .board-card { max-height: calc(100dvh - 48px); overflow: auto; scrollbar-gutter: stable; }
+.wallet-detail-dialog { height: min(760px, calc(100dvh - 48px)); }
+.wallet-detail-grid dd { max-height: 76px; overflow: auto; }
+.wallet-card-grid { align-content: start; overflow: auto; scrollbar-gutter: stable; }
+.wallet-card-tile { align-self: start; }
+.briefing-grid { grid-auto-rows: 220px; align-content: start; overflow: auto; }
+.briefing-item-card { height: 220px; min-width: 0; box-sizing: border-box; overflow: auto; }
+.briefing-item-card .card-reason { flex: 1; min-height: 0; overflow: auto; }
+.briefing-item-card .card-top, .briefing-item-card .card-footer { flex-shrink: 0; }
+.report-view-pane { height: 650px; min-height: 0; overflow: auto; }
+.report-view-pane iframe { height: 100%; width: 100%; }
+.raw-text-container { height: 650px; box-sizing: border-box; }
+.modal-card-body { overflow: auto; }
+#highlightGrid { height: auto; overflow: visible; align-content: start; }
+#fundamentalGrid { height: auto; overflow: visible; align-content: start; }
+#newsList, #briefingHistoryTimeline { height: auto; overflow: visible; }
+#news { overflow-anchor: none; }
+#newsList { align-content: start; }
+#consensusLayout { height: auto; overflow: visible; align-content: start; }
+.quote-stat-card strong, .summary-row strong {
+    height: auto; min-height: 24px; line-height: 24px;
+    white-space: normal; overflow: visible; overflow-wrap: anywhere; min-width: 0;
+}
+.metric-box strong { height: auto; min-height: 24px; line-height: 24px; }
+[data-ai-panel] { height: auto; overflow: visible; scrollbar-gutter: auto; }
+.ai-price-table .ai-note, .ai-price-table .ai-price-muted,
+.ai-price-table .ai-context, .ai-plan-result, .ai-plan-result p {
+    height: auto; max-height: none; overflow: visible;
+}
+.ai-plan-result strong { white-space: normal; overflow: visible; overflow-wrap: anywhere; }
+.news-title-link, .news-summary-text { overflow-wrap: anywhere; }
+.ai-update-list { height: 300px; overflow: auto; }
+.ai-update-item { height: 60px; }
+.ai-update-body { overflow: auto; }
+.ai-estimate-total { overflow-x: auto; }
+.ai-estimate-total > strong { white-space: nowrap; }
+
+/* Overseas tools use the page scrollbar and pagination, not nested scrolling. */
+.table-wrap:has(> #cardsTable) { height: auto; min-height: 606px; overflow: visible; scrollbar-gutter: auto; }
+#cardsTable { min-width: 0; width: 100%; }
+#cardsTable thead { position: static; }
+#cardsTable th { white-space: normal; padding: 10px 6px; font-size: 12px; overflow-wrap: anywhere; }
+#cardsTable td { height: 56px; padding: 7px 6px; white-space: normal !important; }
+#cardsTable .stable-cell-content { height: 41px; overflow: hidden; white-space: normal; line-height: 20px; }
+#cardsTable .stable-cell-content > div { flex-wrap: wrap; gap: 4px !important; }
+#cardsTable .stable-cell-content > span { overflow-wrap: anywhere; }
+
+.table-wrap:has(> #phonesTable) { height: auto; min-height: 606px; overflow: visible; scrollbar-gutter: auto; }
+#phonesTable { min-width: 0; width: 100%; }
+#phonesTable thead { position: static; }
+#phonesTable th { white-space: normal; padding: 10px 6px; }
+#phonesTable td { height: 56px; padding: 7px 6px; white-space: normal !important; }
+#phonesTable .stable-cell-content { height: 41px; overflow: hidden; white-space: normal; line-height: 20px; }
+#phonesTable .stable-cell-content > div { flex-wrap: wrap; gap: 4px !important; }
+
+/* Compact, aligned overseas records; preserve existing row status colors. */
+:is(#cardsTable, #phonesTable) thead { background: #f7f8fa; }
+:is(#cardsTable, #phonesTable) th { height: 42px; color: #596273; font-size: 13px; font-weight: 600; }
+:is(#cardsTable, #phonesTable) td { font-size: 13px; border-bottom-color: #edf0f3; }
+:is(#cardsTable, #phonesTable) td:first-child strong { font-size: 14px; }
+:is(#cardsTable, #phonesTable) tbody tr:hover { box-shadow: inset 3px 0 #ff6859; }
+:is(#cardsTable, #phonesTable) .stable-cell-content > div { flex-wrap: nowrap; gap: 8px !important; }
+:is(#cardsTable, #phonesTable) .button-link { font-size: 13px; line-height: 24px; text-decoration: none; }
+#cardsTable td:nth-child(11) { font-size: 12px !important; font-variant-numeric: tabular-nums; }
+
+/* Readable table type without restoring oversized row spacing. */
+:is(#cardsTable, #phonesTable) th { font-size: 14px; }
+:is(#cardsTable, #phonesTable) td,
+:is(#cardsTable, #phonesTable) .stable-cell-content,
+:is(#cardsTable, #phonesTable) .stable-cell-content > span,
+:is(#cardsTable, #phonesTable) .stable-cell-content > strong,
+:is(#cardsTable, #phonesTable) .button-link { font-size: 14px !important; }
+:is(#cardsTable, #phonesTable) td:first-child strong { font-size: 15px !important; }
+:is(#cardsTable, #phonesTable) .stable-cell-content button:not(.button-link) { font-size: 13px !important; }
+#cardsTable td:nth-child(11) { font-size: 14px !important; }
+
+/* Data-cell text is read directly, never through a nested scrollbar. */
+.stable-table .stable-cell-content { height: auto; min-height: 40px; overflow: visible; white-space: normal; overflow-wrap: anywhere; }
+.stable-table .stock-link { min-width: 0; }
+:is(#cardsTable, #phonesTable) .stable-cell-content { height: 41px; min-height: 0; overflow: hidden; }
+
+/* News entries are readable inline; pagination handles list length. */
+.ai-update-list { height: auto; min-height: 300px; overflow: visible; }
+.ai-update-item { height: auto; min-height: 60px; }
+.ai-update-body { overflow: visible; }
+
+/* Short lists fit their contents; all rows across pages determine the threshold. */
+.table-wrap.compact-table-region { height: auto; min-height: 0; }

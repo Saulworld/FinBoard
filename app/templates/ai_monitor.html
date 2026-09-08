@@ -1,0 +1,340 @@
+{% extends "base.html" %}
+
+{% block sidebar_content %}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/ai_monitor.css?v=1.2.3">
+
+<section class="ai-hero">
+    <div class="ai-hero-copy">
+        <h2>AI模型与价格监控</h2>
+        <div class="ai-hero-meta">
+            <span class="ai-live-dot"><i></i> 官方来源</span>
+            <span>核对于{{ ai_data.last_checked }}</span>
+        </div>
+    </div>
+    <div class="ai-hero-mark" aria-hidden="true"><span>AI</span></div>
+</section>
+
+<section class="ai-stat-grid">
+    <article class="ai-stat-card"><span class="ai-stat-icon purple">◈</span><div><small>厂商</small><strong>{{ stats.providers }}</strong></div></article>
+    <article class="ai-stat-card"><span class="ai-stat-icon blue">⌁</span><div><small>模型</small><strong>{{ stats.models }}</strong></div></article>
+    <article class="ai-stat-card"><span class="ai-stat-icon green">¥</span><div><small>套餐</small><strong>{{ stats.plans }}</strong></div></article>
+    <article class="ai-stat-card"><span class="ai-stat-icon amber">!</span><div><small>调价提醒</small><strong>{{ stats.price_changes }}</strong></div></article>
+</section>
+
+<section class="board-card ai-pricing-card">
+    <div class="ai-section-head">
+        <div><h2>价格对比</h2></div>
+        <div class="ai-view-tabs" role="tablist" aria-label="价格类型">
+            <button class="active" type="button" role="tab" aria-selected="true" data-ai-tab="api">API价格</button>
+            <button type="button" role="tab" aria-selected="false" data-ai-tab="plans">套餐价格</button>
+        </div>
+    </div>
+
+    <div data-ai-panel="api">
+        <div class="ai-toolbar">
+            <label class="ai-search-box"><span aria-hidden="true">🔍</span><input id="aiModelSearch" type="search" aria-label="搜索厂商或模型" placeholder="输入搜索厂商或模型..."></label>
+            <select id="aiProviderFilter" aria-label="按厂商筛选">
+                <option value="">所有厂商</option>
+                {% for group in model_groups %}<option value="{{ group.provider }}">{{ group.provider }}</option>{% endfor %}
+            </select>
+            <select id="aiPriceSort" aria-label="价格排序">
+                <option value="default">默认排序</option>
+                <option value="input-asc">输入价从低到高</option>
+                <option value="output-asc">输出价从低到高</option>
+            </select>
+        </div>
+
+        <div class="ai-table-wrap">
+            <table class="ai-price-table" id="aiPriceTable">
+                <colgroup><col style="width:260px"><col style="width:150px"><col style="width:95px"><col style="width:95px"><col style="width:95px"><col><col style="width:100px"><col style="width:70px"></colgroup>
+                <thead><tr><th>厂商 / 模型</th><th>定位</th><th>输入</th><th>缓存</th><th>输出</th><th>口径</th><th>状态</th><th>来源</th></tr></thead>
+                <tbody>
+                    {% for group in model_groups %}
+                    {% set model = group.models[0] %}
+                    <tr data-model-row data-order="{{ loop.index0 }}" data-provider="{{ group.provider }}" data-search="{{ group.provider }} {% for item in group.models %}{{ item.model }} {{ item.positioning }} {% endfor %}" data-input="{{ model.input_price if model.input_price is not none else '' }}" data-output="{{ model.output_price if model.output_price is not none else '' }}">
+                        <td><div class="ai-model-cell"><span class="ai-provider-logo {{ group.provider_code }}"><img src="/static/images/ai-providers/{{ group.provider_code }}.svg" alt="" width="28" height="28"></span><div>
+                            {% if group.models|length > 1 %}
+                            <select class="ai-model-select" data-model-select aria-label="选择{{ group.provider }}模型">
+                                {% for option in group.models %}
+                                <option data-positioning="{{ option.positioning }}" data-input="{{ option.input_price if option.input_price is not none else '' }}" data-cached="{{ option.cached_input_price if option.cached_input_price is not none else '' }}" data-output="{{ option.output_price if option.output_price is not none else '' }}" data-symbol="{{ option.currency_symbol }}" data-context="{{ option.context }}" data-status="{{ option.status }}" data-tone="{{ option.status_tone }}" data-note="{{ option.pricing_note }}" data-source="{{ option.source_url }}">{{ option.model }}</option>
+                                {% endfor %}
+                            </select>
+                            {% else %}<strong>{{ model.model }}</strong>{% endif %}
+                            <small>{{ group.provider }}</small>
+                        </div></div></td>
+                        <td><span class="ai-positioning" data-model-positioning>{{ model.positioning }}</span></td>
+                        <td>{% if model.input_price is not none %}<strong class="ai-price" data-model-input>{{ model.currency_symbol }}{{ '%.4g'|format(model.input_price) }}</strong>{% else %}<span class="ai-price-muted" data-model-input>{{ model.status }}</span>{% endif %}</td>
+                        <td><span class="ai-price-muted" data-model-cached>{% if model.cached_input_price is not none %}{{ model.currency_symbol }}{{ '%.4g'|format(model.cached_input_price) }}{% else %}--{% endif %}</span></td>
+                        <td>{% if model.output_price is not none %}<strong class="ai-price output" data-model-output>{{ model.currency_symbol }}{{ '%.4g'|format(model.output_price) }}</strong>{% else %}<span class="ai-price-muted" data-model-output>--</span>{% endif %}</td>
+                        <td><span class="ai-context" data-model-context>{{ model.context }}</span><small class="ai-note" data-model-note>{{ model.pricing_note }}</small></td>
+                        <td><span class="ai-status {{ model.status_tone }}" data-model-status>{{ model.status }}</span></td>
+                        <td><a class="ai-source-link" data-model-source href="{{ model.source_url }}" target="_blank" rel="noopener noreferrer">官方 ↗</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div id="aiTableEmpty" class="ai-empty" hidden>没有匹配模型</div>
+        </div>
+    </div>
+
+    <div data-ai-panel="plans" hidden>
+        <div class="ai-plan-grid">
+            {% for group in plan_groups %}
+            {% set first_plan = group.plans[0] %}
+            <article class="ai-plan-card {{ group.provider_code }}" data-plan-card>
+                <div class="ai-plan-provider">
+                    <span class="ai-provider-logo {{ group.provider_code }}"><img src="/static/images/ai-providers/{{ group.provider_code }}.svg" alt="" width="28" height="28"></span>
+                    <div><strong>{{ group.provider }}</strong></div>
+                </div>
+                <label><span>套餐类型</span>
+                    <select data-plan-select>
+                        {% for plan in group.plans %}
+                        <option data-price="{{ plan.price if plan.price is not none else '' }}" data-symbol="{{ plan.currency_symbol }}" data-billing="{{ plan.billing }}" data-note="{{ plan.note }}" data-source="{{ plan.source_url }}">{{ plan.plan }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <div class="ai-plan-result">
+                    <small>当前价格</small>
+                    <strong data-plan-price>{% if first_plan.price == 0 %}免费{% elif first_plan.price is none %}{{ first_plan.billing }}{% else %}{{ first_plan.currency_symbol }}{{ first_plan.price }}{{ first_plan.billing }}{% endif %}</strong>
+                    <p data-plan-note>{{ first_plan.note }}</p>
+                </div>
+                <a class="ai-source-link" data-plan-source href="{{ first_plan.source_url }}" target="_blank" rel="noopener noreferrer">查看官方价格 ↗</a>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="ai-lower-grid">
+    <article class="board-card ai-updates-card">
+        <div class="ai-section-head compact"><h2>最新动态</h2></div>
+        <div class="ai-update-list">
+            {% for update in ai_data.updates %}
+            <div class="ai-update-item" data-update-item>
+                <span class="ai-update-dot"></span>
+                <div class="ai-update-body"><div class="ai-update-meta"><span>{{ update.provider }}</span><em>{{ update.tag }}</em><time>{{ update.date }}</time></div><h3>{{ update.title }}</h3></div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="pagination-container" id="aiUpdatesPagination" hidden><div class="pagination-controls" id="aiUpdatesPaginationControls"></div></div>
+    </article>
+
+    <article class="board-card ai-calculator-card">
+        <div class="ai-section-head compact"><h2>费用估算</h2></div>
+        <label><span>模型</span><select id="aiCostModel">
+            {% for model in ai_data.models %}{% if model.input_price is not none and model.output_price is not none %}<option value="{{ loop.index0 }}" data-input="{{ model.input_price }}" data-output="{{ model.output_price }}" data-symbol="{{ model.currency_symbol }}">{{ model.provider }} · {{ model.model }}</option>{% endif %}{% endfor %}
+        </select></label>
+        <div class="ai-token-grid">
+            <label><span>输入Token</span><input id="aiInputTokens" type="number" min="0" step="1000" value="1000000"></label>
+            <label><span>输出Token</span><input id="aiOutputTokens" type="number" min="0" step="1000" value="200000"></label>
+        </div>
+        <div class="ai-estimate-result">
+            <div class="ai-estimate-total">
+                <span>预计费用</span>
+                <strong id="aiEstimatedCost">--</strong>
+                <small>按当前Token用量估算</small>
+            </div>
+            <div class="ai-estimate-breakdown">
+                <div class="ai-estimate-part"><span>输入费用</span><strong id="aiEstimatedInputCost">--</strong></div>
+                <div class="ai-estimate-part"><span>输出费用</span><strong id="aiEstimatedOutputCost">--</strong></div>
+            </div>
+        </div>
+    </article>
+</section>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const tabs = Array.from(document.querySelectorAll("[data-ai-tab]"));
+    const panels = Array.from(document.querySelectorAll("[data-ai-panel]"));
+    tabs.forEach(tab => tab.addEventListener("click", () => {
+        tabs.forEach(item => { const active = item === tab; item.classList.toggle("active", active); item.setAttribute("aria-selected", String(active)); });
+        panels.forEach(panel => { panel.hidden = panel.dataset.aiPanel !== tab.dataset.aiTab; });
+    }));
+
+    document.querySelectorAll("[data-plan-card]").forEach(card => {
+        const select = card.querySelector("[data-plan-select]");
+        const price = card.querySelector("[data-plan-price]");
+        const note = card.querySelector("[data-plan-note]");
+        const source = card.querySelector("[data-plan-source]");
+        const updatePlan = () => {
+            const option = select.options[select.selectedIndex];
+            const rawPrice = option.dataset.price;
+            if (rawPrice === "") price.textContent = option.dataset.billing;
+            else if (Number(rawPrice) === 0) price.textContent = "免费";
+            else price.textContent = `${option.dataset.symbol}${Number(rawPrice).toLocaleString("en-US", { maximumFractionDigits: 2 })}${option.dataset.billing}`;
+            note.textContent = option.dataset.note;
+            source.href = option.dataset.source;
+        };
+        select.addEventListener("change", updatePlan);
+        updatePlan();
+    });
+
+    const updateItems = Array.from(document.querySelectorAll("[data-update-item]"));
+    const updatesPagination = document.getElementById("aiUpdatesPagination");
+    const updatesPaginationControls = document.getElementById("aiUpdatesPaginationControls");
+    const updatesPerPage = 5;
+    let updatesPage = 1;
+    const updatesList = document.querySelector('.ai-update-list');
+    function measureUpdatesHeight() {
+        if (!updatesList || !updatesList.isConnected) return;
+        if (updateItems.length < updatesPerPage) {
+            updatesList.style.minHeight = '0';
+            return;
+        }
+        // Measure all entries off-screen without changing the displayed page.
+        const copy = updatesList.cloneNode(true);
+        copy.removeAttribute('id');
+        copy.setAttribute('aria-hidden', 'true');
+        copy.inert = true;
+        Object.assign(copy.style, {
+            position: 'fixed', left: '-100000px', top: '0', visibility: 'hidden',
+            width: `${updatesList.getBoundingClientRect().width}px`,
+            height: 'auto', minHeight: '0', pointerEvents: 'none'
+        });
+        const entries = [...copy.querySelectorAll('[data-update-item]')];
+        entries.forEach(item => item.style.display = '');
+        document.body.appendChild(copy);
+        const gap = parseFloat(getComputedStyle(copy).rowGap) || 0;
+        let height = 0;
+        for (let start = 0; start < entries.length; start += updatesPerPage) {
+            const group = entries.slice(start, start + updatesPerPage);
+            height = Math.max(height, group.reduce((sum, item) => sum + item.getBoundingClientRect().height, 0) + gap * (group.length - 1));
+        }
+        copy.remove();
+        updatesList.style.minHeight = `${Math.ceil(height)}px`;
+    }
+    function renderUpdates() {
+        const totalPages = Math.ceil(updateItems.length / updatesPerPage);
+        updatesPage = Math.max(1, Math.min(updatesPage, totalPages || 1));
+        updateItems.forEach((item, index) => {
+            item.style.display = index >= (updatesPage - 1) * updatesPerPage && index < updatesPage * updatesPerPage ? "" : "none";
+        });
+        if (!updatesPagination || !updatesPaginationControls) return;
+        updatesPagination.hidden = totalPages <= 1;
+        updatesPaginationControls.replaceChildren();
+        if (totalPages <= 1) return;
+        const addButton = (label, page, { active = false, disabled = false } = {}) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = `page-btn${active ? " active" : ""}`;
+            button.textContent = label;
+            button.disabled = disabled;
+            if (active) button.setAttribute('aria-current', 'page');
+            button.addEventListener("click", () => { updatesPage = page; renderUpdates(); });
+            updatesPaginationControls.appendChild(button);
+        };
+        addButton("« 上一页", updatesPage - 1, { disabled: updatesPage === 1 });
+        for (let page = 1; page <= totalPages; page += 1) addButton(String(page), page, { active: page === updatesPage });
+        addButton("下一页 »", updatesPage + 1, { disabled: updatesPage === totalPages });
+    }
+    measureUpdatesHeight();
+    renderUpdates();
+    if (updatesList) {
+        let measuredWidth = updatesList.getBoundingClientRect().width;
+        const observer = new ResizeObserver(() => {
+            if (!updatesList.isConnected) { observer.disconnect(); return; }
+            const width = updatesList.getBoundingClientRect().width;
+            if (width !== measuredWidth) { measuredWidth = width; measureUpdatesHeight(); }
+        });
+        observer.observe(updatesList);
+        document.fonts.ready.then(measureUpdatesHeight);
+    }
+
+    const table = document.getElementById("aiPriceTable");
+    const search = document.getElementById("aiModelSearch");
+    const provider = document.getElementById("aiProviderFilter");
+    const sort = document.getElementById("aiPriceSort");
+    const empty = document.getElementById("aiTableEmpty");
+    const modelRows = Array.from(document.querySelectorAll("[data-model-row]"));
+    const parsePrice = value => value === "" ? Number.POSITIVE_INFINITY : Number(value);
+    const formatModelPrice = (raw, symbol) => `${symbol}${Number(raw).toLocaleString("en-US", { maximumSignificantDigits: 4 })}`;
+
+    function updateModelRow(row) {
+        const select = row.querySelector("[data-model-select]");
+        if (!select || select.selectedIndex < 0) return;
+        const option = select.options[select.selectedIndex];
+        const symbol = option.dataset.symbol || "";
+        const input = row.querySelector("[data-model-input]");
+        const cached = row.querySelector("[data-model-cached]");
+        const output = row.querySelector("[data-model-output]");
+        row.dataset.input = option.dataset.input || "";
+        row.dataset.output = option.dataset.output || "";
+        row.querySelector("[data-model-positioning]").textContent = option.dataset.positioning || "";
+        input.textContent = option.dataset.input === "" ? option.dataset.status : formatModelPrice(option.dataset.input, symbol);
+        input.className = option.dataset.input === "" ? "ai-price-muted" : "ai-price";
+        cached.textContent = option.dataset.cached === "" ? "--" : formatModelPrice(option.dataset.cached, symbol);
+        cached.className = "ai-price-muted";
+        output.textContent = option.dataset.output === "" ? "--" : formatModelPrice(option.dataset.output, symbol);
+        output.className = option.dataset.output === "" ? "ai-price-muted" : "ai-price output";
+        row.querySelector("[data-model-context]").textContent = option.dataset.context || "";
+        row.querySelector("[data-model-note]").textContent = option.dataset.note || "";
+        const status = row.querySelector("[data-model-status]");
+        status.textContent = option.dataset.status || "";
+        status.className = `ai-status ${option.dataset.tone || "stable"}`;
+        row.querySelector("[data-model-source]").href = option.dataset.source || "#";
+    }
+
+    function renderModels() {
+        if (!table) return;
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        const query = (search.value || "").trim().toLowerCase();
+        rows.sort((a, b) => {
+            if (sort.value === "input-asc") return parsePrice(a.dataset.input) - parsePrice(b.dataset.input);
+            if (sort.value === "output-asc") return parsePrice(a.dataset.output) - parsePrice(b.dataset.output);
+            return Number(a.dataset.order) - Number(b.dataset.order);
+        }).forEach((row, index) => {
+            // Keep existing rows attached when their order has not changed.
+            if (tbody.children[index] !== row) tbody.insertBefore(row, tbody.children[index]);
+        });
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const visible = (!query || row.dataset.search.toLowerCase().includes(query)) && (!provider.value || row.dataset.provider === provider.value);
+            row.style.display = visible ? "" : "none";
+            if (visible) visibleCount += 1;
+        });
+        empty.hidden = visibleCount !== 0;
+        table.style.display = visibleCount === 0 ? "none" : "table";
+    }
+    [search, provider, sort].forEach(control => control && control.addEventListener(control === search ? "input" : "change", renderModels));
+    modelRows.forEach(row => {
+        updateModelRow(row);
+        const select = row.querySelector("[data-model-select]");
+        if (select) select.addEventListener("change", () => {
+            const scrollPositions = [];
+            for (let node = select.parentElement; node; node = node.parentElement) {
+                scrollPositions.push([node, node.scrollLeft, node.scrollTop]);
+            }
+            const x = window.scrollX, y = window.scrollY;
+            updateModelRow(row);
+            if (sort.value !== "default") renderModels();
+            select.focus({ preventScroll: true });
+            scrollPositions.forEach(([node, left, top]) => { node.scrollLeft = left; node.scrollTop = top; });
+            window.scrollTo({ left: x, top: y, behavior: "instant" });
+        });
+    });
+    renderModels();
+
+    const costModel = document.getElementById("aiCostModel");
+    const inputTokens = document.getElementById("aiInputTokens");
+    const outputTokens = document.getElementById("aiOutputTokens");
+    const costResult = document.getElementById("aiEstimatedCost");
+    const inputCostResult = document.getElementById("aiEstimatedInputCost");
+    const outputCostResult = document.getElementById("aiEstimatedOutputCost");
+    function updateEstimate() {
+        if (!costModel || !costResult || costModel.selectedIndex < 0) return;
+        const option = costModel.options[costModel.selectedIndex];
+        const symbol = option.dataset.symbol || "";
+        const inputCost = Math.max(0, Number(inputTokens.value) || 0) / 1000000 * Number(option.dataset.input);
+        const outputCost = Math.max(0, Number(outputTokens.value) || 0) / 1000000 * Number(option.dataset.output);
+        costResult.textContent = `${symbol}${(inputCost + outputCost).toFixed(4)}`;
+        inputCostResult.textContent = `${symbol}${inputCost.toFixed(4)}`;
+        outputCostResult.textContent = `${symbol}${outputCost.toFixed(4)}`;
+    }
+    [costModel, inputTokens, outputTokens].forEach(control => control && control.addEventListener(control === costModel ? "change" : "input", updateEstimate));
+    updateEstimate();
+});
+</script>
+{% endblock %}

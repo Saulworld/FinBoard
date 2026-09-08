@@ -1,0 +1,435 @@
+{% extends "base.html" %}
+
+{% block sidebar_content %}{% endblock %}
+
+{% block content %}
+{% with expiry_alerts=phone_alerts(), alert_title='境外号码到期提醒', alert_link='/phones', alert_action='去续费', alert_kind='phone', alert_collapsible=true %}{% include 'expiry_alert_panel.html' %}{% endwith %}
+{% with expiry_alerts=wallet_alerts(), alert_title='境外卡到期提醒', alert_link='/wallet-cards', alert_action='更新有效期', alert_kind='wallet', alert_collapsible=true %}{% include 'expiry_alert_panel.html' %}{% endwith %}
+
+<section class="metric-strip two">
+    <div class="metric-box">
+        <span>分析范围</span>
+        <strong>基本面 / 新闻 / 主流观点</strong>
+    </div>
+    <div class="metric-box">
+        <span>支持市场</span>
+        <strong>美股 / ETF / 港股 / A股</strong>
+    </div>
+</section>
+
+<section class="content-split">
+    <section class="board-card">
+        <div class="card-head">
+            <div>
+                <h2>自选管理</h2>
+            </div>
+        </div>
+        <form action="/watchlist" method="post" class="sidebar-form">
+            <label>
+                <span>市场</span>
+                <select name="market">
+                    {% for market_code, market_name in market_labels.items() %}
+                    <option value="{{ market_code }}">{{ market_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                <span>股票代码</span>
+                <input type="text" name="symbol" placeholder="AAPL / 600519 / 0700" required>
+            </label>
+            <label>
+                <span>备注名</span>
+                <input type="text" name="name" placeholder="可留空，自动补公司名">
+            </label>
+            <label>
+                <span>备注</span>
+                <input type="text" name="note" placeholder="例如：财报前观察">
+            </label>
+            <button type="submit">加入自选</button>
+        </form>
+    </section>
+
+    <section class="board-card">
+        <div class="card-head">
+            <div>
+                <h2>大盘指数</h2>
+            </div>
+        </div>
+        <ul class="sidebar-list" style="margin-top: 14px; display: flex; flex-direction: column; gap: 12px;">
+            <li data-quote-symbol="^GSPC" data-quote-market="US" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="color: var(--text); font-size: 15px; text-align: left;">标普 500</strong>
+                    <span style="font-size: 12px; color: var(--muted);">.SPX / 美股</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <strong data-value="price" style="font-size: 15px; color: var(--text);">--</strong>
+                    <span data-value="change_percent" class="quote-flat" style="font-size: 13px; font-weight: bold;">--</span>
+                </div>
+            </li>
+            <li data-quote-symbol="^IXIC" data-quote-market="US" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="color: var(--text); font-size: 15px; text-align: left;">纳斯达克</strong>
+                    <span style="font-size: 12px; color: var(--muted);">.IXIC / 美股</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <strong data-value="price" style="font-size: 15px; color: var(--text);">--</strong>
+                    <span data-value="change_percent" class="quote-flat" style="font-size: 13px; font-weight: bold;">--</span>
+                </div>
+            </li>
+            <li data-quote-symbol="^DJI" data-quote-market="US" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="color: var(--text); font-size: 15px; text-align: left;">道琼斯</strong>
+                    <span style="font-size: 12px; color: var(--muted);">.DJI / 美股</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <strong data-value="price" style="font-size: 15px; color: var(--text);">--</strong>
+                    <span data-value="change_percent" class="quote-flat" style="font-size: 13px; font-weight: bold;">--</span>
+                </div>
+            </li>
+            <li data-quote-symbol="000001.SS" data-quote-market="CN" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="color: var(--text); font-size: 15px; text-align: left;">上证指数</strong>
+                    <span style="font-size: 12px; color: var(--muted);">000001.SS / A股</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <strong data-value="price" style="font-size: 15px; color: var(--text);">--</strong>
+                    <span data-value="change_percent" class="quote-flat" style="font-size: 13px; font-weight: bold;">--</span>
+                </div>
+            </li>
+            <li data-quote-symbol="399001.SZ" data-quote-market="CN" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="color: var(--text); font-size: 15px; text-align: left;">深证成指</strong>
+                    <span style="font-size: 12px; color: var(--muted);">399001.SZ / A股</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <strong data-value="price" style="font-size: 15px; color: var(--text);">--</strong>
+                    <span data-value="change_percent" class="quote-flat" style="font-size: 13px; font-weight: bold;">--</span>
+                </div>
+            </li>
+            <li data-quote-symbol="HSI.HK" data-quote-market="HK" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="color: var(--text); font-size: 15px; text-align: left;">恒生指数</strong>
+                    <span style="font-size: 12px; color: var(--muted);">HSI.HK / 港股</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <strong data-value="price" style="font-size: 15px; color: var(--text);">--</strong>
+                    <span data-value="change_percent" class="quote-flat" style="font-size: 13px; font-weight: bold;">--</span>
+                </div>
+            </li>
+            <li data-quote-symbol="^VIX" data-quote-market="US" style="display: flex; justify-content: space-between; align-items: center; padding: 4px 0;">
+                <div style="display: flex; flex-direction: column;">
+                    <strong style="color: var(--text); font-size: 15px; text-align: left;">恐慌指数 VIX</strong>
+                    <span style="font-size: 12px; color: var(--muted);">^VIX / 美股</span>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end;">
+                    <strong data-value="price" style="font-size: 15px; color: var(--text);">--</strong>
+                    <span data-value="change_percent" class="quote-flat" style="font-size: 13px; font-weight: bold;">--</span>
+                </div>
+            </li>
+        </ul>
+    </section>
+</section>
+
+<section class="board-card">
+    <div class="card-head">
+        <div>
+            <h2>实时涨跌</h2>
+        </div>
+    </div>
+
+    {% if watchlist_rows %}
+    <div class="table-wrap">
+        <table id="watchlistTable">
+            <thead>
+                <tr>
+                    <th>股票</th>
+                    <th>市场</th>
+                    <th>现价</th>
+                    <th>涨跌额</th>
+                    <th>涨跌幅</th>
+                    <th>数据源</th>
+                    <th>更新时间</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in watchlist_rows %}
+                <tr data-quote-symbol="{{ row.symbol }}" data-quote-market="{{ row.market }}">
+                    <td>
+                        <a class="stock-link" href="/stock?symbol={{ row.input_symbol }}&market={{ row.market }}">
+                            <strong>{{ row.name }}</strong>
+                            <span>{{ row.symbol }}</span>
+                        </a>
+                    </td>
+                    <td>{{ row.market_label }}</td>
+                    <td data-value="price">{{ row.quote.price_text }}</td>
+                    <td data-value="change" class="quote-{{ row.quote.css_class }}">{{ row.quote.change_text }}</td>
+                    <td data-value="change_percent" class="quote-{{ row.quote.css_class }}">{{ row.quote.change_percent_text }}</td>
+                    <td data-value="source">{{ row.quote.source }}</td>
+                    <td data-value="updated_at">{{ row.quote.updated_at_text }}</td>
+                    <td class="table-actions">
+                        <button type="button" class="button-link remove-watchlist-btn" style="color: #dc2626; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
+                                data-id="{{ row.id }}" 
+                                data-name="{{ row.name }}" 
+                                data-symbol="{{ row.symbol }}">移除</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">还没有自选股票。先在上面加入你要跟踪的股票。</div>
+    {% endif %}
+</section>
+
+<!-- Remove Watchlist Modal -->
+<div id="removeWatchlistModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="color: #dc2626; margin: 0; font-size: 20px;">确认移除自选</h2>
+            <button type="button" id="closeRemoveModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <form id="removeWatchlistForm" method="post" style="display: flex; flex-direction: column; gap: 20px;">
+            <p style="margin: 0; line-height: 1.6; color: var(--text);">确定要将 <strong id="removeWatchlistStockName" style="color: var(--accent);"></strong> 从自选股列表中移除吗？</p>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" id="cancelRemoveModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; cursor: pointer; font-weight: bold;">取消</button>
+                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; border: 0; border-radius: 14px; padding: 12px 16px; cursor: pointer; font-weight: bold;">确认移除</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Helper to show custom toasts in place without page jump
+    function showToast(message, isError = false) {
+        let banner = document.getElementById("noticeBanner");
+        if (!banner) {
+            banner = document.createElement("div");
+            banner.id = "noticeBanner";
+            banner.className = isError ? "banner banner-error" : "banner banner-notice";
+            banner.style.position = "fixed";
+            banner.style.top = "20px";
+            banner.style.right = "20px";
+            banner.style.zIndex = "9999";
+            banner.style.display = "flex";
+            banner.style.justifyContent = "space-between";
+            banner.style.alignItems = "center";
+            banner.style.transition = "opacity 0.5s ease";
+            banner.style.boxShadow = "var(--shadow)";
+            banner.style.minWidth = "300px";
+            document.body.appendChild(banner);
+        } else {
+            banner.className = isError ? "banner banner-error" : "banner banner-notice";
+        }
+        banner.style.display = "flex";
+        banner.style.opacity = "1";
+        banner.innerHTML = `
+            <span>${message}</span>
+            <button type="button" onclick="const b = document.getElementById('noticeBanner'); if(b){b.style.opacity='0'; setTimeout(()=>b.style.display='none', 500);}" style="background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; line-height: 1; padding: 0 4px;">&times;</button>
+        `;
+        setTimeout(() => {
+            banner.style.opacity = "0";
+            setTimeout(() => banner.style.display = "none", 500);
+        }, 3000);
+    }
+
+    async function reloadDashboardPage(toastMsg) {
+        const scrollPos = window.scrollY;
+        try {
+            const response = await fetch(window.location.href);
+            if (!response.ok) throw new Error("Failed to reload dashboard");
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+
+            // Swap main content area
+            const newContent = doc.querySelector(".content-area");
+            const contentArea = document.querySelector(".content-area");
+            if (newContent && contentArea) {
+                contentArea.innerHTML = newContent.innerHTML;
+                
+                // Re-evaluate page script
+                const scripts = contentArea.querySelectorAll("script");
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement("script");
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+            }
+
+            // Restore scroll
+            window.scrollTo(0, scrollPos);
+            showToast(toastMsg);
+        } catch (e) {
+            console.error("Error reloading dashboard:", e);
+            window.location.reload();
+        }
+    }
+
+    function makeTableSortable(tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        
+        const headers = table.querySelectorAll("thead th");
+        const tbody = table.querySelector("tbody");
+        if (!tbody) return;
+        
+        let sortDirections = {};
+        
+        headers.forEach((th, index) => {
+            if (index === headers.length - 1) return; // Skip action column
+            
+            th.style.cursor = "pointer";
+            th.style.userSelect = "none";
+            th.title = "点击排序";
+            
+            const indicator = document.createElement("span");
+            indicator.className = "sort-indicator";
+            indicator.style.marginLeft = "6px";
+            indicator.style.color = "var(--muted)";
+            indicator.style.fontSize = "12px";
+            indicator.dataset.direction = "none";
+            indicator.setAttribute("aria-hidden", "true");
+            th.appendChild(indicator);
+            
+            th.addEventListener("click", () => {
+                const currentDir = sortDirections[index] || "none";
+                let newDir = "asc";
+                if (currentDir === "asc") {
+                    newDir = "desc";
+                }
+                
+                headers.forEach((h, idx) => {
+                    const ind = h.querySelector(".sort-indicator");
+                    if (ind) {
+                        ind.dataset.direction = "none";
+                        h.setAttribute("aria-sort", "none");
+                        ind.style.color = "var(--muted)";
+                    }
+                    if (idx !== index) {
+                        sortDirections[idx] = "none";
+                    }
+                });
+                
+                sortDirections[index] = newDir;
+                
+                const ind = th.querySelector(".sort-indicator");
+                if (ind) {
+                    ind.dataset.direction = newDir;
+                    th.setAttribute("aria-sort", newDir === "asc" ? "ascending" : "descending");
+                    ind.style.color = "var(--accent)";
+                }
+                
+                let rows = Array.from(tbody.querySelectorAll("tr"));
+                
+                rows.sort((a, b) => {
+                    let valA = getCellValue(a, index);
+                    let valB = getCellValue(b, index);
+                    
+                    let numA = parseFloat(cleanNumberStr(valA));
+                    let numB = parseFloat(cleanNumberStr(valB));
+                    
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return newDir === "asc" ? numA - numB : numB - numA;
+                    }
+                    
+                    return newDir === "asc" 
+                        ? valA.localeCompare(valB, "zh-CN") 
+                        : valB.localeCompare(valA, "zh-CN");
+                });
+                
+                rows.forEach(row => tbody.appendChild(row));
+                if (typeof paginateTable === "function") {
+                    paginateTable(tableId, 5);
+                }
+            });
+        });
+        
+        function cleanNumberStr(str) {
+            return str.replace(/[^\d.-]/g, "");
+        }
+        
+        function getCellValue(row, index) {
+            const cell = row.children[index];
+            if (!cell) return "";
+            
+            const strong = cell.querySelector("strong");
+            if (strong) return strong.textContent.trim();
+            
+            return cell.textContent.trim();
+        }
+    }
+    
+    makeTableSortable("watchlistTable");
+    if (typeof paginateTable === "function") {
+        paginateTable("watchlistTable", 5);
+    }
+
+    const removeModal = document.getElementById("removeWatchlistModal");
+    const removeForm = document.getElementById("removeWatchlistForm");
+    const closeRemoveBtn = document.getElementById("closeRemoveModalBtn");
+    const cancelRemoveBtn = document.getElementById("cancelRemoveModalBtn");
+    const removeStockNameSpan = document.getElementById("removeWatchlistStockName");
+
+    document.querySelectorAll(".remove-watchlist-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.id;
+            const name = btn.dataset.name;
+            const symbol = btn.dataset.symbol;
+
+            // Fill form action and stock name
+            removeForm.action = `/watchlist/${id}/delete`;
+            removeStockNameSpan.textContent = `${name} (${symbol})`;
+
+            // Show modal
+            removeModal.style.display = "flex";
+        });
+    });
+
+    function hideRemoveModal() {
+        removeModal.style.display = "none";
+    }
+
+    if (closeRemoveBtn) closeRemoveBtn.addEventListener("click", hideRemoveModal);
+    if (cancelRemoveBtn) cancelRemoveBtn.addEventListener("click", hideRemoveModal);
+
+    // Watchlist Remove form AJAX submission
+    removeForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(removeForm.action, {
+                method: "POST"
+            });
+            if (!response.ok) throw new Error("HTTP error " + response.status);
+            hideRemoveModal();
+            await reloadDashboardPage("自选股已成功移除");
+        } catch (error) {
+            console.error("移除自选股失败:", error);
+            showToast("移除自选股失败: " + error.message, true);
+        }
+    });
+
+    const handleRemoveModalWindowClick = (event) => {
+        if (event.target === removeModal) {
+            hideRemoveModal();
+        }
+    };
+    window.addEventListener("click", handleRemoveModalWindowClick);
+
+    window.pjaxCleanupTasks = window.pjaxCleanupTasks || [];
+    window.pjaxCleanupTasks.push(() => {
+        window.removeEventListener("click", handleRemoveModalWindowClick);
+    });
+});
+</script>
+{% endblock %}

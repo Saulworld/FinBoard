@@ -1,0 +1,826 @@
+{% extends "base.html" %}
+
+{% block sidebar_content %}{% endblock %}
+
+
+
+{% block page_actions %}
+<div class="page-topbar-actions">
+    <label for="portfolio-base-currency" style="display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px;">
+        <span>汇总货币</span>
+        <select id="portfolio-base-currency" style="width:auto; min-width:112px; padding:7px 30px 7px 10px;">
+            {% for currency in portfolio_currencies %}
+            <option value="{{ currency }}" {% if currency == summary.base_currency %}selected{% endif %}>
+                {{ {"CNY": "人民币 CNY", "USD": "美元 USD", "HKD": "港币 HKD"}.get(currency, currency) }}
+            </option>
+            {% endfor %}
+        </select>
+    </label>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+@keyframes pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+.loading-placeholder {
+    display: inline-block;
+    width: 60px;
+    height: 16px;
+    background-color: #e5e7eb;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite ease-in-out;
+    vertical-align: middle;
+}
+.loading-placeholder-large {
+    display: inline-block;
+    width: 100px;
+    height: 24px;
+    background-color: #e5e7eb;
+    border-radius: 6px;
+    animation: pulse 1.5s infinite ease-in-out;
+    vertical-align: middle;
+}
+#holdingEntryPanel .holding-entry-forms { column-gap: 36px; }
+#holdingEntryPanel .holding-entry-forms > section + section { position: relative; }
+#holdingEntryPanel .holding-entry-forms > section + section::before {
+    content: ""; position: absolute; left: -18px; top: 0; bottom: 0;
+    width: 1px; background: var(--line);
+}
+@media (max-width: 1080px) {
+    #holdingEntryPanel .holding-entry-forms { row-gap: 32px; }
+    #holdingEntryPanel .holding-entry-forms > section + section::before {
+        left: 0; right: 0; top: -16px; bottom: auto; width: auto; height: 1px;
+    }
+}
+</style>
+
+<section class="metric-strip four">
+    <div class="metric-box">
+        <span>持仓数量</span>
+        <strong>{{ summary.holding_count }}</strong>
+    </div>
+    <div class="metric-box">
+        <span>总成本</span>
+        <strong id="summary-total-cost">
+            <span class="loading-placeholder-large"></span>
+        </strong>
+    </div>
+    <div class="metric-box">
+        <span>当前市值</span>
+        <strong id="summary-total-value">
+            <span class="loading-placeholder-large"></span>
+        </strong>
+    </div>
+    <div class="metric-box">
+        <span>浮动盈亏</span>
+        <strong id="summary-total-pnl" class="quote-flat">
+            <span class="loading-placeholder-large"></span>
+        </strong>
+    </div>
+</section>
+<div id="summary-fx-error" style="display:none; margin: -8px 0 14px; color:#b45309; font-size:13px;"></div>
+
+<details class="board-card overseas-add-panel expiry-disclosure" id="holdingEntryPanel">
+    <summary class="card-head">
+        <h2>添加持仓 / 批量导入</h2>
+    </summary>
+    <div class="content-split holding-entry-forms" style="margin-top: 16px;">
+    <section style="display: flex; flex-direction: column; min-width: 0;">
+        <div class="card-head">
+            <div>
+                <h2>批量导入</h2>
+            </div>
+        </div>
+        <form action="/holdings/import" method="post" class="sidebar-form" style="display: flex; flex-direction: column; flex: 1; margin-top: 14px;">
+            <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+                <label style="margin: 0;">
+                    <span>默认市场</span>
+                    <select name="default_market">
+                        {% for market_code, market_name in market_labels.items() %}
+                        <option value="{{ market_code }}">{{ market_name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0; display: flex; flex-direction: column; flex: 1;">
+                    <span>粘贴内容</span>
+                    <textarea name="content" placeholder="代码,数量,成本价,市场,名称,备注&#10;AAPL,10,182.5,US,Apple,长线&#10;600519,20,1680,CN,贵州茅台,白酒核心" style="flex: 1; min-height: 120px; resize: vertical;"></textarea>
+                </label>
+                <div class="checkbox-row" style="margin: 0; margin-top: 4px;">
+                    <input type="checkbox" name="replace_existing" value="1">
+                    <span>导入前清空旧持仓</span>
+                </div>
+            </div>
+            <button type="submit" style="margin-top: 16px;">确认导入</button>
+        </form>
+    </section>
+
+    <section style="display: flex; flex-direction: column; min-width: 0;">
+        <div class="card-head">
+            <div>
+                <h2>添加持仓</h2>
+            </div>
+        </div>
+        <form action="/holdings/transaction" method="post" class="sidebar-form" id="transactionForm" style="display: flex; flex-direction: column; flex: 1; margin-top: 14px;">
+            <div style="display: flex; flex-direction: column; gap: 12px; flex: 1;">
+                <div style="display: flex; gap: 12px; margin: 0;">
+                    <label style="flex: 1; margin: 0;">
+                        <span>交易动作</span>
+                        <select name="action" id="actionSelect">
+                            <option value="加仓">加仓 (买入)</option>
+                            <option value="减仓">减仓 (卖出)</option>
+                            <option value="平仓">平仓 (卖空/出清)</option>
+                        </select>
+                    </label>
+                    <label style="flex: 1; margin: 0;">
+                        <span>市场</span>
+                        <select name="market">
+                            {% for market_code, market_name in market_labels.items() %}
+                            <option value="{{ market_code }}">{{ market_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                </div>
+                <label style="margin: 0;">
+                    <span>股票代码</span>
+                    <input type="text" name="symbol" placeholder="例如 AAPL / 0700" required>
+                </label>
+                <div style="display: flex; gap: 12px; margin: 0;">
+                    <label id="quantityLabel" style="flex: 1; margin: 0;">
+                        <span>交易数量</span>
+                        <input type="number" name="quantity" id="quantityInput" step="any" placeholder="数量" required>
+                    </label>
+                    <label id="priceLabel" style="flex: 1; margin: 0;">
+                        <span>成交价格</span>
+                        <input type="number" name="price" step="any" placeholder="成交单价" required>
+                    </label>
+                </div>
+                <div style="display: flex; gap: 12px; margin: 0;">
+                    <label style="flex: 1; margin: 0;">
+                        <span>交易日期</span>
+                        <input type="date" name="date" value="{{ today_date }}" required>
+                    </label>
+                    <label style="flex: 1; margin: 0;">
+                        <span>备注</span>
+                        <input type="text" name="note" placeholder="选填，例如：建仓">
+                    </label>
+                </div>
+            </div>
+            <button type="submit" style="margin-top: 16px;">确认导入</button>
+        </form>
+    </section>
+    </div>
+</details>
+
+<section class="board-card">
+    <div class="card-head">
+        <div>
+            <h2>持仓明细</h2>
+        </div>
+    </div>
+
+    {% if rows %}
+    <div class="table-wrap">
+        <table id="holdingsTable">
+            <thead>
+                <tr>
+                    <th>股票</th>
+                    <th>数量</th>
+                    <th>成本价</th>
+                    <th>现价</th>
+                    <th>成本市值</th>
+                    <th>当前市值</th>
+                    <th>浮动盈亏</th>
+                    <th>备注</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                <tr data-symbol="{{ row.symbol }}" data-market="{{ row.market }}">
+                    <td>
+                        <a class="stock-link" href="/stock?symbol={{ row.input_symbol }}&market={{ row.market }}">
+                            <strong>{{ row.name }}</strong>
+                            <span>{{ row.symbol }} · {{ row.market_label }}</span>
+                        </a>
+                    </td>
+                    <td>{{ "%.4f"|format(row.quantity) }}</td>
+                    <td>{{ row.average_cost_text }}</td>
+                    <td data-value="price"><span class="loading-placeholder"></span></td>
+                    <td>{{ row.cost_value_text }}</td>
+                    <td data-value="market_value"><span class="loading-placeholder"></span></td>
+                    <td data-value="pnl" class="quote-flat"><span class="loading-placeholder"></span></td>
+                    <td>{{ row.note or '--' }}</td>
+                    <td class="table-actions" style="white-space: nowrap;">
+                        <div style="display: flex; gap: 12px; align-items: center;">
+                            <button type="button" class="button-link edit-holding-btn" style="color: #1a73e8; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
+                                    data-id="{{ row.id }}" 
+                                    data-name="{{ row.name }}" 
+                                    data-symbol="{{ row.symbol }}" 
+                                    data-quantity="{{ row.quantity }}" 
+                                    data-cost="{{ row.average_cost }}" 
+                                    data-note="{{ row.note }}">修改</button>
+                            <button type="button" class="button-link delete-holding-btn" style="color: #dc2626; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
+                                    data-id="{{ row.id }}" 
+                                    data-name="{{ row.name }}" 
+                                    data-symbol="{{ row.symbol }}">删除</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">还没有持仓记录。把券商持仓表复制到上面即可。</div>
+    {% endif %}
+</section>
+
+<section class="board-card" style="margin-top: 24px;">
+    <div class="card-head">
+        <div>
+            <h2>历史流水记录</h2>
+        </div>
+    </div>
+    {% if transactions %}
+    <div class="table-wrap">
+        <table id="transactionsTable">
+            <thead>
+                <tr>
+                    <th>交易日期</th>
+                    <th>股票</th>
+                    <th>市场</th>
+                    <th>动作</th>
+                    <th>成交数量</th>
+                    <th>成交价格</th>
+                    <th>备注</th>
+                    <th>记录时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in transactions %}
+                <tr>
+                    <td>{{ tx.date }}</td>
+                    <td>
+                        <strong>{{ tx.name }}</strong>
+                        <span>{{ tx.symbol }}</span>
+                    </td>
+                    <td>{{ market_labels[tx.market] }}</td>
+                    <td>
+                        <span class="badge-action-{{ tx.action }}" style="padding: 4px 8px; border-radius: 6px; font-weight: bold; font-size: 13px; display: inline-block;
+                            {% if tx.action == '加仓' %} background-color: #e6f4ea; color: #137333;
+                            {% elif tx.action == '减仓' %} background-color: #fef7e0; color: #b06000;
+                            {% else %} background-color: #fce8e6; color: #c5221f; {% endif %}">
+                            {{ tx.action }}
+                        </span>
+                    </td>
+                    <td>{{ "%.4f"|format(tx.quantity) if tx.quantity is not none else '--' }}</td>
+                    <td>{{ format_money(tx.price, get_market_currency(tx.market)) }}</td>
+                    <td>{{ tx.note or '--' }}</td>
+                    <td>{{ format_datetime(tx.created_at) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">尚无交易流水记录。</div>
+    {% endif %}
+</section>
+
+<!-- Edit Holding Modal -->
+<div id="editHoldingModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 450px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2>修改持仓数据</h2>
+            <button type="button" id="closeEditModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <form id="editHoldingForm" method="post" class="sidebar-form" style="margin-top: 0; gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="margin: 0;">
+                    <span>股票代码 / 名称</span>
+                    <input type="text" id="editHoldingStock" readonly style="background-color: #f3f4f6; color: var(--muted); cursor: not-allowed;">
+                </label>
+                <div style="display: flex; gap: 12px; margin: 0;">
+                    <label style="flex: 1; margin: 0;">
+                        <span>持仓数量</span>
+                        <input type="number" name="quantity" id="editHoldingQuantity" step="any" required>
+                    </label>
+                    <label style="flex: 1; margin: 0;">
+                        <span>平均成本</span>
+                        <input type="number" name="price" id="editHoldingCost" step="any" required>
+                    </label>
+                </div>
+                <label style="margin: 0;">
+                    <span>备注</span>
+                    <input type="text" name="note" id="editHoldingNote" placeholder="选填，例如：长期持有">
+                </label>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 8px;">
+                <button type="button" id="cancelEditModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line);">取消</button>
+                <button type="submit" style="flex: 1;">保存修改</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Holding Modal -->
+<div id="deleteHoldingModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2 style="color: #dc2626;">确认删除持仓</h2>
+            <button type="button" id="closeDeleteModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <form id="deleteHoldingForm" method="post" style="display: flex; flex-direction: column; gap: 20px;">
+            <p style="margin: 0; line-height: 1.6; color: var(--text);">确定要删除 <strong id="deleteHoldingStockName" style="color: var(--accent);"></strong> 的持仓记录吗？该操作将清除其所有数据且无法撤销。</p>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" id="cancelDeleteModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; cursor: pointer;">取消</button>
+                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; border: 0; border-radius: 14px; padding: 12px 16px; cursor: pointer; font-weight: bold;">确认删除</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+@keyframes modalFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Helper to show custom toasts in place without page jump
+    function showToast(message, isError = false) {
+        let banner = document.getElementById("noticeBanner");
+        if (!banner) {
+            banner = document.createElement("div");
+            banner.id = "noticeBanner";
+            banner.className = isError ? "banner banner-error" : "banner banner-notice";
+            banner.style.position = "fixed";
+            banner.style.top = "20px";
+            banner.style.right = "20px";
+            banner.style.zIndex = "9999";
+            banner.style.display = "flex";
+            banner.style.justifyContent = "space-between";
+            banner.style.alignItems = "center";
+            banner.style.transition = "opacity 0.5s ease";
+            banner.style.boxShadow = "var(--shadow)";
+            banner.style.minWidth = "300px";
+            document.body.appendChild(banner);
+        } else {
+            banner.className = isError ? "banner banner-error" : "banner banner-notice";
+        }
+        banner.style.display = "flex";
+        banner.style.opacity = "1";
+        banner.innerHTML = `
+            <span>${message}</span>
+            <button type="button" onclick="const b = document.getElementById('noticeBanner'); if(b){b.style.opacity='0'; setTimeout(()=>b.style.display='none', 500);}" style="background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; line-height: 1; padding: 0 4px;">&times;</button>
+        `;
+        setTimeout(() => {
+            banner.style.opacity = "0";
+            setTimeout(() => banner.style.display = "none", 500);
+        }, 3000);
+    }
+
+    async function reloadHoldingsPage(toastMsg) {
+        const scrollPos = window.scrollY;
+        try {
+            const response = await fetch(window.location.href);
+            if (!response.ok) throw new Error("Failed to reload holdings");
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+
+            // Swap main content area
+            const newContent = doc.querySelector(".content-area");
+            const contentArea = document.querySelector(".content-area");
+            if (newContent && contentArea) {
+                // Clear any running refresh timeouts first
+                if (refreshTimeoutId) {
+                    clearTimeout(refreshTimeoutId);
+                    refreshTimeoutId = null;
+                }
+                
+                contentArea.innerHTML = newContent.innerHTML;
+                
+                // Re-evaluate page script
+                const scripts = contentArea.querySelectorAll("script");
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement("script");
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+            }
+
+            // Restore scroll
+            window.scrollTo(0, scrollPos);
+            showToast(toastMsg);
+        } catch (e) {
+            console.error("Error reloading holdings:", e);
+            window.location.reload();
+        }
+    }
+
+    const actionSelect = document.getElementById("actionSelect");
+    const quantityInput = document.getElementById("quantityInput");
+    const quantityLabel = document.getElementById("quantityLabel");
+
+    function handleActionChange() {
+        if (actionSelect.value === "平仓") {
+            quantityInput.disabled = true;
+            quantityInput.required = false;
+            quantityLabel.style.opacity = "0.5";
+        } else {
+            quantityInput.disabled = false;
+            quantityInput.required = true;
+            quantityLabel.style.opacity = "1";
+        }
+    }
+
+    if (actionSelect) {
+        actionSelect.addEventListener("change", handleActionChange);
+        handleActionChange();
+    }
+
+
+
+    // Dynamic Client-side Table Column Sorting Function
+    function makeTableSortable(tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        
+        const headers = table.querySelectorAll("thead th");
+        const tbody = table.querySelector("tbody");
+        if (!tbody) return;
+        
+        let sortDirections = {};
+        
+        headers.forEach((th, index) => {
+            if (index === headers.length - 1) return; // Skip action column
+            
+            th.style.cursor = "pointer";
+            th.style.userSelect = "none";
+            th.title = "点击排序";
+            
+            const indicator = document.createElement("span");
+            indicator.className = "sort-indicator";
+            indicator.style.marginLeft = "6px";
+            indicator.style.color = "var(--muted)";
+            indicator.style.fontSize = "12px";
+            indicator.dataset.direction = "none";
+            indicator.setAttribute("aria-hidden", "true");
+            th.appendChild(indicator);
+            
+            th.addEventListener("click", () => {
+                const currentDir = sortDirections[index] || "none";
+                let newDir = "asc";
+                if (currentDir === "asc") {
+                    newDir = "desc";
+                }
+                
+                headers.forEach((h, idx) => {
+                    const ind = h.querySelector(".sort-indicator");
+                    if (ind) {
+                        ind.dataset.direction = "none";
+                        h.setAttribute("aria-sort", "none");
+                        ind.style.color = "var(--muted)";
+                    }
+                    if (idx !== index) {
+                        sortDirections[idx] = "none";
+                    }
+                });
+                
+                sortDirections[index] = newDir;
+                
+                const ind = th.querySelector(".sort-indicator");
+                if (ind) {
+                    ind.dataset.direction = newDir;
+                    th.setAttribute("aria-sort", newDir === "asc" ? "ascending" : "descending");
+                    ind.style.color = "var(--accent)";
+                }
+                
+                let rows = Array.from(tbody.querySelectorAll("tr"));
+                
+                rows.sort((a, b) => {
+                    let valA = getCellValue(a, index);
+                    let valB = getCellValue(b, index);
+                    
+                    let numA = parseFloat(cleanNumberStr(valA));
+                    let numB = parseFloat(cleanNumberStr(valB));
+                    
+                    if (!isNaN(numA) && !isNaN(numB)) {
+                        return newDir === "asc" ? numA - numB : numB - numA;
+                    }
+                    
+                    return newDir === "asc" 
+                        ? valA.localeCompare(valB, "zh-CN") 
+                        : valB.localeCompare(valA, "zh-CN");
+                });
+                
+                rows.forEach(row => tbody.appendChild(row));
+                if (typeof paginateTable === "function") {
+                    paginateTable(tableId, 5);
+                }
+            });
+        });
+        
+        function cleanNumberStr(str) {
+            return str.replace(/[^\d.-]/g, "");
+        }
+        
+        function getCellValue(row, index) {
+            const cell = row.children[index];
+            if (!cell) return "";
+            
+            const strong = cell.querySelector("strong");
+            if (strong) return strong.textContent.trim();
+            
+            return cell.textContent.trim();
+        }
+    }
+
+    // Paginate holdingsTable and transactionsTable if they exceed 5 rows
+    paginateTable("holdingsTable", 5);
+    paginateTable("transactionsTable", 5);
+    makeTableSortable("holdingsTable");
+    makeTableSortable("transactionsTable");
+
+    // Fetch and update holdings quotes asynchronously
+    let refreshTimeoutId = null;
+    let holdingsQuotesInFlight = false;
+    let pendingCurrencyReload = false;
+    const baseCurrencySelect = document.getElementById("portfolio-base-currency");
+    const supportedBaseCurrencies = new Set(["CNY", "USD", "HKD"]);
+    const savedBaseCurrency = localStorage.getItem("portfolio_base_currency");
+    if (baseCurrencySelect && supportedBaseCurrencies.has(savedBaseCurrency)) {
+        baseCurrencySelect.value = savedBaseCurrency;
+    }
+
+    async function loadHoldingsQuotes() {
+        if (holdingsQuotesInFlight) {
+            pendingCurrencyReload = true;
+            return;
+        }
+
+        try {
+            holdingsQuotesInFlight = true;
+            const requestedCurrency = baseCurrencySelect ? baseCurrencySelect.value : "{{ summary.base_currency }}";
+            const params = new URLSearchParams({
+                base_currency: requestedCurrency,
+                _t: Date.now().toString(),
+            });
+            const response = await fetch(`/api/holdings/quotes?${params.toString()}`);
+            if (!response.ok) throw new Error("Failed to fetch holdings quotes");
+            const data = await response.json();
+
+            // Ignore a stale response if the user changed currency mid-request.
+            if (baseCurrencySelect && requestedCurrency !== baseCurrencySelect.value) {
+                pendingCurrencyReload = true;
+                return;
+            }
+            
+            // 1. Update summary metrics
+            const totalCostEl = document.getElementById("summary-total-cost");
+            const totalValueEl = document.getElementById("summary-total-value");
+            const totalPnlEl = document.getElementById("summary-total-pnl");
+            const fxErrorEl = document.getElementById("summary-fx-error");
+            
+            if (totalCostEl && data.summary) {
+                totalCostEl.textContent = data.summary.total_cost_text || "--";
+            }
+            if (totalValueEl && data.summary) {
+                totalValueEl.textContent = data.summary.total_value_text || "--";
+            }
+            if (totalPnlEl && data.summary) {
+                totalPnlEl.textContent = data.summary.total_pnl_text || "--";
+                totalPnlEl.className = ""; // clear loading classes
+                totalPnlEl.classList.add(`quote-${data.summary.total_pnl_class}`);
+            }
+            if (fxErrorEl && data.summary) {
+                fxErrorEl.textContent = data.summary.error || "";
+                fxErrorEl.style.display = data.summary.error ? "block" : "none";
+            }
+            
+            // 2. Update table rows
+            if (data.quotes && Array.isArray(data.quotes)) {
+                data.quotes.forEach(quote => {
+                    const row = document.querySelector(`#holdingsTable tbody tr[data-symbol="${quote.symbol}"][data-market="${quote.market}"]`);
+                    if (row) {
+                        const priceEl = row.querySelector('[data-value="price"]');
+                        const marketValueEl = row.querySelector('[data-value="market_value"]');
+                        const pnlEl = row.querySelector('[data-value="pnl"]');
+                        
+                        if (priceEl) {
+                            priceEl.textContent = quote.price_text || "--";
+                        }
+                        if (marketValueEl) {
+                            marketValueEl.textContent = quote.market_value_text || "--";
+                        }
+                        if (pnlEl) {
+                            pnlEl.textContent = quote.pnl_text || "--";
+                            pnlEl.className = "";
+                            pnlEl.classList.add(`quote-${quote.pnl_class}`);
+                        }
+                    }
+                });
+            }
+        } catch (error) {
+            console.error("Error loading holdings quotes:", error);
+            // Fallback: remove skeleton placeholders and show error fallback
+            document.querySelectorAll("#holdingsTable [data-value]").forEach(el => {
+                if (el.querySelector(".loading-placeholder")) {
+                    el.textContent = "--";
+                }
+            });
+            const totalValueEl = document.getElementById("summary-total-value");
+            const totalPnlEl = document.getElementById("summary-total-pnl");
+            if (totalValueEl && totalValueEl.querySelector(".loading-placeholder-large")) {
+                totalValueEl.textContent = "--";
+            }
+            if (totalPnlEl && totalPnlEl.querySelector(".loading-placeholder-large")) {
+                totalPnlEl.textContent = "--";
+            }
+        } finally {
+            holdingsQuotesInFlight = false;
+            if (pendingCurrencyReload) {
+                pendingCurrencyReload = false;
+                setTimeout(loadHoldingsQuotes, 0);
+            } else {
+                scheduleNextRefresh();
+            }
+        }
+    }
+
+    if (baseCurrencySelect) {
+        baseCurrencySelect.addEventListener("change", () => {
+            localStorage.setItem("portfolio_base_currency", baseCurrencySelect.value);
+            loadHoldingsQuotes();
+        });
+    }
+
+    function scheduleNextRefresh() {
+        if (refreshTimeoutId) {
+            clearTimeout(refreshTimeoutId);
+        }
+        
+        const savedInterval = localStorage.getItem("quote_refresh_interval_seconds");
+        let seconds = parseFloat(savedInterval);
+        if (isNaN(seconds) || seconds < 0) {
+            seconds = 30;
+        }
+        
+        if (seconds > 0) {
+            refreshTimeoutId = setTimeout(loadHoldingsQuotes, seconds * 1000);
+        }
+    }
+
+    // Load initial holdings data
+    loadHoldingsQuotes();
+
+    // Register PJAX cleanup task for holdings timeout
+    window.pjaxCleanupTasks = window.pjaxCleanupTasks || [];
+    window.pjaxCleanupTasks.push(() => {
+        if (refreshTimeoutId) {
+            clearTimeout(refreshTimeoutId);
+            refreshTimeoutId = null;
+        }
+    });
+
+    // Listen for manual interval change to reschedule immediately
+    const applyIntervalBtn = document.getElementById("applyIntervalBtn");
+    if (applyIntervalBtn) {
+        applyIntervalBtn.addEventListener("click", () => {
+            // Wait slightly for app.js to write to localStorage
+            setTimeout(scheduleNextRefresh, 100);
+        });
+    }
+
+    // Listen for manual data source change to trigger immediate reload
+    window.addEventListener("dataSourceChanged", () => {
+        loadHoldingsQuotes();
+    });
+
+    // Edit Holding Modal logic
+    const editModal = document.getElementById("editHoldingModal");
+    const editForm = document.getElementById("editHoldingForm");
+    const closeBtn = document.getElementById("closeEditModalBtn");
+    const cancelBtn = document.getElementById("cancelEditModalBtn");
+    
+    const editStockInput = document.getElementById("editHoldingStock");
+    const editQuantityInput = document.getElementById("editHoldingQuantity");
+    const editCostInput = document.getElementById("editHoldingCost");
+    const editNoteInput = document.getElementById("editHoldingNote");
+
+    document.querySelectorAll(".edit-holding-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.id;
+            const name = btn.dataset.name;
+            const symbol = btn.dataset.symbol;
+            const quantity = btn.dataset.quantity;
+            const cost = btn.dataset.cost;
+            const note = btn.dataset.note;
+
+            // Fill form
+            editForm.action = `/holdings/${id}/update`;
+            editStockInput.value = `${name} (${symbol})`;
+            editQuantityInput.value = quantity;
+            editCostInput.value = cost;
+            editNoteInput.value = note || "";
+
+            // Show modal
+            editModal.style.display = "flex";
+        });
+    });
+
+    function hideModal() {
+        editModal.style.display = "none";
+    }
+
+    if (closeBtn) closeBtn.addEventListener("click", hideModal);
+    if (cancelBtn) cancelBtn.addEventListener("click", hideModal);
+
+    // Edit form AJAX submission
+    editForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(editForm);
+        try {
+            const response = await fetch(editForm.action, {
+                method: "POST",
+                body: formData
+            });
+            if (!response.ok) throw new Error("HTTP error " + response.status);
+            hideModal();
+            await reloadHoldingsPage("成功更新持仓记录");
+        } catch (error) {
+            console.error("更新持仓失败:", error);
+            showToast("更新持仓失败: " + error.message, true);
+        }
+    });
+
+    // Delete Holding Modal logic
+    const deleteModal = document.getElementById("deleteHoldingModal");
+    const deleteForm = document.getElementById("deleteHoldingForm");
+    const closeDeleteBtn = document.getElementById("closeDeleteModalBtn");
+    const cancelDeleteBtn = document.getElementById("cancelDeleteModalBtn");
+    const deleteStockNameSpan = document.getElementById("deleteHoldingStockName");
+
+    document.querySelectorAll(".delete-holding-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const id = btn.dataset.id;
+            const name = btn.dataset.name;
+            const symbol = btn.dataset.symbol;
+
+            // Fill details
+            deleteForm.action = `/holdings/${id}/delete`;
+            deleteStockNameSpan.textContent = `${name} (${symbol})`;
+
+            // Show modal
+            deleteModal.style.display = "flex";
+        });
+    });
+
+    function hideDeleteModal() {
+        deleteModal.style.display = "none";
+    }
+
+    if (closeDeleteBtn) closeDeleteBtn.addEventListener("click", hideDeleteModal);
+    if (cancelDeleteBtn) cancelDeleteBtn.addEventListener("click", hideDeleteModal);
+
+    // Delete form AJAX submission
+    deleteForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(deleteForm.action, {
+                method: "POST"
+            });
+            if (!response.ok) throw new Error("HTTP error " + response.status);
+            hideDeleteModal();
+            await reloadHoldingsPage("成功删除持仓记录");
+        } catch (error) {
+            console.error("删除持仓失败:", error);
+            showToast("删除持仓失败: " + error.message, true);
+        }
+    });
+    
+    // Close modal if user clicks outside of modal card
+    const handleHoldingModalWindowClick = (event) => {
+        if (event.target === editModal) {
+            hideModal();
+        }
+        if (event.target === deleteModal) {
+            hideDeleteModal();
+        }
+    };
+    window.addEventListener("click", handleHoldingModalWindowClick);
+
+    window.pjaxCleanupTasks = window.pjaxCleanupTasks || [];
+    window.pjaxCleanupTasks.push(() => {
+        window.removeEventListener("click", handleHoldingModalWindowClick);
+    });
+});
+</script>
+{% endblock %}

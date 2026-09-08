@@ -1,0 +1,1391 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+.sidebar-tabs {
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.sidebar-tabs .tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 6px 4px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.stat-pill.filter-btn {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid #e9ecef;
+}
+
+.stat-pill.filter-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.stat-pill.filter-btn.active {
+    box-shadow: 0 0 0 2px var(--accent, #ff4a3d);
+    font-weight: 700;
+}
+
+.briefing-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+.briefing-header-bar {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+}
+
+.search-form-inline {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+
+.search-input {
+    flex: 1;
+    border: 1px solid #dbe0e7;
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
+}
+
+.search-btn {
+    background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.clear-search-btn {
+    border: 1px solid #dbe0e7;
+    border-radius: 12px;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.briefing-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.briefing-dates-aside {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 0;
+    height: 650px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Avoid big scrollbar on the aside card itself */
+}
+
+.briefing-dates-aside::-webkit-scrollbar {
+    width: 6px;
+}
+
+.briefing-dates-aside::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.briefing-dates-aside::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 3px;
+}
+
+.briefing-dates-aside::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.briefing-dates-aside .aside-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 12px;
+    color: var(--text);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+}
+
+.refresh-btn-aside {
+    background: none;
+    border: none;
+    color: var(--accent, #ff4a3d);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.refresh-btn-aside:hover {
+    background: var(--bg);
+    opacity: 0.9;
+}
+
+.refresh-btn-aside:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.refresh-icon.rotating {
+    display: inline-block;
+    animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+
+.date-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.1) transparent;
+}
+
+.briefing-dates-aside.evaluation-active .date-list {
+    flex: 1;
+    max-height: none;
+}
+
+.briefing-dates-aside.report-active .date-list {
+    flex-shrink: 0;
+    height: 180px;
+}
+
+.reports-sub-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.reports-sub-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.reports-sub-sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+}
+
+.date-list::-webkit-scrollbar {
+    width: 4px;
+}
+
+.date-list::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.date-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.15);
+    border-radius: 2px;
+}
+
+.date-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.date-link:hover {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.date-link.active {
+    background: var(--blue-soft);
+    color: #ff4a3d;
+    font-weight: 600;
+}
+
+.briefing-main-content {
+    min-height: 500px;
+}
+
+.view-header {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px 20px;
+    box-shadow: var(--shadow);
+}
+
+.title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.title-row h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.view-tabs {
+    display: flex;
+    background: var(--bg);
+    padding: 4px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+}
+
+.tab-btn {
+    border: none;
+    background: transparent;
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: white;
+    color: var(--text);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.briefing-quick-stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.stat-pill {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    background: #f1f3f5;
+    color: #495057;
+    border: 1px solid #e9ecef;
+}
+
+.buy-pill { background: #e6f4ea; color: #137333; border-color: #ceead6; }
+.keep-pill { background: #e8f0fe; color: #1a73e8; border-color: #d2e3fc; }
+.watch-pill { background: #fef7e0; color: #b06000; border-color: #feebc8; }
+.sell-pill { background: #fce8e6; color: #c5221f; border-color: #fad2cf; }
+
+.briefing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-auto-rows: max-content;
+    gap: 16px;
+    min-height: 680px;
+}
+
+.briefing-item-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.briefing-item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+}
+
+.briefing-item-card.rating-可建仓,
+.briefing-item-card.rating-可加仓,
+.briefing-item-card.rating-STRONG\ BUY {
+    border-left: 5px solid #137333;
+}
+
+.briefing-item-card.rating-观察,
+.briefing-item-card.rating-观察（等回调）,
+.briefing-item-card.rating-观察（暂不买入）,
+.briefing-item-card.rating-观察持有（等回调）,
+.briefing-item-card.rating-观察持有（暂不买入）,
+.briefing-item-card.rating-观察（等回调）,
+.briefing-item-card.rating-观察（暂不买入）,
+.briefing-item-card.rating-WATCH {
+    border-left: 5px solid #f8a100;
+}
+
+.briefing-item-card.rating-继续持有,
+.briefing-item-card.rating-继续持有/观察,
+.briefing-item-card.rating-KEEP {
+    border-left: 5px solid #1a73e8;
+}
+
+.briefing-item-card.rating-减仓,
+.briefing-item-card.rating-减仓\/卖出,
+.briefing-item-card.rating-卖出,
+.briefing-item-card.rating-强烈卖出,
+.briefing-item-card.rating-STRONG\ SELL {
+    border-left: 5px solid #c5221f;
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-date {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.card-ticker {
+    font-size: 18px;
+    font-weight: 700;
+    color: #ff4a3d;
+}
+
+.card-ticker:hover {
+    text-decoration: underline;
+}
+
+.card-action {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+}
+
+.badge-action-可建仓, .badge-action-可加仓, .badge-action-STRONG\ BUY { background: #e6f4ea; color: #137333; }
+.badge-action-观察, .badge-action-观察（等回调）, .badge-action-观察（暂不买入）, .badge-action-观察持有（等回调）, .badge-action-观察持有（暂不买入）, .badge-action-观察（等回调）, .badge-action-观察（暂不买入）, .badge-action-WATCH { background: #fef7e0; color: #b06000; }
+.badge-action-继续持有, .badge-action-继续持有/观察, .badge-action-KEEP { background: #e8f0fe; color: #1a73e8; }
+.badge-action-减仓, .badge-action-减仓\/卖出, .badge-action-卖出, .badge-action-强烈卖出, .badge-action-STRONG\ SELL { background: #fce8e6; color: #c5221f; }
+
+.card-price-row {
+    font-size: 13px;
+    background: var(--bg);
+    padding: 8px 12px;
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.card-price-row .label {
+    color: var(--muted);
+}
+
+.card-price-row .margin-l {
+    margin-left: 10px;
+}
+
+.card-reason {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+    flex: 1;
+}
+
+.card-reason p {
+    margin: 0;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--line-soft);
+    padding-top: 8px;
+}
+
+.reports-container-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.reports-sub-sidebar {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: var(--shadow);
+}
+
+.sub-report-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all 0.2s;
+}
+
+.sub-report-btn:hover {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.sub-report-btn.active {
+    background: var(--blue-soft);
+    color: #ff4a3d;
+    font-weight: 600;
+}
+
+.report-view-pane {
+    flex: 1;
+    min-height: 600px;
+}
+
+.raw-text-container {
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    max-height: 650px;
+    overflow-y: auto;
+}
+
+.raw-text-report {
+    white-space: pre-wrap;
+    font-family: Consolas, Monaco, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+}
+
+.report-collapsed-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.report-card-head {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    background: white;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.report-card-head:hover {
+    background: #f8fafc;
+}
+
+.date-badge {
+    background: #e2e8f0;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.category-badge {
+    background: #dbeafe;
+    color: #1e40af;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.report-title {
+    flex: 1;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.toggle-arrow {
+    font-size: 12px;
+    color: var(--muted);
+}
+
+.empty-state {
+    background: var(--card);
+    border: 1px dashed var(--line);
+    border-radius: 16px;
+    padding: 50px 20px;
+    text-align: center;
+    color: var(--muted);
+    box-shadow: var(--shadow);
+}
+
+.empty-state .emoji {
+    font-size: 48px;
+    margin-bottom: 12px;
+}
+
+@media (max-width: 1080px) {
+    .briefing-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .briefing-dates-aside {
+        height: auto;
+        max-height: 300px;
+    }
+    
+    .raw-text-container {
+        height: auto;
+        max-height: 500px;
+    }
+    
+    .reports-container-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .reports-sub-sidebar {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+}
+
+.briefing-item-card {
+    cursor: pointer;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.modal-overlay.active {
+    display: flex;
+    animation: fadeInModal 0.2s ease-out;
+}
+
+.modal-dialog-card {
+    background: #ffffff;
+    border-radius: 16px;
+    width: 100%;
+    max-width: 960px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    animation: slideUpModal 0.2s ease-out;
+}
+
+.modal-card-header {
+    padding: 16px 24px;
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-card-title-group {
+    font-size: 18px;
+    font-weight: 800;
+    color: #1a73e8;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-close-btn {
+    background: transparent;
+    border: none;
+    font-size: 26px;
+    color: #64748b;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px 10px;
+    border-radius: 8px;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+    background: #fee2e2;
+    color: #ef4444;
+}
+
+.modal-card-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUpModal {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes spinModal {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+</style>
+
+<div class="briefing-container">
+    <!-- Top Search and Filter Bar -->
+    <div class="briefing-header-bar">
+        <form action="/daily-briefing" method="get" class="search-form-inline">
+            <input type="text" name="q" placeholder="输入股票代码 (如 NVDA) 或 评级/分析内容 搜索..." value="{{ q }}" class="search-input">
+            <button type="submit" class="search-btn">搜索</button>
+            {% if q %}
+            <a href="/daily-briefing" class="clear-search-btn">清除</a>
+            {% endif %}
+        </form>
+    </div>
+
+    <div class="briefing-layout">
+        <!-- Date Selector Sidebar (on desktop) -->
+        <aside class="briefing-dates-aside">
+            <div class="aside-title">
+                <span>历史简报日期</span>
+                <button type="button" id="refresh-briefings-btn" class="refresh-btn-aside" onclick="refreshBriefings(event)">
+                    <span class="refresh-icon">🔄</span> 刷新
+                </button>
+            </div>
+            {% if not q and selected_date %}
+            <div class="view-tabs sidebar-tabs">
+                <button class="tab-btn {% if active_tab == 'evaluation-tab' %}active{% endif %}" onclick="switchTab('evaluation-tab')">评估明细</button>
+                <button class="tab-btn {% if active_tab == 'report-tab' %}active{% endif %}" onclick="switchTab('report-tab')">简报文件 ({{ reports|length }})</button>
+            </div>
+            {% endif %}
+            <ul class="date-list">
+                {% for dt in available_dates %}
+                <li>
+                    <a href="/daily-briefing?date={{ dt }}&tab={{ active_tab }}" class="date-link {% if dt == selected_date and not q %}active{% endif %}">
+                        <span class="calendar-icon">📅</span>
+                        <span class="date-text">{{ dt }}</span>
+                    </a>
+                </li>
+                {% else %}
+                <li class="no-dates">暂无数据</li>
+                {% endfor %}
+            </ul>
+
+            <!-- Filter Pills Sidebar Section (only shown when active tab is evaluation-tab) -->
+            {% if not q and selected_date and briefings %}
+            <div class="sidebar-filters-section" style="{% if active_tab == 'evaluation-tab' %}display: block;{% else %}display: none;{% endif %} margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px;">
+                <div class="aside-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 8px;">操作过滤</div>
+                <div class="briefing-quick-stats-sidebar" style="display: flex; flex-direction: column; gap: 8px;">
+                    {% set total = briefings|length %}
+                    {% set ns = namespace(buy=0, keep=0, watch=0, sell=0) %}
+                    {% for b in briefings %}
+                        {% if b.action in ('可建仓', '可加仓', 'STRONG BUY', '强烈买入') %}
+                            {% set ns.buy = ns.buy + 1 %}
+                        {% elif b.action in ('观察', '观察（等回调）', '观察（暂不买入）', '观察持有（等回调）', '观察持有（暂不买入）', '观察（等回调）', '观察（暂不买入）', 'WATCH') %}
+                            {% set ns.watch = ns.watch + 1 %}
+                        {% elif b.action in ('继续持有', '观察持有', 'KEEP（继续持有）', '继续持有/观察', 'KEEP') %}
+                            {% set ns.keep = ns.keep + 1 %}
+                        {% elif b.action in ('减仓', '减仓/卖出', '卖出', '强烈卖出', 'STRONG SELL') %}
+                            {% set ns.sell = ns.sell + 1 %}
+                        {% endif %}
+                    {% endfor %}
+                    <button type="button" class="stat-pill filter-btn active" data-filter="all" style="width: 100%; text-align: left; padding: 8px 12px; font-size: 13px;">全部 ({{ total }})</button>
+                    {% if ns.buy > 0 %}<button type="button" class="stat-pill buy-pill filter-btn" data-filter="buy" style="width: 100%; text-align: left; padding: 8px 12px; font-size: 13px;">🟢 强烈推荐/建仓 ({{ ns.buy }})</button>{% endif %}
+                    {% if ns.keep > 0 %}<button type="button" class="stat-pill keep-pill filter-btn" data-filter="keep" style="width: 100%; text-align: left; padding: 8px 12px; font-size: 13px;">🔵 继续持有 ({{ ns.keep }})</button>{% endif %}
+                    {% if ns.watch > 0 %}<button type="button" class="stat-pill watch-pill filter-btn" data-filter="watch" style="width: 100%; text-align: left; padding: 8px 12px; font-size: 13px;">🟡 观望/等回调 ({{ ns.watch }})</button>{% endif %}
+                    {% if ns.sell > 0 %}<button type="button" class="stat-pill sell-pill filter-btn" data-filter="sell" style="width: 100%; text-align: left; padding: 8px 12px; font-size: 13px;">🔴 卖出/避险 ({{ ns.sell }})</button>{% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Files List Sidebar section (only rendered if selected_date is set and reports are present) -->
+            {% if not q and selected_date and reports %}
+            <div class="sidebar-reports-section" style="{% if active_tab == 'report-tab' %}display: flex;{% else %}display: none;{% endif %} margin-top: 16px; border-top: 1px solid var(--line); padding-top: 12px; flex: 1; flex-direction: column; min-height: 0;">
+                <div class="aside-title" style="border-bottom: none; padding-bottom: 0; margin-bottom: 8px; flex-shrink: 0;">简报文件 ({{ reports|length }})</div>
+                <div class="reports-sub-sidebar" style="box-shadow: none; border: none; padding: 0; background: transparent; display: flex; flex-direction: column; gap: 6px; flex: 1; overflow-y: auto; scrollbar-width: thin;">
+                    {% for r in reports %}
+                    <div class="sub-report-btn {% if loop.first %}active{% endif %}" onclick="selectReport('sub-report-{{ r.id }}', this)">
+                        <span class="file-icon">{% if r.file_type == 'html' %}🌐{% else %}📄{% endif %}</span>
+                        <span class="file-name" style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{ r.title }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="briefing-main-content">
+            {% if q %}
+                <!-- Search Results Mode -->
+                <div class="results-header">
+                    <h2>搜索结果 for "{{ q }}"</h2>
+                    <p class="muted">共找到 {{ briefings|length }} 个股票评估，{{ reports|length }} 篇简报文件</p>
+                </div>
+
+                {% if briefings %}
+                <div class="briefing-section">
+                    <h3>股票评估记录</h3>
+                    <div class="briefing-grid">
+                        {% for b in briefings %}
+                        {% if b.action in ('可建仓', '可加仓', 'STRONG BUY', '强烈买入') %}
+                            {% set cat = 'buy' %}
+                        {% elif b.action in ('继续持有', '观察持有', 'KEEP（继续持有）', '继续持有/观察', 'KEEP') %}
+                            {% set cat = 'keep' %}
+                        {% elif b.action in ('观察', '观察（等回调）', '观察（暂不买入）', '观察持有（等回调）', '观察持有（暂不买入）', '观察（等回调）', '观察（暂不买入）', 'WATCH') %}
+                            {% set cat = 'watch' %}
+                        {% else %}
+                            {% set cat = 'sell' %}
+                        {% endif %}
+                        <div class="briefing-item-card rating-{{ b.action }}" data-action-category="{{ cat }}" onclick="openStockCardModal('{{ b.date }}', '{{ b.ticker }}')">
+                            <div class="card-top">
+                                <span class="card-date">{{ b.date }}</span>
+                                <a href="/stock?symbol={{ b.ticker }}" class="card-ticker" onclick="event.stopPropagation()">{{ b.ticker }}</a>
+                                <span class="card-action badge-action-{{ b.action }}">{{ b.action }}</span>
+                            </div>
+                            <div class="card-price-row">
+                                <span class="label">收盘价:</span> <strong>{% if b.price %}${{ "%.2f"|format(b.price) }}{% else %}--{% endif %}</strong>
+                                <span class="label margin-l">操作区间:</span> <strong>{{ b.buy_range or '--' }}</strong>
+                            </div>
+                            <div class="card-reason">
+                                <p>{{ b.change_reason }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="source-tag" style="color:#1a73e8;font-weight:600;">🔍 点击查看当日完整分析卡片</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if reports %}
+                <div class="briefing-section margin-t" style="margin-top: 20px;">
+                    <h3>相关简报正文</h3>
+                    <div class="reports-list">
+                        {% for r in reports %}
+                        <div class="report-collapsed-card">
+                            <div class="report-card-head" onclick="toggleReportContent('report-{{ r.id }}')">
+                                <span class="date-badge">{{ r.date }}</span>
+                                <span class="category-badge">{{ r.category }}</span>
+                                <strong class="report-title">{{ r.title }}</strong>
+                                <span class="toggle-arrow">展开 ▼</span>
+                            </div>
+                            <div class="report-card-body" id="report-{{ r.id }}" style="display: none; padding: 15px; background: var(--bg); border-top: 1px solid var(--line);">
+                                {% if r.file_type == 'html' %}
+                                <iframe srcdoc="{{ r.content }}" style="width: 100%; height: 500px; border: none; border-radius: 8px; background: white;"></iframe>
+                                {% else %}
+                                <pre class="raw-text-report">{{ r.content }}</pre>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if not briefings and not reports %}
+                <div class="empty-state">
+                    <p class="emoji">🔍</p>
+                    <p>没有找到与 "{{ q }}" 匹配的内容，换个词试试吧！</p>
+                </div>
+                {% endif %}
+
+            {% else %}
+                <!-- Normal Date View Mode -->
+                {% if selected_date %}
+
+
+                <!-- Tab 1: Evaluation Details -->
+                <div class="tab-content" id="evaluation-tab" {% if active_tab != 'evaluation-tab' %}style="display: none;"{% endif %}>
+                    {% if briefings %}
+
+                    <div class="briefing-grid">
+                        {% for b in briefings %}
+                        {% if b.action in ('可建仓', '可加仓', 'STRONG BUY', '强烈买入') %}
+                            {% set cat = 'buy' %}
+                        {% elif b.action in ('继续持有', '观察持有', 'KEEP（继续持有）', '继续持有/观察', 'KEEP') %}
+                            {% set cat = 'keep' %}
+                        {% elif b.action in ('观察', '观察（等回调）', '观察（暂不买入）', '观察持有（等回调）', '观察持有（暂不买入）', '观察（等回调）', '观察（暂不买入）', 'WATCH') %}
+                            {% set cat = 'watch' %}
+                        {% else %}
+                            {% set cat = 'sell' %}
+                        {% endif %}
+                        <div class="briefing-item-card rating-{{ b.action }}" data-action-category="{{ cat }}" onclick="openStockCardModal('{{ b.date }}', '{{ b.ticker }}')">
+                            <div class="card-top">
+                                <a href="/stock?symbol={{ b.ticker }}" class="card-ticker" onclick="event.stopPropagation()">{{ b.ticker }}</a>
+                                <span class="card-action badge-action-{{ b.action }}">{{ b.action }}</span>
+                            </div>
+                            <div class="card-price-row">
+                                <span class="label">收盘价:</span> <strong>{% if b.price %}${{ "%.2f"|format(b.price) }}{% else %}--{% endif %}</strong>
+                                <span class="label margin-l">操作区间:</span> <strong>{{ b.buy_range or '--' }}</strong>
+                            </div>
+                            <div class="card-reason">
+                                <p>{{ b.change_reason }}</p>
+                            </div>
+                            <div class="card-footer">
+                                <span class="source-tag" style="color:#1a73e8;font-weight:600;">🔍 点击查看当日完整分析卡片</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <p>该日期没有评估明细数据</p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Tab 2: Raw Reports -->
+                <div class="tab-content" id="report-tab" {% if active_tab == 'report-tab' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                    {% if reports %}
+                    <div class="report-view-pane">
+                        {% for r in reports %}
+                        <div class="report-view-item" id="sub-report-{{ r.id }}" data-report-id="{{ r.id }}" data-file-type="{{ r.file_type }}" data-loaded="false" style="{% if not loop.first %}display: none;{% endif %} height: 100%;">
+                            <div class="loading-state" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 650px; background: white; border-radius: 12px; border: 1px solid var(--line);">
+                                <span class="loading-placeholder-large" style="width: 120px; height: 24px; margin-bottom: 12px;"></span>
+                                <span style="color: var(--muted); font-size: 14px; font-weight: 600;">正在加载报告正文...</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% else %}
+                    <div class="empty-state">
+                        <p class="emoji">📄</p>
+                        <p>该日期没有找到简报正文文件</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="empty-state">
+                    <p class="emoji">📅</p>
+                    <p>请选择一个日期查看每日简报</p>
+                </div>
+                {% endif %}
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+<script>
+function refreshBriefings(event) {
+    if (event) {
+        event.preventDefault();
+        event.stopPropagation();
+    }
+    const btn = document.getElementById('refresh-briefings-btn');
+    if (!btn || btn.disabled) return;
+    
+    const icon = btn.querySelector('.refresh-icon');
+    btn.disabled = true;
+    if (icon) icon.classList.add('rotating');
+    
+    fetch('/api/briefing/refresh', {
+        method: 'POST'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.status === 'success') {
+            // PJAX reload current view to show new dates instantly
+            if (typeof window.navigateTo === 'function') {
+                window.navigateTo(window.location.pathname + window.location.search);
+            } else {
+                window.location.reload();
+            }
+        } else {
+            alert("刷新失败: " + (data.message || "未知错误"));
+            btn.disabled = false;
+            if (icon) icon.classList.remove('rotating');
+        }
+    })
+    .catch(err => {
+        console.error("Refresh failed:", err);
+        alert("刷新失败，请稍后重试");
+        btn.disabled = false;
+        if (icon) icon.classList.remove('rotating');
+    });
+}
+
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.getElementById(tabId).style.display = 'block';
+    
+    // Sync active classes on all tab buttons
+    document.querySelectorAll('.view-tabs .tab-btn').forEach(btn => {
+        if (btn.getAttribute('onclick').includes(tabId)) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    const dateList = document.querySelector('.date-list');
+    const reportsSection = document.querySelector('.sidebar-reports-section');
+    const filtersSection = document.querySelector('.sidebar-filters-section');
+    
+    if (tabId === 'report-tab') {
+        if (reportsSection) reportsSection.style.display = 'flex';
+        if (filtersSection) filtersSection.style.display = 'none';
+        
+        // Auto-load active report content
+        const activeReportBtn = document.querySelector('.sub-report-btn.active');
+        if (activeReportBtn) {
+            const onclickAttr = activeReportBtn.getAttribute('onclick');
+            const match = onclickAttr.match(/selectReport\('([^']+)'/);
+            if (match && match[1]) {
+                const item = document.getElementById(match[1]);
+                if (item) loadReportContent(item);
+            }
+        } else {
+            const firstItem = document.querySelector('.report-view-item');
+            if (firstItem) loadReportContent(firstItem);
+        }
+    } else {
+        if (reportsSection) reportsSection.style.display = 'none';
+        if (filtersSection) filtersSection.style.display = 'block';
+    }
+    
+    // Toggle active class on aside based on active tab
+    const asideEl = document.querySelector('.briefing-dates-aside');
+    if (asideEl) {
+        if (tabId === 'report-tab') {
+            asideEl.classList.add('report-active');
+            asideEl.classList.remove('evaluation-active');
+        } else {
+            asideEl.classList.add('evaluation-active');
+            asideEl.classList.remove('report-active');
+        }
+    }
+    
+    // Update all date links to preserve the active tab
+    document.querySelectorAll('.date-link').forEach(link => {
+        try {
+            const url = new URL(link.href, window.location.origin);
+            url.searchParams.set('tab', tabId);
+            link.href = url.pathname + url.search;
+        } catch (e) {
+            console.error("failed to update link", e);
+        }
+    });
+
+    // Update browser URL query param without reload
+    try {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('tab', tabId);
+        window.history.replaceState({}, '', currentUrl.pathname + currentUrl.search);
+    } catch (e) {
+        console.error("failed to update history state", e);
+    }
+    
+    // Recalculate pagination if switching to evaluations tab
+    if (tabId === 'evaluation-tab') {
+        initPaginationAndFilters();
+    }
+}
+
+async function selectReport(reportId, btnEl) {
+    document.querySelectorAll('.report-view-item').forEach(el => el.style.display = 'none');
+    const targetItem = document.getElementById(reportId);
+    if (targetItem) {
+        targetItem.style.display = 'block';
+        await loadReportContent(targetItem);
+    }
+    
+    document.querySelectorAll('.sub-report-btn').forEach(btn => btn.classList.remove('active'));
+    if (btnEl) btnEl.classList.add('active');
+}
+
+async function loadReportContent(item) {
+    if (!item || item.getAttribute('data-loaded') === 'true') {
+        return;
+    }
+    const reportId = item.getAttribute('data-report-id');
+    const fileType = item.getAttribute('data-file-type');
+    if (!reportId) return;
+
+    try {
+        const response = await fetch(`/api/report/${reportId}`);
+        if (!response.ok) throw new Error("Failed to fetch report content");
+        const data = await response.json();
+        
+        if (fileType === 'html') {
+            const esc = data.content.replace(/"/g, "&quot;");
+            item.innerHTML = `<iframe srcdoc="${esc}" style="width: 100%; height: 650px; border: none; border-radius: 12px; background: white; box-shadow: var(--shadow);"></iframe>`;
+        } else {
+            const esc = data.content
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+            item.innerHTML = `<div class="raw-text-container"><pre class="raw-text-report">${esc}</pre></div>`;
+        }
+        item.setAttribute('data-loaded', 'true');
+    } catch (e) {
+        console.error("Failed to load report content:", e);
+        item.innerHTML = `<div class="empty-state" style="height: 650px; display: flex; align-items: center; justify-content: center; background: white; border-radius: 12px; border: 1px solid var(--line); color: #dc2626; font-weight: bold;">加载失败，请重试。</div>`;
+    }
+}
+
+function toggleReportContent(id) {
+    var contentEl = document.getElementById(id);
+    var headEl = contentEl.previousElementSibling;
+    var arrowEl = headEl.querySelector('.toggle-arrow');
+    
+    if (contentEl.style.display === 'none') {
+        contentEl.style.display = 'block';
+        arrowEl.textContent = '收起 ▲';
+    } else {
+        contentEl.style.display = 'none';
+        arrowEl.textContent = '展开 ▼';
+    }
+}
+
+function initPaginationAndFilters() {
+    const grids = document.querySelectorAll(".briefing-grid");
+    grids.forEach(grid => {
+        const cards = Array.from(grid.querySelectorAll(".briefing-item-card"));
+        if (cards.length === 0) return;
+        
+        const parentContent = grid.closest('.tab-content') || grid.closest('.briefing-main-content');
+        const filterButtons = document.querySelectorAll(".briefing-quick-stats-sidebar .filter-btn");
+        
+        // Create or get pagination container
+        let pagContainer = parentContent.querySelector(".pagination-container");
+        if (!pagContainer) {
+            pagContainer = document.createElement("div");
+            pagContainer.className = "pagination-container";
+            grid.after(pagContainer);
+        }
+        
+        // Find active filter
+        let activeFilter = "all";
+        const currentActiveBtn = Array.from(filterButtons).find(btn => btn.classList.contains("active"));
+        if (currentActiveBtn) {
+            activeFilter = currentActiveBtn.getAttribute("data-filter") || "all";
+        }
+        
+        let currentPage = 1;
+        const itemsPerPage = 9;
+        
+        function updateVisibility() {
+            // Filter cards
+            const matchingCards = cards.filter(card => {
+                const cat = card.getAttribute("data-action-category");
+                return activeFilter === "all" || cat === activeFilter;
+            });
+            
+            const totalMatching = matchingCards.length;
+            const totalPages = Math.ceil(totalMatching / itemsPerPage);
+            
+            if (currentPage > totalPages && totalPages > 0) {
+                currentPage = totalPages;
+            }
+            
+            // Hide all cards first
+            cards.forEach(card => card.style.display = "none");
+            
+            // Show cards for active page
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            
+            matchingCards.forEach((card, index) => {
+                if (index >= startIndex && index < endIndex) {
+                    card.style.display = "flex";
+                }
+            });
+            
+            // Render pagination controls
+            renderPaginationControls(totalPages);
+        }
+        
+        function renderPaginationControls(totalPages) {
+            pagContainer.innerHTML = "";
+            if (totalPages <= 1) return;
+            
+            // Prev button
+            const prevBtn = document.createElement("button");
+            prevBtn.type = "button";
+            prevBtn.className = "page-btn";
+            prevBtn.innerHTML = "&laquo; 上一页";
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener("click", () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateVisibility();
+                }
+            });
+            pagContainer.appendChild(prevBtn);
+            
+            // Page numbers (truncated with ellipses)
+            const maxVisible = 5;
+            let pages = [];
+            
+            if (totalPages <= maxVisible) {
+                for (let i = 1; i <= totalPages; i++) {
+                    pages.push(i);
+                }
+            } else {
+                pages.push(1);
+                
+                let start = Math.max(2, currentPage - 1);
+                let end = Math.min(totalPages - 1, currentPage + 1);
+                
+                if (currentPage <= 3) {
+                    end = 4;
+                }
+                if (currentPage >= totalPages - 2) {
+                    start = totalPages - 3;
+                }
+                
+                if (start > 2) {
+                    pages.push('...');
+                }
+                
+                for (let i = start; i <= end; i++) {
+                    pages.push(i);
+                }
+                
+                if (end < totalPages - 1) {
+                    pages.push('...');
+                }
+                
+                pages.push(totalPages);
+            }
+            
+            pages.forEach(p => {
+                if (p === '...') {
+                    const dotsSpan = document.createElement("span");
+                    dotsSpan.className = "page-dots";
+                    dotsSpan.textContent = "...";
+                    pagContainer.appendChild(dotsSpan);
+                } else {
+                    const pageBtn = document.createElement("button");
+                    pageBtn.type = "button";
+                    pageBtn.className = "page-btn" + (p === currentPage ? " active" : "");
+                    pageBtn.textContent = p;
+                    pageBtn.addEventListener("click", () => {
+                        currentPage = p;
+                        updateVisibility();
+                    });
+                    pagContainer.appendChild(pageBtn);
+                }
+            });
+            
+            // Next button
+            const nextBtn = document.createElement("button");
+            nextBtn.type = "button";
+            nextBtn.className = "page-btn";
+            nextBtn.innerHTML = "下一页 &raquo;";
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener("click", () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateVisibility();
+                }
+            });
+            pagContainer.appendChild(nextBtn);
+        }
+        
+        // Bind click events to filter buttons (only once)
+        filterButtons.forEach(btn => {
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            newBtn.addEventListener("click", function() {
+                const filter = this.getAttribute("data-filter");
+                if (!filter) return;
+                
+                activeFilter = filter;
+                currentPage = 1;
+                
+                // Toggle active classes on buttons
+                const siblings = this.parentNode.querySelectorAll(".filter-btn");
+                siblings.forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+                
+                updateVisibility();
+            });
+        });
+        
+        // Initial display
+        updateVisibility();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+    initPaginationAndFilters();
+    
+    // Set initial class on aside based on active tab
+    const activeTabBtn = document.querySelector('.view-tabs .tab-btn.active');
+    if (activeTabBtn) {
+        const tabId = activeTabBtn.getAttribute('onclick').includes('report-tab') ? 'report-tab' : 'evaluation-tab';
+        const asideEl = document.querySelector('.briefing-dates-aside');
+        if (asideEl) {
+            if (tabId === 'report-tab') {
+                asideEl.classList.add('report-active');
+                
+                // Auto-load active report content
+                const activeReportBtn = document.querySelector('.sub-report-btn.active');
+                if (activeReportBtn) {
+                    const match = activeReportBtn.getAttribute('onclick').match(/selectReport\('([^']+)'/);
+                    if (match && match[1]) {
+                        const item = document.getElementById(match[1]);
+                        if (item) loadReportContent(item);
+                    }
+                } else {
+                    const firstItem = document.querySelector('.report-view-item');
+                    if (firstItem) loadReportContent(firstItem);
+                }
+            } else {
+                asideEl.classList.add('evaluation-active');
+            }
+        }
+    }
+    
+    // Scroll active date into view inside the sidebar
+    const activeDateLink = document.querySelector('.date-link.active');
+    if (activeDateLink) {
+        activeDateLink.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+    }
+});
+</script>
+
+<!-- Stock Card Detail Modal -->
+<div id="stock-card-modal-overlay" class="modal-overlay" onclick="closeStockCardModal(event)">
+    <div class="modal-dialog-card" onclick="event.stopPropagation()">
+        <div class="modal-card-header">
+            <div class="modal-card-title-group">
+                <span id="modal-card-icon">🏷️</span>
+                <span id="modal-card-title">股票深度评估报告</span>
+            </div>
+            <button class="modal-close-btn" onclick="closeStockCardModal()">&times;</button>
+        </div>
+        <div id="modal-card-body" class="modal-card-body">
+            <div class="modal-loading-spinner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 0;">
+                <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1a73e8;border-radius:50%;animation:spinModal 0.8s linear infinite;"></div>
+                <p style="margin-top:16px;color:#5f6368;font-size:14px;font-weight:600;">正在加载分析卡片正文...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openStockCardModal(date, ticker) {
+    const overlay = document.getElementById('stock-card-modal-overlay');
+    const titleEl = document.getElementById('modal-card-title');
+    const bodyEl = document.getElementById('modal-card-body');
+    
+    if (!overlay || !bodyEl) return;
+    
+    titleEl.textContent = `${ticker} 当日深度评估报告 (${date})`;
+    bodyEl.innerHTML = `
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 0;">
+            <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1a73e8;border-radius:50%;animation:spinModal 0.8s linear infinite;"></div>
+            <p style="margin-top:16px;color:#5f6368;font-size:14px;font-weight:600;">正在提取 ${ticker} 完整评估分析卡片...</p>
+        </div>
+    `;
+    
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    fetch(`/api/briefing/stock-card?date=${encodeURIComponent(date)}&ticker=${encodeURIComponent(ticker)}`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success' && data.html) {
+                bodyEl.innerHTML = data.html;
+            } else {
+                bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#c5221f;font-weight:600;">⚠️ 未能提取到 ${ticker} 在 ${date} 的详细评估卡片</div>`;
+            }
+        })
+        .catch(err => {
+            bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#c5221f;font-weight:600;">⚠️ 加载出错: ${err.message}</div>`;
+        });
+}
+
+function closeStockCardModal(event) {
+    if (event && event.target && !event.target.classList.contains('modal-overlay') && !event.target.classList.contains('modal-close-btn')) {
+        return;
+    }
+    const overlay = document.getElementById('stock-card-modal-overlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeStockCardModal();
+    }
+});
+</script>
+
+{% endblock %}

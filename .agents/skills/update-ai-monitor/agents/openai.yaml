@@ -1,0 +1,4 @@
+interface:
+  display_name: "更新AI监控"
+  short_description: "核对全部AI套餐档位与API价格并更新FinBoard监控页"
+  default_prompt: "使用 $update-ai-monitor 核对全部公开套餐类型与API价格并更新 FinBoard AI监控页面。"

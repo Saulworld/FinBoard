@@ -1,0 +1,493 @@
+{% extends "base.html" %}
+
+{% block sidebar_content %}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/cards.css?v=1.0.0">
+
+<!-- Top Panel: Add Card Form (Full Width) -->
+<section class="board-card overseas-add-panel" style="display: flex; flex-direction: column; width: 100%;">
+    <div class="card-head">
+        <div>
+            <h2>添加境外工具</h2>
+        </div>
+        <button type="button" id="toggleCardAddForm" class="form-toggle-btn" aria-expanded="false">添加工具</button>
+    </div>
+    <form action="/cards/add" method="post" id="cardAddForm" class="sidebar-form collapsible-add-form is-collapsed" style="display: flex; flex-direction: column; margin-top: 14px; gap: 0;" onsubmit="sessionStorage.setItem('cards_current_page', 1);">
+        <div class="grid-form-row">
+            <label style="margin: 0;">
+                <span>名称</span>
+                <input type="text" name="name" placeholder="例如：Wise / Voxi / O2 / OKX / Lloyds" required style="width: 100%; box-sizing: border-box;">
+            </label>
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>KYC 申请方式</span>
+                    <button type="button" class="btn-manage-options" data-type="kyc" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="kyc_method" id="addCardKyc" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    {% for opt in options.kyc_methods %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>KYC 提供商</span>
+                    <button type="button" class="btn-manage-options" data-type="kyc_provider" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="kyc_provider" id="addCardKycProvider" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    {% for opt in options.kyc_providers %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>登录方式</span>
+                    <button type="button" class="btn-manage-options" data-type="login" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="login_method" id="addCardLogin" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    {% for opt in options.login_methods %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>类型</span>
+                    <button type="button" class="btn-manage-options" data-type="type" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="type" id="addCardType" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    {% for opt in options.types %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        <div class="grid-form-row" style="margin-top: 16px;">
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>国家 / 地区</span>
+                    <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="country" id="addCardCountry" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    {% for opt in options.countries %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>电话号码</span>
+                    <button type="button" class="btn-manage-options" data-type="phone" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="phone" id="addCardPhone" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    {% for opt in options.phones %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="margin: 0;">
+                <span>备注信息</span>
+                <input type="text" name="note" placeholder="选填，例如：欧元账户 / 税号数字" style="width: 100%; box-sizing: border-box;">
+            </label>
+            <label style="margin: 0;">
+                <span>账户提供方</span>
+                <input type="text" name="account_provider" placeholder="例如：USD Bank Account: Wise (--)" style="width: 100%; box-sizing: border-box;">
+            </label>
+        </div>
+        <div class="grid-form-row" style="margin-top: 16px;">
+            <label style="margin: 0; grid-column: span 2;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>证明地址</span>
+                    <button type="button" class="btn-manage-options" data-type="address" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="address" id="addCardAddress" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    {% for opt in options.addresses %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>行高亮颜色</span>
+                    <button type="button" class="btn-manage-options" data-type="color" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="color" id="addCardColor" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    <option value="">默认 (无颜色)</option>
+                    {% for opt in options.colors %}
+                    <option value="{{ opt.value }}">{{ opt.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        <button type="submit" style="margin-top: 8px; width: 100%; font-weight: bold; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; border: 0; padding: 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">确认添加</button>
+    </form>
+</section>
+
+<!-- Bottom Panel: Cards Table List -->
+<section class="board-card" style="width: 100%;">
+    <div class="card-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h2>境外工具列表</h2>
+        </div>
+        <!-- Color Status Legend Bar -->
+        <div id="colorLegendContainer" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(255,255,255,0.8); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--line); box-shadow: var(--shadow-sm);">
+            <span class="color-legend-badge" data-color="#fff5f5" title="点击过滤：红色 (好用)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #e53e3e; display: inline-block;"></span> 红色 (好用)
+            </span>
+            <span class="color-legend-badge" data-color="#fefbeb" title="点击过滤：黄色 (注销)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #fefbeb; color: #d69e2e; border: 1px solid #f6e05e; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #d69e2e; display: inline-block;"></span> 黄色 (注销)
+            </span>
+            <span class="color-legend-badge" data-color="#eff6ff" title="点击过滤：蓝色 (待验证)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #eff6ff; color: #3182ce; border: 1px solid #90cdf4; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #3182ce; display: inline-block;"></span> 蓝色 (待验证)
+            </span>
+            <span class="color-legend-badge" data-color="#f0fdf4" title="点击过滤：绿色 (待注册)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #f0fdf4; color: #38a169; border: 1px solid #9ae6b4; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #38a169; display: inline-block;"></span> 绿色 (待注册)
+            </span>
+            <span class="color-legend-badge" data-color="#f3f4f6" title="点击过滤：灰色 (无法使用)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #6b7280; display: inline-block;"></span> 灰色 (无法使用)
+            </span>
+            <span id="colorLegendReset" title="恢复全部列表" style="display: none; font-size: 12px; color: var(--muted); cursor: pointer; text-decoration: underline; margin-left: 4px; font-weight: bold;">清除筛选</span>
+        </div>
+    </div>
+
+    <!-- Search Input Area -->
+    <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center; width: 100%;">
+        <div style="position: relative; flex: 1;">
+            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; pointer-events: none;">🔍</span>
+            <input type="text" id="cardsSearchInput" placeholder="输入搜索名称、KYC 方式、登录方式、类型、国家、电话、地址、备注或标识含义(好用/注销/待验证/待注册/无法使用)..." style="width: 100%; box-sizing: border-box; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; background: white; outline: none; transition: all 0.2s; box-shadow: var(--shadow-sm);">
+        </div>
+    </div>
+
+    {% if cards %}
+    <div class="table-wrap">
+        <table id="cardsTable">
+            <thead>
+                <tr>
+                    <th>名称</th>
+                    <th>KYC 方式</th>
+                    <th>KYC 提供商</th>
+                    <th>登录方式</th>
+                    <th>类型</th>
+                    <th>账户提供方</th>
+                    <th>国家/地区</th>
+                    <th>电话号码</th>
+                    <th style="text-align: center;">证明地址</th>
+                    <th>备注</th>
+                    <th>添加时间</th>
+                    <th style="width: 100px; text-align: center;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for card in cards %}
+                {% set bg_color = card.color %}
+                {% if card.color == 'red' %}{% set bg_color = '#fff5f5' %}
+                {% elif card.color == 'yellow' %}{% set bg_color = '#fefbeb' %}
+                {% elif card.color == 'green' %}{% set bg_color = '#f0fdf4' %}
+                {% elif card.color == 'blue' %}{% set bg_color = '#eff6ff' %}
+                {% endif %}
+                <tr {% if bg_color %}style="background-color: {{ bg_color }} !important;"{% endif %}
+                    data-color="{{ card.color or '' }}">
+                    <td><strong>{{ card.name }}</strong></td>
+                    <td><span style="font-size: 13px; font-weight: 500;">{{ card.kyc_method }}</span></td>
+                    <td style="text-align: center;" data-sort="{{ card.kyc_provider or '' }}">
+                        {% if card.kyc_provider and card.kyc_provider != '--' %}
+                        <button type="button" class="view-kyc-provider-btn" style="background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 4px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: 500;" data-kyc-provider="{{ card.kyc_provider }}">👤 查看</button>
+                        {% else %}
+                        <span style="font-size: 13px; font-weight: 500; color: var(--muted);">--</span>
+                        {% endif %}
+                    </td>
+                    <td><span style="font-size: 13px; font-weight: 500; font-family: monospace;">{{ card.login_method or '--' }}</span></td>
+                    <td><span class="badge-type">{{ card.type or '--' }}</span></td>
+                    <td style="text-align: center;" data-sort="{{ card.account_provider or '' }}">
+                        {% if card.account_provider and card.account_provider != '--' %}
+                        <button type="button" class="view-provider-btn" style="background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 4px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: 500;" data-provider="{{ card.account_provider }}">🏦 查看</button>
+                        {% else %}
+                        <span style="font-size: 13px; font-weight: 500; color: var(--muted);">--</span>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge-country">{{ card.country }}</span></td>
+                    <td><span style="font-size: 13px; font-family: monospace; font-weight: 500;">{{ card.phone or '--' }}</span></td>
+                    <td style="text-align: center;" data-sort="{{ card.address or '' }}">
+                        {% if card.address and card.address != '--' %}
+                        <button type="button" class="view-address-btn" style="background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 4px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: 500;" data-address="{{ card.address }}">📍 查看</button>
+                        {% else %}
+                        <span style="font-size: 13px; font-weight: 500; color: var(--muted);">--</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 13px; color: var(--muted);">{{ card.note or '--' }}</td>
+                    <td style="font-size: 13px; color: var(--muted); white-space: nowrap;">{{ card.created_at or '--' }}</td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        <div style="display: flex; gap: 12px; justify-content: center; align-items: center;">
+                            <button type="button" class="button-link edit-card-btn" style="color: #1a73e8; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
+                                    data-id="{{ card.id }}" 
+                                    data-name="{{ card.name }}" 
+                                    data-kyc="{{ card.kyc_method }}" 
+                                    data-kyc-provider="{{ card.kyc_provider or '--' }}"
+                                    data-login="{{ card.login_method or '' }}"
+                                    data-type="{{ card.type or '' }}"
+                                    data-country="{{ card.country }}" 
+                                    data-phone="{{ card.phone or '' }}"
+                                    data-address="{{ card.address }}"
+                                    data-note="{{ card.note }}"
+                                    data-account-provider="{{ card.account_provider or '--' }}"
+                                    data-color="{{ card.color or '' }}">修改</button>
+                            <button type="button" class="button-link delete-card-btn" style="color: #dc2626; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
+                                    data-id="{{ card.id }}" 
+                                    data-name="{{ card.name }}">删除</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">尚无境外工具记录，在上方添加第一条记录吧。</div>
+    {% endif %}
+</section>
+
+<!-- Edit Card Modal -->
+<div id="editCardModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 450px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2>修改境外工具数据</h2>
+            <button type="button" id="closeEditModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <form id="editCardForm" method="post" class="sidebar-form" style="margin-top: 0; gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="margin: 0;">
+                    <span>名称</span>
+                    <input type="text" name="name" id="editCardName" required style="width: 100%; box-sizing: border-box;">
+                </label>
+                <label style="margin: 0;">
+                    <span>KYC 申请方式</span>
+                    <select name="kyc_method" id="editCardKyc" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        {% for opt in options.kyc_methods %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>KYC 提供商</span>
+                        <button type="button" class="btn-manage-options" data-type="kyc_provider" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    </span>
+                    <select name="kyc_provider" id="editCardKycProvider" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        {% for opt in options.kyc_providers %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>登录方式</span>
+                        <button type="button" class="btn-manage-options" data-type="login" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    </span>
+                    <select name="login_method" id="editCardLogin" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        {% for opt in options.login_methods %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span>类型</span>
+                    <select name="type" id="editCardType" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        {% for opt in options.types %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>国家 / 地区</span>
+                        <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    </span>
+                    <select name="country" id="editCardCountry" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        {% for opt in options.countries %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>电话号码</span>
+                        <button type="button" class="btn-manage-options" data-type="phone" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    </span>
+                    <select name="phone" id="editCardPhone" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        {% for opt in options.phones %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>证明地址</span>
+                        <button type="button" class="btn-manage-options" data-type="address" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    </span>
+                    <select name="address" id="editCardAddress" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        {% for opt in options.addresses %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span>账户提供方</span>
+                    <input type="text" name="account_provider" id="editCardAccountProvider" placeholder="例如：USD Bank Account: Wise (--)" style="width: 100%; box-sizing: border-box;">
+                </label>
+                <label style="margin: 0;">
+                    <span>备注</span>
+                    <input type="text" name="note" id="editCardNote" style="width: 100%; box-sizing: border-box;">
+                </label>
+                <label style="margin: 0;">
+                    <span style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>行高亮颜色</span>
+                        <button type="button" class="btn-manage-options" data-type="color" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    </span>
+                    <select name="color" id="editCardColor" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        <option value="">默认 (无颜色)</option>
+                        {% for opt in options.colors %}
+                        <option value="{{ opt.value }}">{{ opt.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button type="button" id="cancelEditModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer;">取消</button>
+                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">保存修改</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Card Modal -->
+<div id="deleteCardModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2 style="color: #dc2626;">确认删除记录</h2>
+            <button type="button" id="closeDeleteModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <form id="deleteCardForm" method="post" style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="font-size: 15px; color: var(--text); line-height: 1.6;">
+                您确定要删除此境外工具记录 <strong id="deleteCardNameSpan" style="color: #ff4a3d;"></strong> 吗？删除后将无法恢复。
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" id="cancelDeleteModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer;">取消</button>
+                <button type="submit" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">确认删除</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Address View Modal -->
+<div id="addressViewModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 450px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2>证明地址详情</h2>
+            <button type="button" id="closeAddressModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <div style="font-size: 14px; color: var(--text); line-height: 1.6; background-color: var(--bg); padding: 16px; border-radius: 12px; border: 1px solid var(--line); word-break: break-all;" id="addressModalContent">
+            <!-- Address content will be injected here -->
+        </div>
+        <div style="margin-top: 20px;">
+            <button type="button" id="closeAddressModalBtn2" style="width: 100%; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">关闭窗口</button>
+        </div>
+    </div>
+</div>
+
+<!-- Provider View Modal -->
+<div id="providerViewModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 450px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2>账户提供方详情</h2>
+            <button type="button" id="closeProviderModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <div style="font-size: 14px; color: var(--text); line-height: 1.6; background-color: var(--bg); padding: 16px; border-radius: 12px; border: 1px solid var(--line); word-break: break-all;" id="providerModalContent">
+            <!-- Provider content will be injected here -->
+        </div>
+        <div style="margin-top: 20px;">
+            <button type="button" id="closeProviderModalBtn2" style="width: 100%; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">关闭窗口</button>
+        </div>
+    </div>
+</div>
+
+<!-- KYC Provider View Modal -->
+<div id="kycProviderViewModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 450px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2>KYC 提供商详情</h2>
+            <button type="button" id="closeKycProviderModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <div style="font-size: 14px; color: var(--text); line-height: 1.6; background-color: var(--bg); padding: 16px; border-radius: 12px; border: 1px solid var(--line); word-break: break-all;" id="kycProviderModalContent">
+            <!-- KYC Provider content will be injected here -->
+        </div>
+        <div style="margin-top: 20px;">
+            <button type="button" id="closeKycProviderModalBtn2" style="width: 100%; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">关闭窗口</button>
+        </div>
+    </div>
+</div>
+
+<!-- Manage Options Modal -->
+<div id="manageOptionsModal" class="modal" style="display: none; position: fixed; z-index: 1010; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2 id="manageOptionsTitle">管理选项</h2>
+            <button type="button" id="closeManageModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        
+        <!-- Add New Option Input -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="text" id="newOptionInput" placeholder="输入新选项名称..." style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 14px; outline: none; background: white; color: var(--text);">
+            <button type="button" id="addOptionBtn" style="background: #1a73e8; color: white; border: 0; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">添加</button>
+        </div>
+        
+        <!-- List of Options -->
+        <div id="optionsListContainer" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 6px; background: var(--bg);">
+            <!-- Option items will be populated dynamically -->
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button type="button" id="closeManageModalBtn2" style="width: 100%; background: var(--line); color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Confirm Modal -->
+<div id="customConfirmModal" class="modal" style="display: none; position: fixed; z-index: 1030; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 380px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.25s;">
+        <div class="card-head" style="margin-bottom: 16px;">
+            <h2 id="customConfirmTitle" style="color: #dc2626; font-size: 18px;">确认操作</h2>
+        </div>
+        <div id="customConfirmMessage" style="font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 20px;">
+            确定要执行此操作吗？
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <button type="button" id="customConfirmCancelBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">取消</button>
+            <button type="button" id="customConfirmOkBtn" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">确认</button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Prompt Modal -->
+<div id="customPromptModal" class="modal" style="display: none; position: fixed; z-index: 1030; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 380px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.25s;">
+        <div class="card-head" style="margin-bottom: 16px;">
+            <h2 id="customPromptTitle" style="font-size: 18px;">输入内容</h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+            <label style="margin: 0; display: flex; flex-direction: column; gap: 6px;">
+                <span id="customPromptLabel" style="font-size: 13px; color: var(--muted); font-weight: bold;">修改名称：</span>
+                <input type="text" id="customPromptInput" style="width: 100%; box-sizing: border-box; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 14px; outline: none; background: white; color: var(--text);">
+            </label>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <button type="button" id="customPromptCancelBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">取消</button>
+            <button type="button" id="customPromptOkBtn" style="flex: 1; background: #1a73e8; color: white; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">确认</button>
+        </div>
+    </div>
+</div>
+
+
+<script defer src="/static/js/cards.js?v=1.0.5"></script>
+{% endblock %}

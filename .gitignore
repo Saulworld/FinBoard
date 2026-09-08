@@ -1,0 +1,41 @@
+# Python and editor files
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.idea/
+.vscode/
+
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Runtime data: these files may contain holdings, phone numbers or payment data
+/data/*
+!/data/ai_monitor.json
+!/data/README.md
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+
+# Local history, backups and generated artifacts
+/backups/
+/scratch/
+/dist/
+*.log
+*.tmp
+*.bak
+*.zip
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini

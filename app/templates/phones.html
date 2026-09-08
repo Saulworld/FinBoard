@@ -1,0 +1,328 @@
+{% extends "base.html" %}
+
+{% block sidebar_content %}{% endblock %}
+
+{% block content %}
+{% with expiry_alerts=phone_alerts(), alert_title='境外号码到期提醒', alert_link='/phones', alert_action='去续费', alert_kind='phone' %}{% include 'expiry_alert_panel.html' %}{% endwith %}
+<link rel="stylesheet" href="/static/css/phones.css?v=1.0.0">
+
+<!-- Top Panel: Add Phone Form (Full Width) -->
+<section class="board-card overseas-add-panel" style="display: flex; flex-direction: column; width: 100%;">
+    <div class="card-head">
+        <div>
+            <h2>添加境外号码</h2>
+        </div>
+        <button type="button" id="togglePhoneAddForm" class="form-toggle-btn" aria-expanded="false">添加号码</button>
+    </div>
+    <form action="/phones/add" method="post" id="phoneAddForm" class="sidebar-form collapsible-add-form is-collapsed" style="display: flex; flex-direction: column; margin-top: 14px; gap: 0;" onsubmit="sessionStorage.setItem('phones_current_page', 1);">
+        <div class="grid-form-row">
+            <label style="margin: 0;">
+                <span>运营商/名称</span>
+                <input type="text" name="name" placeholder="例如：Vodafone / Giffgaff / O2 / Lyca" required style="width: 100%; box-sizing: border-box;">
+            </label>
+            <label style="margin: 0;">
+                <span>电话号码</span>
+                <input type="text" name="phone" placeholder="例如：请输入完整国际号码" required style="width: 100%; box-sizing: border-box;">
+            </label>
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>国家 / 地区</span>
+                    <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select name="country" id="addPhoneCountry" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    {% for opt in options.countries %}
+                    <option value="{{ opt }}">{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="margin: 0;">
+                <span>状态</span>
+                <select name="status" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    <option value="已激活">已激活</option>
+                    <option value="待激活">待激活</option>
+                    <option value="已关闭">已关闭</option>
+                </select>
+            </label>
+        </div>
+        <div class="grid-form-row" style="margin-top: 16px;">
+            <label style="margin: 0;">
+                <span>充值日期</span>
+                <input type="date" name="last_recharge_date" id="addPhoneRecharge" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+            </label>
+            <label style="margin: 0;">
+                <span style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>到期时长</span>
+                    <button type="button" class="btn-manage-options" data-type="duration" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                </span>
+                <select id="addPhoneInterval" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                    <option value="custom">自定义</option>
+                    {% for dur in options.durations %}
+                    <option value="{{ dur.days }}" {% if dur.days == 90 %}selected{% endif %}>{{ dur.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label style="margin: 0;">
+                <span>到期日期</span>
+                <input type="date" name="expiry_date" id="addPhoneExpiry" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+            </label>
+            <label style="margin: 0;">
+                <span>续费方式/说明</span>
+                <input type="text" name="renewal_method" id="addPhoneRenewal" placeholder="例如：三个月 / 10英镑 / 续费0.99美元" style="width: 100%; box-sizing: border-box;">
+            </label>
+            <label style="margin: 0;">
+                <span>备注</span>
+                <input type="text" name="note" placeholder="选填备注..." style="width: 100%; box-sizing: border-box;">
+            </label>
+        </div>
+        <button type="submit" style="margin-top: 8px; width: 100%; font-weight: bold; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; border: 0; padding: 12px; border-radius: 12px; cursor: pointer; transition: all 0.2s;">确认添加</button>
+    </form>
+</section>
+
+<!-- Bottom Panel: Phones Table List -->
+<section class="board-card" style="width: 100%;">
+    <div class="card-head" style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+        <div>
+            <h2>境外号码列表</h2>
+        </div>
+        <!-- Color Status Legend Bar -->
+        <div id="colorLegendContainer" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: rgba(255,255,255,0.8); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--line); box-shadow: var(--shadow-sm);">
+            <span class="color-legend-badge" data-color="#fff5f5" title="点击过滤：红色 (临期/过期)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #fff5f5; color: #e53e3e; border: 1px solid #feb2b2; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #e53e3e; display: inline-block;"></span> 🔴 红色 (临期/过期)
+            </span>
+            <span class="color-legend-badge" data-color="#fefbeb" title="点击过滤：黄色 (已关闭)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #fefbeb; color: #d69e2e; border: 1px solid #f6e05e; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #d69e2e; display: inline-block;"></span> 🟡 黄色 (已关闭)
+            </span>
+            <span class="color-legend-badge" data-color="#f0fdf4" title="点击过滤：绿色 (待激活/待办)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #f0fdf4; color: #38a169; border: 1px solid #9ae6b4; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #38a169; display: inline-block;"></span> 🟢 绿色 (待激活/待办)
+            </span>
+            <span id="colorLegendReset" title="恢复全部列表" style="display: none; font-size: 12px; color: var(--muted); cursor: pointer; text-decoration: underline; margin-left: 4px; font-weight: bold;">清除筛选</span>
+        </div>
+    </div>
+
+    <!-- Search Input Area -->
+    <div style="display: flex; gap: 16px; margin-bottom: 16px; align-items: center; width: 100%; flex-wrap: wrap;">
+        <div style="position: relative; flex: 1; min-width: 250px;">
+            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; pointer-events: none;">🔍</span>
+            <input type="text" id="phonesSearchInput" placeholder="输入搜索名称、号码、国家、状态、备注或颜色含义(临期/关闭/待激活)..." style="width: 100%; box-sizing: border-box; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; background: white; outline: none; transition: all 0.2s; box-shadow: var(--shadow-sm);">
+        </div>
+        <label style="display: flex; align-items: center; gap: 6px; margin: 0; font-size: 14px; color: var(--text); cursor: pointer; font-weight: 500; user-select: none;">
+            <input type="checkbox" id="expiryFilterCheckbox" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ff4a3d;">
+            <span>⚠️ 仅显示临期 / 已过期</span>
+        </label>
+    </div>
+
+    {% if phones %}
+    <div class="table-wrap">
+        <table id="phonesTable">
+            <thead>
+                <tr>
+                    <th>名称/运营商</th>
+                    <th>电话号码</th>
+                    <th>国家/地区</th>
+                    <th>状态</th>
+                    <th>充值日期</th>
+                    <th>到期日期</th>
+                    <th>续费方式</th>
+                    <th>备注</th>
+                    <th style="width: 100px; text-align: center;">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for phone in phones %}
+                <tr>
+                    <td><strong>{{ phone.name }}</strong></td>
+                    <td><span style="font-size: 13px; font-weight: 500; font-family: monospace;">{{ phone.phone }}</span></td>
+                    <td><span class="badge-country">{{ phone.country }}</span></td>
+                    <td>
+                        {% if phone.status == '已激活' %}
+                        <span class="badge-status badge-status-active">{{ phone.status }}</span>
+                        {% elif phone.status == '待激活' %}
+                        <span class="badge-status badge-status-pending">{{ phone.status }}</span>
+                        {% else %}
+                        <span class="badge-status badge-status-closed">{{ phone.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td><span style="font-size: 13px; font-weight: 500;">{{ phone.last_recharge_date or '--' }}</span></td>
+                    <td><span style="font-size: 13px; font-weight: 500; color: #ff4a3d;">{{ phone.expiry_date or '--' }}</span></td>
+                    <td><span style="font-size: 13px; font-weight: 500;">{{ phone.renewal_method or '--' }}</span></td>
+                    <td style="font-size: 13px; color: var(--muted);">{{ phone.note or '--' }}</td>
+                    <td style="text-align: center; white-space: nowrap;">
+                        <div style="display: flex; gap: 12px; justify-content: center; align-items: center;">
+                            <button type="button" class="button-link edit-phone-btn" style="color: #1a73e8; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
+                                    data-id="{{ phone.id }}" 
+                                    data-name="{{ phone.name }}" 
+                                    data-phone="{{ phone.phone }}" 
+                                    data-country="{{ phone.country }}"
+                                    data-status="{{ phone.status }}"
+                                    data-recharge="{{ phone.last_recharge_date or '' }}" 
+                                    data-expiry="{{ phone.expiry_date or '' }}"
+                                    data-renewal="{{ phone.renewal_method or '' }}"
+                                    data-note="{{ phone.note }}">修改</button>
+                            <button type="button" class="button-link delete-phone-btn" style="color: #dc2626; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
+                                    data-id="{{ phone.id }}" 
+                                    data-name="{{ phone.name }} ({{ phone.phone }})">删除</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">尚无境外号码记录，在上方添加第一条记录吧。</div>
+    {% endif %}
+</section>
+
+<!-- Edit Phone Modal -->
+<div id="editPhoneModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 450px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2>修改境外号码数据</h2>
+            <button type="button" id="closeEditModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <form id="editPhoneForm" method="post" class="sidebar-form" style="margin-top: 0; gap: 16px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                <label style="margin: 0;">
+                    <span>运营商/名称</span>
+                    <input type="text" name="name" id="editPhoneName" required style="width: 100%; box-sizing: border-box;">
+                </label>
+                <label style="margin: 0;">
+                    <span>电话号码</span>
+                    <input type="text" name="phone" id="editPhoneNo" required style="width: 100%; box-sizing: border-box;">
+                </label>
+                <label style="margin: 0;">
+                    <span>国家 / 地区</span>
+                    <select name="country" id="editPhoneCountry" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        {% for opt in options.countries %}
+                        <option value="{{ opt }}">{{ opt }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span>状态</span>
+                    <select name="status" id="editPhoneStatus" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        <option value="已激活">已激活</option>
+                        <option value="待激活">待激活</option>
+                        <option value="已关闭">已关闭</option>
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span>充值日期</span>
+                    <input type="date" name="last_recharge_date" id="editPhoneRecharge" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                </label>
+                <label style="margin: 0;">
+                    <span>到期时长</span>
+                    <select id="editPhoneInterval" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                        <option value="custom">自定义</option>
+                        {% for dur in options.durations %}
+                        <option value="{{ dur.days }}">{{ dur.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label style="margin: 0;">
+                    <span>到期日期</span>
+                    <input type="date" name="expiry_date" id="editPhoneExpiry" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
+                </label>
+                <label style="margin: 0;">
+                    <span>续费方式/说明</span>
+                    <input type="text" name="renewal_method" id="editPhoneRenewal" style="width: 100%; box-sizing: border-box;">
+                </label>
+                <label style="margin: 0;">
+                    <span>备注</span>
+                    <input type="text" name="note" id="editPhoneNote" style="width: 100%; box-sizing: border-box;">
+                </label>
+            </div>
+            <div style="display: flex; gap: 12px; margin-top: 16px;">
+                <button type="button" id="cancelEditModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer;">取消</button>
+                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">保存修改</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Phone Modal -->
+<div id="deletePhoneModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2 style="color: #dc2626;">确认删除号码</h2>
+            <button type="button" id="closeDeleteModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        <form id="deletePhoneForm" method="post" style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="font-size: 15px; color: var(--text); line-height: 1.6;">
+                您确定要删除此境外号码记录 <strong id="deletePhoneNameSpan" style="color: #ff4a3d;"></strong> 吗？删除后将无法恢复。
+            </div>
+            <div style="display: flex; gap: 12px;">
+                <button type="button" id="cancelDeleteModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer;">取消</button>
+                <button type="submit" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">确认删除</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Manage Options Modal -->
+<div id="manageOptionsModal" class="modal" style="display: none; position: fixed; z-index: 1010; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 400px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.3s;">
+        <div class="card-head" style="margin-bottom: 20px;">
+            <h2 id="manageOptionsTitle">管理国家选项</h2>
+            <button type="button" id="closeManageModalBtn" style="background: transparent; color: var(--muted); font-size: 24px; padding: 0; border: 0; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+        
+        <!-- Add New Option Input -->
+        <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <input type="text" id="newOptionInput" placeholder="输入新国家名称..." style="flex: 1; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 14px; outline: none; background: white; color: var(--text);">
+            <button type="button" id="addOptionBtn" style="background: #1a73e8; color: white; border: 0; padding: 8px 16px; border-radius: 8px; font-weight: bold; cursor: pointer;">添加</button>
+        </div>
+        
+        <!-- List of Options -->
+        <div id="optionsListContainer" style="max-height: 250px; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; padding: 8px; display: flex; flex-direction: column; gap: 6px; background: var(--bg);">
+            <!-- Option items will be populated dynamically -->
+        </div>
+        
+        <div style="margin-top: 20px;">
+            <button type="button" id="closeManageModalBtn2" style="width: 100%; background: var(--line); color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">关闭</button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Confirm Modal -->
+<div id="customConfirmModal" class="modal" style="display: none; position: fixed; z-index: 1030; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 380px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.25s;">
+        <div class="card-head" style="margin-bottom: 16px;">
+            <h2 id="customConfirmTitle" style="color: #dc2626; font-size: 18px;">确认操作</h2>
+        </div>
+        <div id="customConfirmMessage" style="font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 20px;">
+            确定要执行此操作吗？
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <button type="button" id="customConfirmCancelBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">取消</button>
+            <button type="button" id="customConfirmOkBtn" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">确认</button>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Prompt Modal -->
+<div id="customPromptModal" class="modal" style="display: none; position: fixed; z-index: 1030; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card" style="background-color: var(--card); margin: auto; padding: 24px; width: 90%; max-width: 380px; border-radius: 20px; box-shadow: var(--shadow); position: relative; animation: modalFadeIn 0.25s;">
+        <div class="card-head" style="margin-bottom: 16px;">
+            <h2 id="customPromptTitle" style="font-size: 18px;">输入内容</h2>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+            <label style="margin: 0; display: flex; flex-direction: column; gap: 6px;">
+                <span id="customPromptLabel" style="font-size: 13px; color: var(--muted); font-weight: bold;">修改名称：</span>
+                <input type="text" id="customPromptInput" style="width: 100%; box-sizing: border-box; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 14px; outline: none; background: white; color: var(--text);">
+            </label>
+            <label id="customPromptDaysLabel" style="margin: 0; display: none; flex-direction: column; gap: 6px;">
+                <span style="font-size: 13px; color: var(--muted); font-weight: bold;">天数：</span>
+                <input type="number" id="customPromptDaysInput" min="1" style="width: 100%; box-sizing: border-box; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); font-size: 14px; outline: none; background: white; color: var(--text);">
+            </label>
+        </div>
+        <div style="display: flex; gap: 12px;">
+            <button type="button" id="customPromptCancelBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">取消</button>
+            <button type="button" id="customPromptOkBtn" style="flex: 1; background: #1a73e8; color: white; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">确认</button>
+        </div>
+    </div>
+</div>
+
+
+<script defer src="/static/js/phones.js?v=1.0.3"></script>
+{% endblock %}

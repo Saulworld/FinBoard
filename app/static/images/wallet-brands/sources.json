@@ -1,0 +1,135 @@
+{
+  "decard": {
+    "file": "decard.ico",
+    "source": "https://www.thedecard.com/dcscc/favicon.ico?v=20251128",
+    "name": "DeCard",
+    "category": "支付卡",
+    "path": "/static/images/wallet-brands/decard.ico"
+  },
+  "etherfi": {
+    "file": "etherfi.png",
+    "source": "https://www.ether.fi/images/favicon/favicon-light-32x32.png",
+    "name": "Ether.fi",
+    "category": "加密金融",
+    "path": "/static/images/wallet-brands/etherfi.png"
+  },
+  "plasma": {
+    "file": "plasma.ico",
+    "source": "https://www.plasma.org/favicon.ico",
+    "name": "Plasma One",
+    "category": "加密金融",
+    "path": "/static/images/wallet-brands/plasma.ico"
+  },
+  "pokepay": {
+    "file": "pokepay.png",
+    "source": "https://app.pokepay.cc/icons/Icon-192.png",
+    "name": "PokePay",
+    "category": "支付钱包",
+    "path": "/static/images/wallet-brands/pokepay.png"
+  },
+  "uu": {
+    "file": "uu.ico",
+    "source": "https://www.uuwallet.com/favicon.ico",
+    "name": "UU Wallet",
+    "category": "支付钱包",
+    "path": "/static/images/wallet-brands/uu.ico"
+  },
+  "krak": {
+    "file": "krak.png",
+    "source": "https://assets-cms.kraken.com/files/51n36hrp/facade/82a3efa4a177949836eade835a8d5f6af7fc6df7.png",
+    "name": "Krak",
+    "category": "支付钱包",
+    "path": "/static/images/wallet-brands/krak.png"
+  },
+  "blackcat": {
+    "file": "blackcat.png",
+    "source": "https://blackcatcard.com/favicon.png",
+    "name": "Blackcatcard",
+    "category": "支付卡",
+    "path": "/static/images/wallet-brands/blackcat.png"
+  },
+  "skrill": {
+    "file": "skrill.ico",
+    "source": "https://www.skrill.com/typo3conf/ext/sitepackage/Resources/Public/images/icons/favicon.ico",
+    "name": "Skrill",
+    "category": "支付钱包",
+    "path": "/static/images/wallet-brands/skrill.ico"
+  },
+  "payfun": {
+    "file": "payfun.svg",
+    "source": "Vector rendition of the PayFun brand symbol visible in user-provided card screenshot.",
+    "name": "PayFun",
+    "category": "支付卡",
+    "path": "/static/images/wallet-brands/payfun.svg"
+  },
+  "dtcpay": {
+    "file": "dtcpay.ico",
+    "source": "https://dtcpay.com/favicon.ico",
+    "name": "dtcpay",
+    "category": "支付平台",
+    "path": "/static/images/wallet-brands/dtcpay.ico"
+  },
+  "starryblu": {
+    "file": "starryblu.png",
+    "source": "https://www.starryblu.com/favicon.png",
+    "name": "Starryblu",
+    "category": "跨境金融",
+    "path": "/static/images/wallet-brands/starryblu.png"
+  },
+  "mexc": {
+    "file": "mexc.png",
+    "source": "https://static.mocortech.com/image-host/web/common/favicon/icon-192x192.png",
+    "name": "MEXC",
+    "category": "交易所",
+    "path": "/static/images/wallet-brands/mexc.png"
+  },
+  "bunq": {
+    "file": "bunq.png",
+    "source": "https://framerusercontent.com/images/b045zwzvNy5y6vd746YpE1N8.png",
+    "name": "bunq",
+    "category": "银行",
+    "path": "/static/images/wallet-brands/bunq.png"
+  },
+  "yonder": {
+    "file": "yonder.png",
+    "source": "https://cdn.prod.website-files.com/6209512878b45f39119ebfb5/6232233b2104c2360e4b9deb_YONDER_LOGO_ICON_LIGHT%201%202.png",
+    "name": "Yonder",
+    "category": "支付卡",
+    "path": "/static/images/wallet-brands/yonder.png"
+  },
+  "altery": {
+    "file": "altery.png",
+    "source": "https://altery.com/static/assets/app-icons/icon-32x32.png",
+    "name": "Altery",
+    "category": "跨境金融",
+    "path": "/static/images/wallet-brands/altery.png"
+  },
+  "zopa": {
+    "file": "zopa.ico",
+    "source": "https://www.zopa.com/favicon.ico",
+    "name": "Zopa",
+    "category": "银行",
+    "path": "/static/images/wallet-brands/zopa.ico"
+  },
+  "gmgn": {
+    "file": "gmgn.png",
+    "source": "https://gmgn.ai/favicon.ico",
+    "name": "GMGN",
+    "category": "加密金融",
+    "path": "/static/images/wallet-brands/gmgn.png"
+  },
+  "lava": {
+    "file": "lava.png",
+    "source": "https://lava.xyz",
+    "name": "LAVA",
+    "category": "加密金融",
+    "path": "/static/images/wallet-brands/lava.png"
+  },
+  "savo": {
+    "file": "savo.png",
+    "source": "https://savo.xyz",
+    "name": "Savo",
+    "category": "加密金融",
+    "path": "/static/images/wallet-brands/savo.png"
+  }
+}

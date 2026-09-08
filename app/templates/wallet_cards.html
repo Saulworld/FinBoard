@@ -1,0 +1,265 @@
+{% extends "base.html" %}
+
+{% block sidebar_content %}{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/wallet_cards.css?v=1.7.7">
+
+<div id="walletCardsPage" class="wallet-cards-page" data-wallet-card-count="{{ wallet_cards|length }}">
+{% with expiry_alerts=wallet_alerts(), alert_title='境外卡到期提醒', alert_link='/wallet-cards', alert_action='更新有效期', alert_kind='wallet' %}{% include 'expiry_alert_panel.html' %}{% endwith %}
+    <section class="board-card wallet-card-form-panel overseas-add-panel">
+        <div class="card-head wallet-section-head">
+            <div>
+                <h2>添加境外卡</h2>
+            </div>
+            <button type="button" id="toggleWalletCardForm" class="wallet-secondary-btn form-toggle-btn" aria-expanded="false">
+                添加卡片
+            </button>
+        </div>
+
+        <form action="/wallet-cards/add" method="post" id="walletCardAddForm" class="wallet-card-form is-collapsed" autocomplete="off">
+            <div class="wallet-form-grid">
+                <label>
+                    <span>卡片名称</span>
+                    <input type="text" name="name" placeholder="例如：英国日常消费卡" required maxlength="80">
+                </label>
+                <label>
+                    <span>所属软件 / 平台</span>
+                    <input type="text" name="software" id="addWalletCardSoftware" placeholder="例如：Wise / Bybit" required maxlength="80">
+                </label>
+                <label>
+                    <span>关联境外工具</span>
+                    <select name="source_tool_id" id="addWalletCardSourceTool">
+                        <option value="0">不关联</option>
+                        {% for tool in tool_options %}
+                        <option value="{{ tool.id }}" data-tool-name="{{ tool.name }}" data-tool-address="{{ tool.address or '' }}">{{ tool.name }}{% if tool.country %} · {{ tool.country }}{% endif %}（ID {{ tool.id }}）</option>
+                        {% endfor %}
+                    </select>
+                </label>
+                <label>
+                    <span class="wallet-field-heading">卡组织<button type="button" class="wallet-manage-schemes">⚙ 管理</button></span>
+                    <select name="scheme">{% for scheme in scheme_options %}<option value="{{ scheme }}">{{ scheme }}</option>{% endfor %}</select>
+                </label>
+                <label>
+                    <span>卡片版本 / 类型</span>
+                    <input type="text" name="card_variant" placeholder="例如：Visa Platinum / Core / Lite Virtual" maxlength="80">
+                </label>
+                <input type="hidden" name="cover_style" value="standard">
+                <label>
+                    <span>卡号</span>
+                    <input type="text" name="card_number" inputmode="numeric" placeholder="支持空格或短横线" required minlength="12" maxlength="23" spellcheck="false">
+                </label>
+                <label>
+                    <span>有效期</span>
+                    <input type="text" name="expiry" inputmode="numeric" placeholder="MM/YY" required maxlength="7" spellcheck="false">
+                </label>
+                <label>
+                    <span>CVC安全码</span>
+                    <input type="password" name="cvc" inputmode="numeric" placeholder="3或4位数字" required minlength="3" maxlength="4" pattern="[0-9]{3,4}" autocomplete="off" spellcheck="false">
+                </label>
+                <label>
+                    <span>持卡人姓名</span>
+                    <input type="text" name="holder_name" placeholder="与卡片资料一致" required maxlength="100" spellcheck="false">
+                </label>
+                <label>
+                    <span>备注</span>
+                    <textarea name="note" rows="1" placeholder="可选，例如：订阅专用" maxlength="300"></textarea>
+                </label>
+<label class="wallet-form-full">
+                    <span>账单地址</span>
+                    <textarea name="billing_address" id="addWalletCardAddress" rows="1" placeholder="选择关联工具后可自动带入" required maxlength="500" spellcheck="false"></textarea>
+                </label>
+            </div>
+            <div class="wallet-form-actions wallet-form-actions-end">
+                <button type="submit">保存卡片</button>
+            </div>
+        </form>
+    </section>
+
+    <section class="board-card wallet-card-gallery-panel">
+        <div class="card-head wallet-section-head wallet-gallery-head">
+            <div>
+                <h2>境外卡片</h2>
+                
+            </div>
+
+        </div>
+
+        {% if wallet_cards %}
+        <label class="wallet-search wallet-search-full">
+            <span class="sr-only">搜索卡片</span>
+            <span class="wallet-search-icon" aria-hidden="true">🔍</span>
+            <input type="search" id="walletCardSearch" placeholder="输入搜索名称、软件、卡组织或卡片类型..." autocomplete="off">
+        </label>
+        <div id="walletCardGrid" class="wallet-card-grid">
+            {% for card in wallet_cards %}
+            <button
+                type="button"
+                class="wallet-card-tile{% if card.expiry_alert %} wallet-expiry-alert{% if card.expiry_alert.status == 'expired' %} wallet-expiry-expired{% endif %}{% endif %}"
+                data-card-id="{{ card.id }}"
+                data-expiry="{{ card.expiry }}"
+                data-card-name="{{ card.name }}"
+                data-search="{{ card.name }} {{ card.software }} {{ card.scheme }} {{ card.card_variant }}"
+                aria-label="查看{{ card.name }}详情"
+            >
+                <span class="wallet-card-cover wallet-card-cover-{{ card.cover_style }}">
+                    <span class="wallet-card-topline">
+                        <span class="wallet-card-software-mark" aria-hidden="true"><img src="{{ card.brand_icon }}" alt="" width="30" height="30"></span>
+                        <span class="wallet-card-software">{{ card.software }}</span>
+                        <span class="wallet-card-scheme">{% if '虚拟卡' in card.card_variant %}虚拟卡 · {% endif %}{{ card.scheme }}</span>
+                    </span>
+                    {% if card.expiry_alert %}<span class="wallet-expiry-badge">{{ card.expiry_alert.label }}</span>{% endif %}
+                    <span class="wallet-card-chip" aria-hidden="true"><i></i><i></i><i></i></span>
+                    <span class="wallet-card-number">{{ card.card_number_masked }}</span>
+                    <span class="wallet-card-bottomline">
+                        <span>
+                            <small>卡片名称</small>
+                            <strong>{{ card.name }}</strong>
+                        </span>
+                        <span>
+                            <small>有效期</small>
+                            <strong>{{ card.expiry }}</strong>
+                        </span>
+                    </span>
+                </span>
+            </button>
+            {% endfor %}
+        </div>
+        <div id="walletCardsEmptySearch" class="empty-state wallet-empty-search" hidden>没有找到匹配的卡片。</div>
+        <div id="walletCardsPagination" class="pagination-container" aria-label="境外卡片分页"></div>
+        {% else %}
+        <div class="empty-state wallet-cards-empty">
+            <span class="wallet-empty-icon" aria-hidden="true">▰</span>
+            <strong>还没有境外卡片</strong>
+            <p>在上方添加第一张卡，保存后会显示在这里。</p>
+        </div>
+        {% endif %}
+    </section>
+
+<div id="walletSchemeModal" class="wallet-modal wallet-delete-modal" aria-hidden="true"><div class="board-card wallet-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="walletSchemeTitle"><div class="card-head"><h2 id="walletSchemeTitle">管理卡组织</h2><button type="button" data-wallet-modal-close aria-label="关闭">×</button></div><div style="display:flex;gap:8px;margin:16px 0"><input id="walletNewScheme" maxlength="50" placeholder="输入新选项名称"><button type="button" id="walletAddScheme">添加</button></div><div id="walletSchemeList"></div><p id="walletSchemeError" role="status"></p><div class="wallet-delete-actions"><button type="button" data-wallet-modal-close>取消</button><button type="button" id="walletSaveSchemes">保存</button></div></div></div>
+    <div id="walletCardDeleteModal" class="wallet-modal wallet-delete-modal" aria-hidden="true">
+        <div class="board-card wallet-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="walletDeleteTitle">
+            <div class="card-head"><h2 id="walletDeleteTitle">确认删除卡片</h2><button type="button" data-wallet-modal-close aria-label="关闭">×</button></div>
+            <p>您确定要删除卡片 <strong id="walletDeleteName"></strong> 吗？删除后将无法恢复。</p>
+            <div class="wallet-delete-actions"><button type="button" data-wallet-modal-close>取消</button><button type="button" id="confirmWalletDelete">确认删除</button></div>
+        </div>
+    </div>
+    <div id="walletCardDetailModal" class="wallet-modal" aria-hidden="true">
+        <div class="wallet-modal-dialog wallet-detail-dialog" role="dialog" aria-modal="true" aria-labelledby="walletCardDetailTitle">
+            <button type="button" class="wallet-modal-close" data-wallet-modal-close aria-label="关闭">×</button>
+            <div class="wallet-detail-heading">
+                <span class="wallet-detail-app-mark" id="walletDetailAppMark" aria-hidden="true">C</span>
+                <div>
+                    <p id="walletDetailSoftware">--</p>
+                    <h2 id="walletCardDetailTitle">卡片详情</h2>
+                </div>
+                <span id="walletDetailScheme" class="wallet-detail-scheme">CARD</span>
+            </div>
+            <dl class="wallet-detail-grid">
+                <div class="wallet-detail-number">
+                    <dt>完整卡号</dt>
+                    <dd><span id="walletDetailNumber">--</span><button type="button" id="copyWalletCardNumber" class="wallet-copy-btn">复制</button></dd>
+                </div>
+                <div>
+                    <dt>有效期</dt>
+                    <dd id="walletDetailExpiry">--</dd>
+                </div>
+                <div>
+                    <dt>CVC安全码</dt>
+                    <dd class="wallet-secret-row"><span id="walletDetailCvc">•••</span><button type="button" id="toggleWalletCardCvc" class="wallet-copy-btn">显示</button></dd>
+                </div>
+                <div>
+                    <dt>持卡人</dt>
+                    <dd id="walletDetailHolder">--</dd>
+                </div>
+                <div>
+                    <dt>卡片版本 / 类型</dt>
+                    <dd id="walletDetailVariant">--</dd>
+                </div>
+                <div class="wallet-detail-address">
+                    <dt>账单地址</dt>
+                    <dd id="walletDetailAddress">--</dd>
+                </div>
+                <div>
+                    <dt>国家 / 地区</dt>
+                    <dd id="walletDetailCountry">--</dd>
+                </div>
+                <div>
+                    <dt>绑定电话</dt>
+                    <dd id="walletDetailPhone">--</dd>
+                </div>
+                <div>
+                    <dt>登录方式</dt>
+                    <dd id="walletDetailLogin">--</dd>
+                </div>
+                <div>
+                    <dt>KYC提供商</dt>
+                    <dd id="walletDetailKycProvider">--</dd>
+                </div>
+                <div class="wallet-detail-address">
+                    <dt>账户提供方</dt>
+                    <dd id="walletDetailAccountProvider">--</dd>
+                </div>
+                <div class="wallet-detail-address">
+                    <dt>备注</dt>
+                    <dd id="walletDetailNote">--</dd>
+                </div>
+            </dl>
+            <div class="wallet-modal-actions">
+                <form id="deleteWalletCardForm" method="post">
+                    <button type="submit" class="wallet-danger-btn">删除</button>
+                </form>
+                <div>
+                    <button type="button" class="wallet-secondary-btn" data-wallet-modal-close>关闭</button>
+                    <button type="button" id="editWalletCardButton">修改资料</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="walletCardEditModal" class="wallet-modal" aria-hidden="true">
+        <div class="wallet-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="walletCardEditTitle">
+            <button type="button" class="wallet-modal-close" data-wallet-modal-close aria-label="关闭">×</button>
+            <div class="card-head">
+                <div>
+                    <p class="card-kicker">更新本机记录</p>
+                    <h2 id="walletCardEditTitle">修改卡片资料</h2>
+                </div>
+            </div>
+            <form method="post" id="walletCardEditForm" class="wallet-card-form" autocomplete="off">
+                <div class="wallet-form-grid wallet-edit-grid">
+                    <label><span>卡片名称</span><input type="text" name="name" id="editWalletCardName" required maxlength="80"></label>
+                    <label><span>所属软件 / 平台</span><input type="text" name="software" id="editWalletCardSoftware" required maxlength="80"></label>
+                    <label>
+                        <span>关联境外工具</span>
+                        <select name="source_tool_id" id="editWalletCardSourceTool">
+                            <option value="0">不关联</option>
+                            {% for tool in tool_options %}
+                            <option value="{{ tool.id }}" data-tool-name="{{ tool.name }}" data-tool-address="{{ tool.address or '' }}">{{ tool.name }}{% if tool.country %} · {{ tool.country }}{% endif %}（ID {{ tool.id }}）</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <label>
+                        <span class="wallet-field-heading">卡组织<button type="button" class="wallet-manage-schemes">⚙ 管理</button></span>
+                        <select name="scheme" id="editWalletCardScheme">{% for scheme in scheme_options %}<option value="{{ scheme }}">{{ scheme }}</option>{% endfor %}</select>
+                    </label>
+                    <label><span>卡片版本 / 类型</span><input type="text" name="card_variant" id="editWalletCardVariant" maxlength="80"></label>
+                    <input type="hidden" name="cover_style" id="editWalletCardCoverStyle" value="standard">
+                    <label><span>卡号</span><input type="text" name="card_number" id="editWalletCardNumber" inputmode="numeric" required minlength="12" maxlength="23" spellcheck="false"></label>
+                    <label><span>有效期</span><input type="text" name="expiry" id="editWalletCardExpiry" inputmode="numeric" required maxlength="7" spellcheck="false"></label>
+                    <label><span>CVC安全码</span><input type="password" name="cvc" id="editWalletCardCvc" inputmode="numeric" required minlength="3" maxlength="4" pattern="[0-9]{3,4}" autocomplete="off" spellcheck="false"></label>
+                    <label><span>持卡人姓名</span><input type="text" name="holder_name" id="editWalletCardHolder" required maxlength="100" spellcheck="false"></label>
+                    <label><span>备注</span><textarea name="note" id="editWalletCardNote" rows="1" maxlength="300"></textarea></label>
+<label class="wallet-form-full"><span>账单地址</span><textarea name="billing_address" id="editWalletCardAddress" rows="1" required maxlength="500" spellcheck="false"></textarea></label>
+                </div>
+                <div class="wallet-modal-actions wallet-edit-actions">
+                    <button type="button" class="wallet-secondary-btn" data-wallet-modal-close>取消</button>
+                    <button type="submit">保存修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script defer src="/static/js/wallet_cards.js?v=1.7.0"></script>
+{% endblock %}

@@ -1,0 +1,1 @@
+Brand SVGs from @lobehub/icons-static-svg (https://github.com/lobehub/lobe-icons), fetched 2026-09-05 via registry.npmmirror.com. Brand marks belong to their respective owners. glm.svg uses zhipu-color.svg. Other filenames correspond to provider names (color variants where available). Local copies avoid runtime third-party requests.

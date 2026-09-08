@@ -1,0 +1,592 @@
+{% extends "base.html" %}
+
+{% block sidebar_content %}
+<section class="sidebar-card">
+    <div class="sidebar-card-head">
+        <p>快速操作</p>
+        <h3>加入自选</h3>
+    </div>
+    <form action="/watchlist" method="post" class="sidebar-form">
+        <input type="hidden" name="symbol" value="{{ detail.input_symbol }}">
+        <input type="hidden" name="market" value="{{ detail.market }}">
+        <input type="hidden" name="name" value="{{ detail.name }}">
+        <label>
+            <span>备注</span>
+            <input type="text" name="note" placeholder="例如：跟踪财报或等回调">
+        </label>
+        <button type="submit">加入自选</button>
+    </form>
+</section>
+{% endblock %}
+
+{% block content %}
+<section class="price-region">
+    <div class="quote-hero quote-flat" id="quoteHero" data-quote-symbol="{{ detail.symbol }}" data-quote-market="{{ detail.market }}">
+        <div class="quote-main">
+            <span>最新价格</span>
+            <strong data-value="price" id="quotePrice"><span class="skeleton" style="width: 120px; height: 32px;"></span></strong>
+            <div class="quote-pair">
+                <span data-value="change" id="quoteChange"><span class="skeleton skeleton-inline"></span></span>
+                <span data-value="change_percent" id="quoteChangePercent"><span class="skeleton skeleton-inline"></span></span>
+            </div>
+        </div>
+        <div class="quote-stats">
+            <div class="quote-stat-card">
+                <span>昨收</span>
+                <strong data-value="previous_close" id="quotePrevClose"><span class="skeleton skeleton-inline"></span></strong>
+            </div>
+            <div class="quote-stat-card">
+                <span>数据源</span>
+                <strong data-value="source" id="quoteSource"><span class="skeleton skeleton-inline"></span></strong>
+            </div>
+            <div class="quote-stat-card">
+                <span>更新时间</span>
+                <strong data-value="updated_at" id="quoteUpdatedAt"><span class="skeleton skeleton-inline"></span></strong>
+            </div>
+        </div>
+    </div>
+    <div class="summary-board">
+        <div class="summary-row"><span>股票代码</span><strong>{{ detail.symbol }}</strong></div>
+        <div class="summary-row"><span>交易市场</span><strong>{{ detail.market_label }}</strong></div>
+        <div class="summary-row"><span>交易所</span><strong id="exchange-val"><span class="skeleton skeleton-inline"></span></strong></div>
+        <div class="summary-row"><span>计价货币</span><strong id="currency-val"><span class="skeleton skeleton-inline"></span></strong></div>
+        <div class="summary-row"><span>行业</span><strong id="industry-val"><span class="skeleton skeleton-inline"></span></strong></div>
+        <div class="summary-row"><span>板块</span><strong id="sector-val"><span class="skeleton skeleton-inline"></span></strong></div>
+    </div>
+</section>
+
+<section class="tab-strip">
+    <a href="#overview" class="tab-link active">核心概览</a>
+    <a href="#fundamentals" class="tab-link">基本面</a>
+    <a href="#consensus" class="tab-link">主流观点</a>
+    <a href="#news" class="tab-link">新闻</a>
+</section>
+
+<section id="overview" class="detail-grid">
+    <div class="tone-card tone-blue" id="overviewCard">
+        <h3>快速概览</h3>
+        <div class="highlight-grid" id="highlightGrid">
+            <div class="highlight-card"><span class="skeleton skeleton-inline"></span><strong><span class="skeleton skeleton-inline"></span></strong></div>
+            <div class="highlight-card"><span class="skeleton skeleton-inline"></span><strong><span class="skeleton skeleton-inline"></span></strong></div>
+            <div class="highlight-card"><span class="skeleton skeleton-inline"></span><strong><span class="skeleton skeleton-inline"></span></strong></div>
+            <div class="highlight-card"><span class="skeleton skeleton-inline"></span><strong><span class="skeleton skeleton-inline"></span></strong></div>
+        </div>
+        <p class="description" id="businessSummary"><span class="skeleton skeleton-block"></span></p>
+        <p class="website-line" id="websiteLine" style="display: none;"></p>
+    </div>
+
+    <div class="board-card compact">
+        <div class="card-head">
+            <div>
+                <p class="card-kicker">价格走势</p>
+                <h2>近一月</h2>
+            </div>
+        </div>
+        <div class="trend-summary">
+            <div class="trend-chip">
+                <span>当前价格</span>
+                <strong id="trendCurrentPrice"><span class="skeleton skeleton-inline"></span></strong>
+            </div>
+            <div class="trend-chip">
+                <span>近一月样本</span>
+                <strong id="trendSamplesCount"><span class="skeleton skeleton-inline"></span></strong>
+            </div>
+        </div>
+        <div class="chart-wrap" style="position: relative;">
+            <div id="chartLoading" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); z-index: 10;">
+                <span class="skeleton skeleton-block" style="height: 100%;"></span>
+            </div>
+            <canvas id="priceChart"></canvas>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    </div>
+</section>
+
+<section id="fundamentals" class="board-card">
+    <div class="card-head">
+        <div>
+            <p class="card-kicker">基本面</p>
+            <h2>财务结构</h2>
+        </div>
+        <div class="soft-note">聚焦估值、成长、资产负债 and 现金流</div>
+    </div>
+    <div class="fundamental-grid" id="fundamentalGrid">
+        <div class="tone-card tone-blue"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-block"></span></div>
+        <div class="tone-card tone-blue"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-block"></span></div>
+        <div class="tone-card tone-blue"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-block"></span></div>
+        <div class="tone-card tone-blue"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-block"></span></div>
+    </div>
+</section>
+
+<section id="consensus" class="board-card">
+    <div class="card-head">
+        <div>
+            <p class="card-kicker">主流观点</p>
+            <h2>分析师一致预期</h2>
+        </div>
+    </div>
+    <div class="consensus-layout" id="consensusLayout">
+        <div class="tone-card tone-yellow" style="flex: 1;">
+            <h3>当前判断：<span class="skeleton skeleton-inline" style="width: 100px;"></span></h3>
+            <span class="skeleton skeleton-block" style="height: 150px;"></span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px; flex: 1.5;">
+            <div class="consensus-target-grid">
+                <div class="metric-box">
+                    <span>目标价均值</span>
+                    <strong><span class="skeleton skeleton-inline"></span></strong>
+                </div>
+                <div class="metric-box">
+                    <span>目标价高位</span>
+                    <strong><span class="skeleton skeleton-inline"></span></strong>
+                </div>
+                <div class="metric-box">
+                    <span>目标价低位</span>
+                    <strong><span class="skeleton skeleton-inline"></span></strong>
+                </div>
+            </div>
+            <div class="breakdown-grid">
+                <span class="skeleton skeleton-block" style="height: 50px;"></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if briefing_history %}
+<section id="briefing-history" class="board-card" style="margin-bottom: 18px;">
+    <div class="card-head">
+        <div>
+            <p class="card-kicker">评估历史</p>
+            <h2>简报记录</h2>
+        </div>
+    </div>
+
+    <div class="briefing-history-timeline" id="briefingHistoryTimeline" style="display: flex; flex-direction: column; gap: 14px; padding: 6px 0;">
+        {% for b in briefing_history %}
+        <div class="timeline-item" style="display: flex; gap: 16px; border-bottom: 1px solid var(--line-soft); padding-bottom: 14px; align-items: flex-start;">
+            <div class="timeline-date-action" style="display: flex; flex-direction: column; gap: 4px; min-width: 140px;">
+                <span style="font-size: 13px; color: var(--muted); font-weight: 600;">📅 {{ b.date }}</span>
+                <span class="card-action badge-action-{{ b.action }}" style="font-size: 12px; font-weight: 700; padding: 3px 8px; border-radius: 6px; display: inline-block; text-align: center;">{{ b.action }}</span>
+            </div>
+            <div class="timeline-content" style="flex: 1; display: flex; flex-direction: column; gap: 6px;">
+                <div style="font-size: 13px; color: var(--muted);">
+                    <span>收盘价格: <strong>{% if b.price %}${{ "%.2f"|format(b.price) }}{% else %}--{% endif %}</strong></span>
+                    <span style="margin-left: 15px;">建仓/操作区间: <strong>{{ b.buy_range or '--' }}</strong></span>
+                </div>
+                <p style="margin: 0; font-size: 14px; line-height: 1.5; color: var(--text);">{{ b.change_reason }}</p>
+                <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">
+                    <span>📂 数据来源: {{ b.source_file }}</span> <button type="button" style="margin-left:12px;padding:2px 8px;font-size:12px;border:1px solid #1a73e8;color:#1a73e8;background:#e8f0fe;border-radius:4px;cursor:pointer;" onclick="openStockCardModal('{{ b.date }}', '{{ b.ticker }}')">🔍 查看当日完整分析卡片</button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div id="briefingPagination" class="pagination-container"></div>
+
+    <script>
+    (function() {
+        const timeline = document.getElementById("briefingHistoryTimeline");
+        const pagination = document.getElementById("briefingPagination");
+        if (!timeline || !pagination) return;
+        
+        const items = timeline.getElementsByClassName("timeline-item");
+        const itemsPerPage = 5;
+        const totalPages = Math.ceil(items.length / itemsPerPage);
+        let currentPage = 1;
+        
+        if (items.length <= itemsPerPage) {
+            pagination.style.display = "none";
+            return;
+        }
+        
+        function showPage(page) {
+            currentPage = page;
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            
+            for (let i = 0; i < items.length; i++) {
+                if (i >= start && i < end) {
+                    items[i].style.setProperty("display", "flex", "important");
+                } else {
+                    items[i].style.setProperty("display", "none", "important");
+                }
+            }
+            renderPagination();
+        }
+        
+        function renderPagination() {
+            pagination.innerHTML = "";
+            
+            // Prev Button
+            const prevBtn = document.createElement("button");
+            prevBtn.type = "button";
+            prevBtn.className = "page-btn";
+            prevBtn.textContent = "« 上一页";
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.addEventListener("click", () => showPage(currentPage - 1));
+            pagination.appendChild(prevBtn);
+            
+            // Page buttons
+            for (let i = 1; i <= totalPages; i++) {
+                const pageBtn = document.createElement("button");
+                pageBtn.type = "button";
+                pageBtn.className = "page-btn" + (i === currentPage ? " active" : "");
+                pageBtn.textContent = i;
+                pageBtn.addEventListener("click", () => showPage(i));
+                pagination.appendChild(pageBtn);
+            }
+            
+            // Next Button
+            const nextBtn = document.createElement("button");
+            nextBtn.type = "button";
+            nextBtn.className = "page-btn";
+            nextBtn.textContent = "下一页 »";
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.addEventListener("click", () => showPage(currentPage + 1));
+            pagination.appendChild(nextBtn);
+        }
+        
+        showPage(1);
+    })();
+    </script>
+</section>
+{% endif %}
+
+<section id="news" class="board-card">
+    <div class="card-head">
+        <div>
+            <p class="card-kicker">新闻</p>
+            <h2>最新动态</h2>
+        </div>
+    </div>
+    <div class="news-list" id="newsList">
+        <article class="news-item"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-block"></span></article>
+        <article class="news-item"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-block"></span></article>
+        <article class="news-item"><span class="skeleton skeleton-title"></span><span class="skeleton skeleton-block"></span></article>
+    </div>
+    <nav id="stockNewsPagination" class="pagination-container" aria-label="新闻分页" hidden></nav>
+</section>
+
+<script>
+(function() {
+    const symbol = "{{ detail.symbol }}";
+    const market = "{{ detail.market }}";
+
+    let newsPage = 1;
+    function renderNewsPage(measure = true) {
+        const list = document.getElementById('newsList');
+        const pager = document.getElementById('stockNewsPagination');
+        if (!list || !pager) return;
+        const items = [...list.querySelectorAll('.news-item[data-news-idx]')];
+        const pages = Math.ceil(items.length / 5);
+        newsPage = Math.max(1, Math.min(newsPage, pages || 1));
+        // Measure complete pages so shorter final pages retain the same space.
+        if (measure) {
+        list.style.minHeight = '0';
+        items.forEach(item => item.style.display = '');
+        const gap = parseFloat(getComputedStyle(list).rowGap) || 0;
+        let height = 0;
+        for (let start = 0; start < items.length; start += 5) {
+            const group = items.slice(start, start + 5);
+            height = Math.max(height, group.reduce((sum, item) => sum + item.getBoundingClientRect().height, 0) + gap * (group.length - 1));
+        }
+        list.style.minHeight = items.length >= 5 ? `${Math.ceil(height)}px` : '0';
+        }
+        items.forEach((item, index) => item.style.display = Math.floor(index / 5) === newsPage - 1 ? '' : 'none');
+        pager.replaceChildren();
+        pager.hidden = pages <= 1;
+        if (pages <= 1) return;
+        const controls = document.createElement('div');
+        controls.className = 'pagination-controls';
+        function button(label, target, disabled, active = false) {
+            const node = document.createElement('button');
+            node.type = 'button';
+            node.className = 'page-btn' + (active ? ' active' : '');
+            node.textContent = label;
+            node.disabled = disabled;
+            if (active) node.setAttribute('aria-current', 'page');
+            node.addEventListener('click', () => { newsPage = target; renderNewsPage(false); });
+            controls.appendChild(node);
+        }
+        button('« 上一页', newsPage - 1, newsPage === 1);
+        for (let page = 1; page <= pages; page++) button(String(page), page, false, page === newsPage);
+        button('下一页 »', newsPage + 1, newsPage === pages);
+        pager.appendChild(controls);
+    }
+    
+    function initChart(historyPoints) {
+        window.stockChartData = historyPoints || [];
+        const chartLoading = document.getElementById("chartLoading");
+        if (chartLoading) {
+            chartLoading.style.display = "none";
+        }
+        if (typeof renderPriceChart === "function") {
+            renderPriceChart();
+        } else if (typeof queueChartRender === "function") {
+            queueChartRender();
+        }
+    }
+    
+    if (window.priceChartInstance) {
+        window.priceChartInstance.destroy();
+        window.priceChartInstance = null;
+    }
+
+    async function loadDetail() {
+        if (typeof window.setQuickLookLoading === "function") {
+            window.setQuickLookLoading(true);
+        }
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refreshParam = urlParams.get("refresh") === "true" ? "&refresh=true" : "";
+            const res = await fetch(`/api/stock/detail?symbol=${encodeURIComponent(symbol)}&market=${encodeURIComponent(market)}${refreshParam}&_t=${Date.now()}`);
+            if (!res.ok) throw new Error("Failed to fetch detail");
+            const data = await res.json();
+            
+            // 1. Update document and page header titles
+            if (data.name && data.name !== symbol) {
+                document.title = data.name + " - FinBoard";
+                const pageTitle = document.querySelector(".page-title");
+                if (pageTitle) {
+                    pageTitle.textContent = data.name;
+                }
+                const pageKicker = document.querySelector(".page-topbar .page-kicker");
+                if (pageKicker && data.market_label) {
+                    pageKicker.textContent = `${data.market_label} 分析`;
+                }
+            }
+            
+            // 2. Update quote hero card
+            const quoteHero = document.getElementById("quoteHero");
+            if (quoteHero && data.quote && data.quote.price !== null && data.quote.price !== undefined) {
+                quoteHero.className = `quote-hero quote-${data.quote.css_class}`;
+                
+                const qPrice = document.getElementById("quotePrice");
+                if (qPrice) qPrice.textContent = data.quote.price_text || "--";
+                
+                const qChange = document.getElementById("quoteChange");
+                if (qChange) {
+                    qChange.textContent = data.quote.change_text || "--";
+                    qChange.className = `quote-${data.quote.css_class}`;
+                }
+                
+                const qChangePercent = document.getElementById("quoteChangePercent");
+                if (qChangePercent) {
+                    qChangePercent.textContent = data.quote.change_percent_text || "--";
+                    qChangePercent.className = `quote-${data.quote.css_class}`;
+                }
+                
+                const qPrevClose = document.getElementById("quotePrevClose");
+                if (qPrevClose) qPrevClose.textContent = data.quote.previous_close_text || "--";
+                
+                const qSource = document.getElementById("quoteSource");
+                if (qSource) qSource.textContent = data.quote.source || "--";
+                
+                const qUpdatedAt = document.getElementById("quoteUpdatedAt");
+                if (qUpdatedAt) qUpdatedAt.textContent = data.quote.updated_at_text || "--";
+                
+                const trendCurrentPrice = document.getElementById("trendCurrentPrice");
+                if (trendCurrentPrice) trendCurrentPrice.textContent = data.quote.price_text || "--";
+            }
+            
+            // 3. Update summary board
+            document.getElementById("exchange-val").textContent = data.exchange || "--";
+            document.getElementById("currency-val").textContent = data.currency || "--";
+            document.getElementById("industry-val").textContent = data.industry || "--";
+            document.getElementById("sector-val").textContent = data.sector || "--";
+            
+            // 4. Update overview details
+            const overviewCard = document.getElementById("overviewCard");
+            if (overviewCard) {
+                const highlightGrid = document.getElementById("highlightGrid");
+                if (highlightGrid && Array.isArray(data.highlights)) {
+                    highlightGrid.innerHTML = data.highlights.map(h => `
+                        <div class="highlight-card">
+                            <span>${h.label}</span>
+                            <strong>${h.value}</strong>
+                        </div>
+                    `).join("");
+                }
+                
+                const bSummary = document.getElementById("businessSummary");
+                if (bSummary) {
+                    bSummary.textContent = data.business_summary || "暂无概览描述。";
+                }
+                
+                const websiteLine = document.getElementById("websiteLine");
+                if (websiteLine) {
+                    if (data.website) {
+                        websiteLine.style.display = "block";
+                        websiteLine.innerHTML = `<strong>官网：</strong><a href="${data.website}" target="_blank" rel="noreferrer">${data.website}</a>`;
+                    } else {
+                        websiteLine.style.display = "none";
+                    }
+                }
+            }
+            
+            // 5. Update chart trend points
+            const trendSamplesCount = document.getElementById("trendSamplesCount");
+            if (trendSamplesCount && Array.isArray(data.history_points)) {
+                trendSamplesCount.textContent = `${data.history_points.length} 天`;
+            }
+            initChart(data.history_points);
+            
+            // 6. Update fundamentals
+            const fundamentalGrid = document.getElementById("fundamentalGrid");
+            if (fundamentalGrid && Array.isArray(data.fundamental_sections)) {
+                fundamentalGrid.innerHTML = data.fundamental_sections.map(section => `
+                    <div class="tone-card tone-blue">
+                        <h3>${section.title}</h3>
+                        <ul class="metric-list">
+                            ${(section.metrics || []).map(m => `
+                                <li>
+                                    <span>${m.label}</span>
+                                    <strong>${m.value}</strong>
+                                </li>
+                            `).join("")}
+                        </ul>
+                    </div>
+                `).join("");
+            }
+            
+            // 7. Update consensus
+            const consensusLayout = document.getElementById("consensusLayout");
+            if (consensusLayout && data.consensus) {
+                let pointsHtml = "";
+                if (Array.isArray(data.consensus.points)) {
+                    pointsHtml = data.consensus.points.map(p => `<li>${p}</li>`).join("");
+                }
+                
+                let breakdownHtml = "";
+                if (data.consensus.breakdown) {
+                    breakdownHtml = `
+                        <div class="breakdown-grid">
+                            ${Object.entries(data.consensus.breakdown).map(([label, value]) => `
+                                <div class="mini-stat">
+                                    <span>${label}</span>
+                                    <strong>${value}</strong>
+                                </div>
+                            `).join("")}
+                        </div>
+                    `;
+                }
+                
+                consensusLayout.innerHTML = `
+                    <div class="tone-card tone-yellow" style="flex: 1;">
+                        <h3>当前判断：${data.consensus.recommendation_label || "--"}</h3>
+                        <ul class="flat-list">
+                            ${pointsHtml || "<li>暂无观点明细。</li>"}
+                        </ul>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 14px; flex: 1.5;">
+                        <div class="consensus-target-grid">
+                            <div class="metric-box">
+                                <span>目标价均值</span>
+                                <strong>${data.consensus.target_mean || "--"}</strong>
+                            </div>
+                            <div class="metric-box">
+                                <span>目标价高位</span>
+                                <strong>${data.consensus.target_high || "--"}</strong>
+                            </div>
+                            <div class="metric-box">
+                                <span>目标价低位</span>
+                                <strong>${data.consensus.target_low || "--"}</strong>
+                            </div>
+                        </div>
+                        ${breakdownHtml}
+                    </div>
+                `;
+            }
+            
+            // 8. Update news
+            const newsList = document.getElementById("newsList");
+            if (newsList) {
+                if (Array.isArray(data.news) && data.news.length) {
+                    newsList.innerHTML = data.news.map((item, idx) => {
+                        let dateStr = "";
+                        if (item.published_at) {
+                            try {
+                                dateStr = new Date(item.published_at * 1000).toLocaleString("zh-CN", {hour12: false});
+                            } catch(e) {
+                                dateStr = "";
+                            }
+                        }
+                        return `
+                            <article class="news-item" data-news-idx="${idx}">
+                                <div class="news-meta">
+                                    <span>${item.source || "未知"}</span>
+                                    <span>${dateStr}</span>
+                                </div>
+                                <a class="news-title-link" href="${item.url}" target="_blank" rel="noreferrer">${item.title}</a>
+                                ${item.summary ? `<p class="news-summary-text">${item.summary}</p>` : ""}
+                            </article>
+                        `;
+                    }).join("");
+
+                    // Translate news in the background
+                    newsPage = 1;
+                    renderNewsPage();
+                    translateNewsAsync(data.news);
+                } else {
+                    newsList.innerHTML = `<div class="empty-state">暂无可用新闻。</div>`;
+                    renderNewsPage();
+                }
+            }
+            
+            async function translateNewsAsync(newsItems) {
+                try {
+                    const response = await fetch('/api/translate/news', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(newsItems)
+                    });
+                    if (!response.ok) return;
+                    const result = await response.json();
+                    const translatedNews = result.news || [];
+                    
+                    translatedNews.forEach((item, idx) => {
+                        const article = document.querySelector(`[data-news-idx="${idx}"]`);
+                        if (article) {
+                            const titleLink = article.querySelector('.news-title-link');
+                            if (titleLink && item.title) {
+                                titleLink.textContent = item.title;
+                            }
+                            const summaryText = article.querySelector('.news-summary-text');
+                            if (summaryText && item.summary) {
+                                summaryText.textContent = item.summary;
+                            }
+                        }
+                    });
+                    renderNewsPage();
+                } catch (e) {
+                    console.error("News translation failed:", e);
+                }
+            }
+            // Add to analysis history on success
+            if (typeof window.addToAnalysisHistory === "function") {
+                window.addToAnalysisHistory(symbol, market, data.name || symbol);
+            }
+        } catch (err) {
+            console.error("Error loading stock detail:", err);
+            const chartLoading = document.getElementById("chartLoading");
+            if (chartLoading) chartLoading.style.display = "none";
+            
+            document.querySelectorAll(".skeleton").forEach(el => {
+                el.textContent = "--";
+                el.classList.remove("skeleton");
+            });
+        } finally {
+            if (typeof window.setQuickLookLoading === "function") {
+                window.setQuickLookLoading(false);
+            }
+        }
+    }
+    
+    window.pjaxCleanupTasks = window.pjaxCleanupTasks || [];
+    loadDetail();
+})();
+</script>
+{% endblock %}
