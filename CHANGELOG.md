@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased] - 2026-09-08
+
+### Added
+
+- 在`docs/images/`新增股票总览、持仓记录与AI监控三张脱敏运行截图，并在`README.md`增加运行截图展示；截图来自全新公开环境，不包含个人持仓、卡片、号码或账户数据。
+- 更新`docs/MAINTENANCE.md`，明确所有待上传内容先保存到独立`FinBoard/`公开仓库工作目录，并要求每次更新同步记录公开`CHANGELOG.md`。
+
 ## [0.1] - 2026-09-08
 
 ### Changed

@@ -4,6 +4,22 @@
 
 FinBoard 是一个运行在 Windows 本机的股票、持仓、每日简报和境外工具管理项目。页面由 FastAPI 和 Jinja2 生成，股票与持仓数据保存在 SQLite，境外工具、卡片、号码和 AI 监控资料保存在本地 JSON 文件。项目默认仅监听 `127.0.0.1`，不应直接暴露到公网。
 
+## 运行截图
+
+以下截图来自全新、无个人数据的 FinBoard v0.1 公开环境。
+
+### 股票总览
+
+![FinBoard 股票总览](docs/images/dashboard.png)
+
+### 持仓记录
+
+![FinBoard 持仓记录](docs/images/holdings.png)
+
+### AI监控
+
+![FinBoard AI监控](docs/images/ai-monitor.png)
+
 ## 功能地图
 
 | 页面 | 地址 | 用途 | 主要数据 |
