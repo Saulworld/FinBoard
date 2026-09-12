@@ -131,5 +131,26 @@
     "name": "Savo",
     "category": "加密金融",
     "path": "/static/images/wallet-brands/savo.png"
+  },
+  "lloyds": {
+    "file": "lloyds.png",
+    "source": "用户提供的Lloyds Bank真实卡面截图，本地重构于2026-09-08",
+    "name": "Lloyds Bank",
+    "category": "银行",
+    "path": "/static/images/wallet-brands/lloyds.png"
+  },
+  "coinbase": {
+    "file": "coinbase.svg",
+    "source": "https://www.coinbase.com/",
+    "name": "Coinbase",
+    "category": "加密金融",
+    "path": "/static/images/wallet-brands/coinbase.svg"
+  },
+  "digitap": {
+    "file": "digitap.ico",
+    "source": "https://digitap.app/",
+    "name": "Digitap",
+    "category": "加密金融",
+    "path": "/static/images/wallet-brands/digitap.ico"
   }
 }

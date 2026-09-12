@@ -18,6 +18,7 @@ class PortfolioTotalsTests(unittest.TestCase):
         self.assertAlmostEqual(totals.total_cost, 21000)
         self.assertAlmostEqual(totals.total_value, 23800)
         self.assertAlmostEqual(totals.total_pnl, 2800)
+        self.assertAlmostEqual(totals.total_return_percent, 2800 / 21000 * 100)
 
     def test_missing_quote_or_rate_disables_summary(self):
         entries = [PortfolioEntry(1000, "USD", None, "USD")]
@@ -26,6 +27,16 @@ class PortfolioTotalsTests(unittest.TestCase):
         self.assertIsNone(totals.total_value)
         self.assertIn("USD", totals.missing_currencies)
         self.assertIn("USD行情", totals.missing_currencies)
+        self.assertIsNone(totals.total_return_percent)
+
+    def test_zero_cost_has_no_return_percent(self):
+        totals = calculate_portfolio_totals(
+            [PortfolioEntry(0, "USD", 100, "USD")],
+            "USD",
+            lambda *_: None,
+        )
+        self.assertTrue(totals.complete)
+        self.assertIsNone(totals.total_return_percent)
 
     def test_summary_can_switch_to_usd(self):
         rates = {("CNY", "USD"): 0.14, ("HKD", "USD"): 0.128}

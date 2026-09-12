@@ -18,6 +18,8 @@ input, select, textarea { min-width: 0; max-width: 100%; }
     overflow-x: auto; scrollbar-gutter: auto; overflow-anchor: none;
 }
 #holdingsTable td { height: 80px; }
+#holdingsTable .table-actions .stable-cell-content > div { gap: 8px !important; flex-wrap: nowrap; }
+#holdingsTable .table-actions button { flex-shrink: 0; white-space: nowrap; }
 .table-wrap.compact-table-region:has(> #holdingsTable) { min-height: 0; }
 .stable-table { table-layout: fixed; min-width: var(--table-min-width); }
 .stable-table thead { position: sticky; top: 0; z-index: 2; background: var(--card, white); }
@@ -105,6 +107,26 @@ input, select, textarea { min-width: 0; max-width: 100%; }
 :is(#cardsTable, #phonesTable) td:first-child strong { font-size: 15px !important; }
 :is(#cardsTable, #phonesTable) .stable-cell-content button:not(.button-link) { font-size: 13px !important; }
 #cardsTable td:nth-child(11) { font-size: 14px !important; }
+
+#cardsTable th:nth-child(3),
+#cardsTable td:nth-child(3),
+#cardsTable th:nth-child(6),
+#cardsTable td:nth-child(6),
+#cardsTable th:nth-child(9),
+#cardsTable td:nth-child(9),
+#cardsTable th:nth-child(12),
+#cardsTable td:nth-child(12) {
+    text-align: center !important;
+}
+#cardsTable td:nth-child(3) .stable-cell-content,
+#cardsTable td:nth-child(6) .stable-cell-content,
+#cardsTable td:nth-child(9) .stable-cell-content,
+#cardsTable td:nth-child(12) .stable-cell-content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
 
 /* Data-cell text is read directly, never through a nested scrollbar. */
 .stable-table .stable-cell-content { height: auto; min-height: 40px; overflow: visible; white-space: normal; overflow-wrap: anywhere; }

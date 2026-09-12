@@ -2,31 +2,32 @@
 
 ## 发布原则
 
-日常使用目录保存真实数据，GitHub目录只保存脱敏公开内容。所有准备上传的文件都必须先进入独立的`FinBoard/`公开仓库工作目录，不直接从日常目录提交。每次更新都同步填写公开`CHANGELOG.md`，保证线上每次变化都有记录。
+日常使用目录保存真实数据，GitHub目录只保存脱敏公开内容。每次更新先在私人主项目完成修改，再生成新的公开副本，与现有公开目录比较后更新；不直接从日常目录提交。
 
 ## 每次更新顺序
 
 1. 在日常项目中完成修改并更新私有变更记录。
-2. 运行项目测试：
+2. 每次准备上传都递增公开版本号，并同步更新`docs/VERSION`、README当前版本及公开CHANGELOG的新版本章节。
+3. 运行项目测试：
 
    ```powershell
    .\.venv\Scripts\python.exe -m unittest discover -s tests -q
    ```
 
-3. 生成新的公开副本：
+4. 重新打包并更新固定的`FinBoard/`脱敏副本：
 
    ```powershell
-   .\scripts\export_github.ps1 -Version "下一版本号"
+   .\scripts\export_github.ps1
    ```
 
-4. 运行公开包检查：
+5. 运行公开包检查：
 
    ```powershell
    .\scripts\audit_public_package.ps1 -Path "公开副本目录"
    ```
 
-5. 将准备上传的文件保存到`FinBoard/`公开仓库工作目录，并更新公开`CHANGELOG.md`。
-6. 在公开仓库目录中检查变更：
+6. 准备真正推送时，在`docs/UPLOAD_HISTORY.md`按版本顺序新增北京时间、分支、版本和更新内容。
+7. 在公开仓库目录中检查变更：
 
    ```powershell
    git status --short
@@ -34,8 +35,13 @@
    git diff
    ```
 
-7. 确认没有`.env`、数据库、个人JSON、备份、日志、未脱敏截图、卡片、CVC、手机号、姓名、地址或本机路径后再提交和推送。
-8. 发布正式版本时创建对应标签，例如`v0.2`。
+8. 确认没有`.env`、数据库、个人JSON、备份、日志、未脱敏截图、卡片、CVC、手机号、姓名、地址或本机路径后再提交和推送。
+9. 从`FinBoard/`生成版本ZIP，再提交、推送并创建同名Git标签；只有推送成功才算一次上传：
+
+   ```powershell
+   cd ..\FinBoard
+   .\scripts\package_finboard.ps1
+   ```
 
 ## 绝对不要上传
 

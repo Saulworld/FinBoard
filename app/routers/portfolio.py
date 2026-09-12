@@ -14,6 +14,7 @@ from app.utils import (
     MARKET_LABELS,
     build_redirect_url,
     format_money,
+    format_percent,
     get_market_currency,
     get_preferred_providers,
     normalize_market,
@@ -158,6 +159,8 @@ def api_holdings_quotes(
         market_currency = (quote.currency if quote else None) or cost_currency
         market_value = holding.quantity * price if price is not None else None
         pnl_value = market_value - cost_value if market_value is not None and market_currency == cost_currency else None
+        pnl_percent = (pnl_value / cost_value) * 100 if pnl_value is not None and cost_value != 0 else None
+        daily_change_percent = quote.change_percent if quote else None
         entries.append(PortfolioEntry(cost_value, cost_currency, market_value, market_currency))
 
         price_text = format_money(price, market_currency)
@@ -173,7 +176,10 @@ def api_holdings_quotes(
                 "price_text": price_text,
                 "market_value_text": format_money(market_value, market_currency),
                 "pnl_text": format_money(pnl_value, market_currency),
+                "pnl_percent_text": format_percent(pnl_percent),
                 "pnl_class": "up" if pnl_value and pnl_value > 0 else "down" if pnl_value and pnl_value < 0 else "flat",
+                "daily_change_percent_text": format_percent(daily_change_percent),
+                "daily_change_class": quote.css_class if quote else "flat",
             }
         )
 
@@ -182,10 +188,12 @@ def api_holdings_quotes(
         total_cost_text = format_money(totals.total_cost, totals.base_currency)
         total_value_text = format_money(totals.total_value, totals.base_currency)
         total_pnl_text = format_money(totals.total_pnl, totals.base_currency)
+        total_pnl_percent_text = format_percent(totals.total_return_percent)
         total_pnl_class = "up" if totals.total_pnl and totals.total_pnl > 0 else "down" if totals.total_pnl and totals.total_pnl < 0 else "flat"
         error = None
     else:
         total_cost_text = total_value_text = total_pnl_text = "--"
+        total_pnl_percent_text = "--"
         total_pnl_class = "flat"
         error = f"缺少必要行情或汇率（{'/'.join(totals.missing_currencies)}），已停止生成错误汇总。"
 
@@ -197,6 +205,7 @@ def api_holdings_quotes(
                 "total_cost_text": total_cost_text,
                 "total_value_text": total_value_text,
                 "total_pnl_text": total_pnl_text,
+                "total_pnl_percent_text": total_pnl_percent_text,
                 "total_pnl_class": total_pnl_class,
                 "error": error,
             },

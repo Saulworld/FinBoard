@@ -3,7 +3,7 @@
 {% block sidebar_content %}{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="/static/css/wallet_cards.css?v=1.7.7">
+<link rel="stylesheet" href="/static/css/wallet_cards.css?v=1.8.3">
 
 <div id="walletCardsPage" class="wallet-cards-page" data-wallet-card-count="{{ wallet_cards|length }}">
 {% with expiry_alerts=wallet_alerts(), alert_title='境外卡到期提醒', alert_link='/wallet-cards', alert_action='更新有效期', alert_kind='wallet' %}{% include 'expiry_alert_panel.html' %}{% endwith %}

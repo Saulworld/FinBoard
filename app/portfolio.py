@@ -24,6 +24,12 @@ class PortfolioTotals:
     def complete(self) -> bool:
         return not self.missing_currencies
 
+    @property
+    def total_return_percent(self) -> float | None:
+        if not self.complete or self.total_cost in (None, 0) or self.total_pnl is None:
+            return None
+        return (self.total_pnl / self.total_cost) * 100
+
 
 def calculate_portfolio_totals(
     entries: Iterable[PortfolioEntry],

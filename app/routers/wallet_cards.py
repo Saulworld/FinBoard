@@ -41,10 +41,10 @@ async def set_wallet_options(request: Request):
     return {"schemes": values}
 
 
-COVER_STYLES = {"standard", "decard-pink", "etherfi-prism", "plasma-dark", "plasma-light", "pokepay-green", "prepaid-green", "krak-red", "blackcat-photo", "payfun-gold", "dtcpay-gold", "starryblu-night", "mexc-black", "bunq-cloud", "yonder-dark", "virtual-orange", "mexc-global", "zopa-sage", "gmgn-green", "lava-black", "savo-green"}
+COVER_STYLES = {"standard", "decard-pink", "etherfi-prism", "plasma-dark", "plasma-light", "pokepay-green", "prepaid-green", "krak-red", "kraken-black", "coinbase-blue", "blackcat-photo", "payfun-gold", "dtcpay-gold", "starryblu-night", "mexc-black", "bunq-cloud", "yonder-dark", "virtual-orange", "mexc-global", "zopa-sage", "gmgn-green", "lava-black", "savo-green", "lloyds-green", "digitap-green"}
 
 
-BRAND_ICONS = {103: 'decard.ico', 105: 'etherfi.png', 89: 'plasma.ico', 80: 'pokepay.png', 122: 'uu.ico', 24: 'krak.png', 23: 'krak.png', 91: 'blackcat.png', 83: 'skrill.ico', 93: 'payfun.svg', 79: 'dtcpay.ico', 69: 'starryblu.png', 99: 'mexc.png', 67: 'bunq.png', 45: 'yonder.png', 53: 'altery.png', 128: 'zopa.ico', 130: 'gmgn.png', 66: 'lava.png', 10: 'savo.png'}
+BRAND_ICONS = {103: 'decard.ico', 105: 'etherfi.png', 89: 'plasma.ico', 80: 'pokepay.png', 122: 'uu.ico', 24: 'krak.png', 23: 'krak.png', 91: 'blackcat.png', 83: 'skrill.ico', 93: 'payfun.svg', 79: 'dtcpay.ico', 69: 'starryblu.png', 99: 'mexc.png', 67: 'bunq.png', 45: 'yonder.png', 53: 'altery.png', 128: 'zopa.ico', 130: 'gmgn.png', 66: 'lava.png', 10: 'savo.png', 129: 'lloyds.png', 48: 'coinbase.svg', 12: 'digitap.ico'}
 
 def _brand_icon(record: dict) -> str:
     return "/static/images/wallet-brands/" + BRAND_ICONS.get(int(record.get("source_tool_id") or 0), "card.svg")

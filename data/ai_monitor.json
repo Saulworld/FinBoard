@@ -1,5 +1,5 @@
 {
-  "last_checked": "2026-09-06",
+  "last_checked": "2026-09-12",
   "unit": "每100万Token",
   "models": [
     {
@@ -401,12 +401,12 @@
       "currency": "CNY",
       "currency_symbol": "¥",
       "input_price": 12.0,
-      "cached_input_price": null,
+      "cached_input_price": 1.5,
       "output_price": 36.0,
       "context": "1M",
       "status": "新品",
       "status_tone": "new",
-      "pricing_note": "华北2标准价；缓存命中价仅在百炼控制台公开",
+      "pricing_note": "华北2标准价；隐式缓存命中¥1.5，显式缓存读取¥1、创建¥15",
       "source_label": "阿里云百炼官方定价",
       "source_url": "https://help.aliyun.com/en/model-studio/model-pricing"
     },
@@ -485,13 +485,13 @@
       "positioning": "多模态高速智能体(国际站)",
       "currency": "USD",
       "currency_symbol": "$",
-      "input_price": 0.075,
-      "cached_input_price": 0.015,
-      "output_price": 0.25,
+      "input_price": 0.15,
+      "cached_input_price": 0.03,
+      "output_price": 0.5,
       "context": "1M",
-      "status": "限时半价",
-      "status_tone": "promo",
-      "pricing_note": "北京时间9月9日24:00结束；原价$0.15/$0.03/$0.5",
+      "status": "价格稳定",
+      "status_tone": "stable",
+      "pricing_note": "9月9日半价活动已结束；缓存存储仍为限时免费",
       "source_label": "Z.AI官方定价",
       "source_url": "https://docs.z.ai/guides/overview/pricing"
     },
@@ -574,11 +574,11 @@
       "cached_input_price": 2.0,
       "output_price": 100.0,
       "context": "1M",
-      "status": "待复核",
-      "status_tone": "warning",
-      "pricing_note": "本次官方价格表未能读取，保留9月2日旧值；统一按量价",
+      "status": "价格稳定",
+      "status_tone": "stable",
+      "pricing_note": "官方公开平台统一按量价",
       "source_label": "Kimi 官方定价",
-      "source_url": "https://platform.kimi.com/docs/pricing/chat-k3"
+      "source_url": "https://platform.kimi.com/"
     },
     {
       "provider": "Kimi",
@@ -591,11 +591,11 @@
       "cached_input_price": 1.3,
       "output_price": 27.0,
       "context": "256K",
-      "status": "待复核",
-      "status_tone": "warning",
-      "pricing_note": "本次官方价格表未能读取，保留9月2日旧值；代码专用模型；高速版在官方定价页另列",
+      "status": "价格稳定",
+      "status_tone": "stable",
+      "pricing_note": "代码专用模型；官方公开平台统一按量价",
       "source_label": "Kimi 官方定价",
-      "source_url": "https://platform.kimi.com/docs/pricing/chat-k27-code"
+      "source_url": "https://platform.kimi.com/"
     },
     {
       "provider": "Kimi",
@@ -608,26 +608,43 @@
       "cached_input_price": 1.1,
       "output_price": 27.0,
       "context": "256K",
-      "status": "待复核",
-      "status_tone": "warning",
-      "pricing_note": "本次官方价格表未能读取，保留9月2日旧值；支持视觉、思考与非思考模式",
+      "status": "价格稳定",
+      "status_tone": "stable",
+      "pricing_note": "支持视觉、思考与非思考模式；官方公开平台统一按量价",
       "source_label": "Kimi 官方定价",
-      "source_url": "https://platform.kimi.com/docs/pricing/chat-k26"
+      "source_url": "https://platform.kimi.com/"
     },
     {
       "provider": "Meta",
       "provider_code": "meta",
-      "model": "Muse Spark 1.2",
-      "positioning": "编码智能体旗舰",
+      "model": "Muse Spark 1.3",
+      "positioning": "长程编码智能体旗舰",
       "currency": null,
       "currency_symbol": "",
       "input_price": null,
       "cached_input_price": null,
       "output_price": null,
       "context": "未公开",
-      "status": "待复核",
-      "status_tone": "warning",
-      "pricing_note": "本次官方模型页未能读取；Meta Model API公测；公开页未列固定Token单价",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": "Meta Model API全球扩大公测；官方公开页未列固定Token单价",
+      "source_label": "Meta 官方发布",
+      "source_url": "https://ai.meta.com/llama/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "model": "Muse Spark 1.2",
+      "positioning": "编码智能体",
+      "currency": null,
+      "currency_symbol": "",
+      "input_price": null,
+      "cached_input_price": null,
+      "output_price": null,
+      "context": "未公开",
+      "status": "价格未公开",
+      "status_tone": "stable",
+      "pricing_note": "Meta Model API公测；官方公开页未列固定Token单价",
       "source_label": "Meta 官方发布",
       "source_url": "https://ai.meta.com/llama/"
     },
@@ -635,16 +652,16 @@
       "provider": "Meta",
       "provider_code": "meta",
       "model": "Muse Spark 1.1",
-      "positioning": "多模态智能体",
+      "positioning": "历史多模态智能体",
       "currency": null,
       "currency_symbol": "",
       "input_price": null,
       "cached_input_price": null,
       "output_price": null,
       "context": "1M",
-      "status": "价格未公开",
-      "status_tone": "new",
-      "pricing_note": "Meta Model API公测；公开页未列固定Token单价",
+      "status": "历史版本",
+      "status_tone": "stable",
+      "pricing_note": "保留历史记录；Meta Model API首个公测版本，官方未公开固定Token单价",
       "source_label": "Meta 官方发布",
       "source_url": "https://ai.meta.com/blog/introducing-muse-spark-meta-model-api/"
     },
@@ -659,9 +676,9 @@
       "cached_input_price": null,
       "output_price": null,
       "context": "本地部署",
-      "status": "待复核",
-      "status_tone": "warning",
-      "pricing_note": "本次官方模型页未能读取；30B开放模型；本地部署无统一官方API单价",
+      "status": "自托管",
+      "status_tone": "stable",
+      "pricing_note": "30B开放模型；本地部署无统一官方API单价",
       "source_label": "Meta 官方模型页",
       "source_url": "https://ai.meta.com/llama/"
     }
@@ -714,7 +731,7 @@
       "price": 200,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "用量为Plus的20倍；本次固定月费待复核(保留9月2日旧值)",
+      "note": "用量为Plus的20倍；自2026-09-10起暂停售新订阅与升级，现有订阅可续费",
       "source_url": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
     },
     {
@@ -991,10 +1008,10 @@
       "provider": "xAI",
       "provider_code": "xai",
       "plan": "Grok Business",
-      "price": 30,
-      "currency_symbol": "$",
-      "billing": "/席位/月",
-      "note": "团队管理与统一账单；本次固定月费待复核(保留9月2日旧值)",
+      "price": null,
+      "currency_symbol": "",
+      "billing": "联系销售",
+      "note": "团队管理与统一账单；官方公开页未列固定月费",
       "source_url": "https://x.ai/pricing"
     },
     {
@@ -1220,41 +1237,81 @@
     {
       "provider": "Kimi",
       "provider_code": "kimi",
-      "plan": "Moderato",
-      "price": 19,
-      "currency_symbol": "$",
+      "plan": "Andante",
+      "price": 49,
+      "currency_symbol": "¥",
       "billing": "/月",
-      "note": "年付折合$15/月",
+      "note": "日常使用；连续包年更优惠",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Moderato",
+      "price": 99,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "效率升级；连续包年更优惠",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
       "provider": "Kimi",
       "provider_code": "kimi",
       "plan": "Allegretto",
-      "price": 39,
-      "currency_symbol": "$",
+      "price": 199,
+      "currency_symbol": "¥",
       "billing": "/月",
-      "note": "年付折合$31/月",
+      "note": "专业优选；连续包年更优惠",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
       "provider": "Kimi",
       "provider_code": "kimi",
       "plan": "Allegro",
-      "price": 99,
-      "currency_symbol": "$",
+      "price": 699,
+      "currency_symbol": "¥",
       "billing": "/月",
-      "note": "年付折合$79/月",
+      "note": "全能尊享；连续包年更优惠",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
       "provider": "Kimi",
       "provider_code": "kimi",
-      "plan": "Vivace",
+      "plan": "Moderato（国际旧档）",
+      "price": 19,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Allegretto（国际旧档）",
+      "price": 39,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Allegro（国际旧档）",
+      "price": 99,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Vivace（国际旧档）",
       "price": 199,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "年付折合$159/月",
+      "note": "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
@@ -1264,8 +1321,8 @@
       "price": null,
       "currency_symbol": "¥",
       "billing": "按量计费",
-      "note": "API与会员分开；本次Token单价待复核",
-      "source_url": "https://platform.kimi.com/docs/pricing/chat-k3"
+      "note": "API与会员分开；K3、K2.7 Code和K2.6按Token计费",
+      "source_url": "https://platform.kimi.com/"
     },
     {
       "provider": "Meta",
@@ -1274,8 +1331,8 @@
       "price": null,
       "currency_symbol": "",
       "billing": "按量计费",
-      "note": "Muse Spark 1.1，注册送$20额度，公测仅限美国开发者",
-      "source_url": "https://ai.meta.com/blog/introducing-muse-spark-meta-model-api/"
+      "note": "Muse Spark 1.3；公开预览已扩大至全球，固定Token单价未公开",
+      "source_url": "https://ai.meta.com/llama/"
     },
     {
       "provider": "Meta",
@@ -1299,6 +1356,60 @@
     }
   ],
   "updates": [
+    {
+      "date": "2026-09-12",
+      "provider": "OpenAI",
+      "tag": "套餐",
+      "title": "Pro 20x暂停售新订阅与升级"
+    },
+    {
+      "date": "2026-09-12",
+      "provider": "智谱AI",
+      "tag": "价格",
+      "title": "GLM-5.3-Flash恢复标准价格"
+    },
+    {
+      "date": "2026-09-09",
+      "provider": "Meta",
+      "tag": "模型",
+      "title": "Muse Spark 1.3成为最新编码旗舰"
+    },
+    {
+      "date": "2026-09-09",
+      "provider": "Meta",
+      "tag": "套餐",
+      "title": "Model API公开预览扩大至全球"
+    },
+    {
+      "date": "2026-09-09",
+      "provider": "Kimi",
+      "tag": "价格",
+      "title": "会员更新为人民币四档49至699元"
+    },
+    {
+      "date": "2026-09-09",
+      "provider": "Kimi",
+      "tag": "复核",
+      "title": "K3与K2.7、K2.6价格完成官方复核"
+    },
+    {
+      "date": "2026-09-09",
+      "provider": "千问",
+      "tag": "价格",
+      "title": "补齐Qwen3.8 Max隐式缓存单价"
+    },
+    {
+      "date": "2026-09-09",
+      "provider": "xAI",
+      "tag": "价格",
+      "title": "X搜索将于9月21日起按结果计费"
+    },
+    {
+      "date": "2026-09-09",
+      "provider": "智谱AI",
+      "tag": "价格",
+      "title": "GLM-5.3-Flash半价优惠今晚结束"
+    },
     {
       "date": "2026-09-06",
       "provider": "OpenAI",

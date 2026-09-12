@@ -192,7 +192,14 @@
 .ai-price-table { table-layout: fixed; min-width: 1120px; }
 .ai-price-table tbody tr { height: 84px; }
 .ai-price-table td { box-sizing: border-box; overflow: hidden; }
-.ai-price-table .ai-positioning,
+.ai-price-table .ai-positioning {
+    display: block;
+    max-width: 100%;
+    overflow: visible;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    line-height: 1.35;
+}
 .ai-price-table .ai-context { display: block; overflow: auto; max-width: 100%; }
 .ai-price-table .ai-note { height: 40px; max-height: 40px; max-width: 100%; overflow: auto; overflow-wrap: anywhere; }
 .ai-price-table .ai-price-muted { display: block; max-height: 48px; overflow: auto; }

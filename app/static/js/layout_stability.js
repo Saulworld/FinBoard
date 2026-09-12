@@ -5,7 +5,7 @@
         cardsTable: { widths: [125, 80, 90, 120, 80, 95, 85, 145, 85, 140, 130, 100], height: 686 },
         phonesTable: { widths: [160, 165, 120, 110, 130, 130, 180, 260, 110], height: 558 },
         watchlistTable: { widths: [190, 95, 110, 110, 110, 135, 180, 100], height: 366 },
-        holdingsTable: { widths: [190, 100, 110, 110, 135, 135, 135, 220, 110], height: 366 },
+        holdingsTable: { widths: [165, 70, 85, 95, 100, 100, 100, 105, 105, 100, 90], height: 366 },
         transactionsTable: { widths: [140, 150, 100, 95, 120, 120, 220, 170], height: 366 },
     };
     function stabilize() {

@@ -1,3 +1,4 @@
+﻿# Keep this script encoded as UTF-8 with BOM for Windows PowerShell 5.1.
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $projectRoot
 

@@ -742,12 +742,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!query) return true;
 
-            // Semantic Color Meaning Query Matching (好用/注销/待验证/待注册)
+            // Semantic Color Meaning Query Matching (好用/注销/待验证/待/重新注册)
             let queryMatchesColor = false;
             if ((query === '好用' || query === '红色' || query === '红') && (rowColor === '#fff5f5' || rowColor === 'red')) queryMatchesColor = true;
             if ((query === '注销' || query === '黄色' || query === '黄') && (rowColor === '#fefbeb' || rowColor === 'yellow')) queryMatchesColor = true;
             if ((query === '待验证' || query === '蓝色' || query === '蓝') && (rowColor === '#eff6ff' || rowColor === 'blue')) queryMatchesColor = true;
-            if ((query === '待注册' || query === '绿色' || query === '绿') && (rowColor === '#f0fdf4' || rowColor === 'green')) queryMatchesColor = true;
+            if ((query === '待注册' || query === '待/重新注册' || query === '重新注册' || query === '绿色' || query === '绿') && (rowColor === '#f0fdf4' || rowColor === 'green')) queryMatchesColor = true;
             if ((query === '无法使用' || query === '不可用' || query === '灰色' || query === '灰' || query === '无') && (rowColor === '#f3f4f6' || rowColor === 'gray' || rowColor === 'grey')) queryMatchesColor = true;
             if (queryMatchesColor) return true;
 
@@ -1087,8 +1087,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 activeEditingRow.cells[1].querySelector("span").textContent = kyc;
                 
                 // Update KYC提供商 cell
+                // Update KYC提供商 cell
                 const cell2 = activeEditingRow.cells[2];
-                cell2.innerHTML = "";
+                const box2 = cell2.querySelector(".stable-cell-content") || cell2;
+                box2.innerHTML = "";
                 if (kyc_provider && kyc_provider !== "--") {
                     const btn = document.createElement("button");
                     btn.type = "button";
@@ -1096,24 +1098,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     btn.style.cssText = "background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 4px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: 500;";
                     btn.textContent = "👤 查看";
                     btn.dataset.kycProvider = kyc_provider;
-                    cell2.appendChild(btn);
+                    box2.appendChild(btn);
                     cell2.dataset.sort = kyc_provider;
-                    cell2.style.textAlign = "center";
                 } else {
                     const span = document.createElement("span");
                     span.style.cssText = "font-size: 13px; font-weight: 500; color: var(--muted);";
                     span.textContent = "--";
-                    cell2.appendChild(span);
+                    box2.appendChild(span);
                     cell2.dataset.sort = "";
-                    cell2.style.textAlign = "";
                 }
+                cell2.style.textAlign = "center";
 
                 activeEditingRow.cells[3].querySelector("span").textContent = login || "--";
                 activeEditingRow.cells[4].querySelector("span").textContent = type || "--";
                 
                 // Update 账户提供方 cell
                 const cell5 = activeEditingRow.cells[5];
-                cell5.innerHTML = "";
+                const box5 = cell5.querySelector(".stable-cell-content") || cell5;
+                box5.innerHTML = "";
                 if (account_provider && account_provider !== "--") {
                     const btn = document.createElement("button");
                     btn.type = "button";
@@ -1121,24 +1123,24 @@ document.addEventListener("DOMContentLoaded", () => {
                     btn.style.cssText = "background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 4px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: 500;";
                     btn.textContent = "🏦 查看";
                     btn.dataset.provider = account_provider;
-                    cell5.appendChild(btn);
+                    box5.appendChild(btn);
                     cell5.dataset.sort = account_provider;
-                    cell5.style.textAlign = "center";
                 } else {
                     const span = document.createElement("span");
                     span.style.cssText = "font-size: 13px; font-weight: 500; color: var(--muted);";
                     span.textContent = "--";
-                    cell5.appendChild(span);
+                    box5.appendChild(span);
                     cell5.dataset.sort = "";
-                    cell5.style.textAlign = "";
                 }
+                cell5.style.textAlign = "center";
                 
                 activeEditingRow.cells[6].querySelector("span").textContent = country;
                 activeEditingRow.cells[7].querySelector("span").textContent = phone || "--";
                 
                 // Update 证明地址 cell
                 const cell8 = activeEditingRow.cells[8];
-                cell8.innerHTML = "";
+                const box8 = cell8.querySelector(".stable-cell-content") || cell8;
+                box8.innerHTML = "";
                 if (address && address !== "--") {
                     const btn = document.createElement("button");
                     btn.type = "button";
@@ -1146,17 +1148,16 @@ document.addEventListener("DOMContentLoaded", () => {
                     btn.style.cssText = "background: var(--bg); border: 1px solid var(--line); color: var(--text); padding: 4px 10px; border-radius: 8px; font-size: 12px; cursor: pointer; transition: all 0.2s; font-weight: 500;";
                     btn.textContent = "📍 查看";
                     btn.dataset.address = address;
-                    cell8.appendChild(btn);
+                    box8.appendChild(btn);
                     cell8.dataset.sort = address;
-                    cell8.style.textAlign = "center";
                 } else {
                     const span = document.createElement("span");
                     span.style.cssText = "font-size: 13px; font-weight: 500; color: var(--muted);";
                     span.textContent = "--";
-                    cell8.appendChild(span);
+                    box8.appendChild(span);
                     cell8.dataset.sort = "";
-                    cell8.style.textAlign = "";
                 }
+                cell8.style.textAlign = "center";
 
                 activeEditingRow.cells[9].textContent = note || "--";
 

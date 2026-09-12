@@ -46,10 +46,11 @@ def add_card(
     with json_file_transaction(CARDS_FILE):
         cards = load_card_records()
         next_id = max((int(card.get("id", 0)) for card in cards), default=0) + 1
+        clean_kyc = _clean(kyc_method) or ("CNID" if country == "中国" else "CN护照")
         cards.append(
             {
                 "id": next_id, "name": _clean(name),
-                "kyc_method": "CNID" if country == "中国" else "CN护照",
+                "kyc_method": clean_kyc,
                 "kyc_provider": _clean(kyc_provider), "login_method": _clean(login_method),
                 "type": _clean(type), "country": _clean(country), "phone": phone.strip(),
                 "address": _clean(address), "note": _clean(note),
@@ -69,12 +70,13 @@ def update_card(
     note: str = Form(""), account_provider: str = Form("--"), color: str = Form(""),
 ):
     found = False
+    clean_kyc = _clean(kyc_method) or ("CNID" if country == "中国" else "CN护照")
     with json_file_transaction(CARDS_FILE):
         cards = load_card_records()
         for card in cards:
             if int(card.get("id", 0)) == card_id:
                 card.update(
-                    name=_clean(name), kyc_method="CNID" if country == "中国" else "CN护照",
+                    name=_clean(name), kyc_method=clean_kyc,
                     kyc_provider=_clean(kyc_provider), login_method=_clean(login_method),
                     type=_clean(type), country=_clean(country), phone=phone.strip(),
                     address=_clean(address), note=_clean(note),

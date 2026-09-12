@@ -27,7 +27,7 @@ Copy-Item .env.example .env
 
 `.gitignore` 是最后一道防误传保护，不是脱敏工具。已经被 Git 跟踪的内容不会因为后来加入 `.gitignore` 而自动消失。
 
-## 3. 生成可上传副本
+## 3. 更新可上传副本
 
 不要直接上传日常使用目录。在项目根目录运行：
 
@@ -35,39 +35,37 @@ Copy-Item .env.example .env
 .\scripts\export_github.ps1
 ```
 
-脚本会在桌面创建`FinBoard-v0.1`独立目录和 ZIP，只复制代码、公开文档、测试、AI 公共数据和 `update-ai-monitor` skill，并执行隐私检查。ZIP 方便网页上传；目录方便先检查和初始化 Git。
+脚本固定更新独立的`FinBoard/`Git工作目录，只复制代码、公开文档、测试、AI公共数据和`update-ai-monitor` Skill，并执行隐私检查。公开Skill保存于`docs/skills/update-ai-monitor/`，避免同一台电脑同时打开私人主项目与公开副本时被Codex重复注册；唯一自动识别入口保留在私人主项目。目录必须没有未提交修改，脚本不会生成额外的版本项目目录。
 
 再次手工检查：
 
 ```powershell
-.\scripts\audit_public_package.ps1 -Path "桌面上的新版本目录"
+.\scripts\audit_public_package.ps1 -Path "..\FinBoard"
 ```
 
 至少随机打开 README、CHANGELOG、`.env.example`、测试、`app/utils.py`、`app/importer.py` 和 `data/`，确认看不到你的资料。
 
 ## 4. 上传 GitHub
 
-推荐创建一个全新的空仓库，不要导入旧目录或旧 Git 历史。
-
-1. 在 GitHub 创建仓库，先设为 **Private** 完成复查；不要勾选自动生成 README、`.gitignore` 或 License。
-2. 只使用桌面新版本目录，不使用日常数据目录。
-3. 初始化并逐项检查：
+1. 只在`FinBoard/`目录中操作Git，不使用FinBoard日常数据目录。
+2. 每次上传递增版本号，同步更新README、公开`CHANGELOG.md`和Git标签；在`docs/UPLOAD_HISTORY.md`按版本顺序写入北京时间、分支、版本和更新内容。
+3. 逐项检查后提交和推送：
 
    ```powershell
-   git init -b main
+   .\scripts\package_finboard.ps1
    git add --dry-run .
    git status --short
    git add .
    git diff --cached --stat
    git diff --cached
-   git commit -m "Initial public release"
-   git remote add origin 你的仓库地址
-   git push -u origin main
+   git commit -m "描述本次公开更新"
+   git push origin main
+   git push origin "本次版本标签"
    ```
 
-4. 在 GitHub 网页再次检查文件树、提交内容和 Actions 测试，通过后再决定是否改为 Public。
+4. 推送成功后在GitHub网页再次检查文件树、提交内容和Actions测试。若推送失败，本次时间记录应标记为未完成或在重试前修正。
 
-不要使用 `git add -f` 绕过忽略规则。不要上传桌面 ZIP 本身到仓库；ZIP 是传输副本，不是项目源文件。
+不要使用`git add -f`绕过忽略规则。
 
 ## 5. GitHub 公开仓库规范
 
@@ -77,7 +75,7 @@ Copy-Item .env.example .env
 - **安全功能**：建议启用 Dependabot alerts、secret scanning、push protection 和 CodeQL 默认扫描。公开仓库的部分安全功能可免费使用。
 - **分支保护**：为 `main` 启用拉取请求、测试通过后合并和禁止直接强推。
 - **贡献内容**：提交者必须有权提供代码、图片和数据；不得提交侵权、违法、恶意、绕过身份验证或规避金融合规的内容。
-- **社区管理**：按 `CONTRIBUTING.md`、`CODE_OF_CONDUCT.md` 和 `SECURITY.md` 处理贡献、行为和安全问题。
+- **社区管理**：按 `.github/CONTRIBUTING.md`、`.github/CODE_OF_CONDUCT.md` 和 `.github/SECURITY.md` 处理贡献、行为和安全问题。
 
 ## 6. 如果误传了敏感信息
 

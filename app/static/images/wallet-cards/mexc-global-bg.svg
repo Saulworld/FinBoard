@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 404" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="mexcStrokeA" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#625f60"/>
+      <stop offset="0.52" stop-color="#444244"/>
+      <stop offset="1" stop-color="#291b19"/>
+    </linearGradient>
+    <linearGradient id="mexcStrokeB" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#706d6e"/>
+      <stop offset="0.48" stop-color="#4b4849"/>
+      <stop offset="1" stop-color="#2b1c1a"/>
+    </linearGradient>
+    <linearGradient id="mexcShade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111111" stop-opacity="0"/>
+      <stop offset="1" stop-color="#371f19" stop-opacity="0.48"/>
+    </linearGradient>
+    <pattern id="mexcLines" width="6" height="6" patternUnits="userSpaceOnUse">
+      <path d="M0 0H6" stroke="#ffffff" stroke-opacity="0.018" stroke-width="1"/>
+    </pattern>
+  </defs>
+  <rect width="640" height="404" fill="#050505"/>
+  <rect width="640" height="404" fill="url(#mexcLines)"/>
+  <path d="M-76 76C92-102 314-97 411 111C458 211 451 286 360 357C224 463 45 432-61 302"
+        fill="none" stroke="url(#mexcStrokeA)" stroke-width="46" stroke-linecap="butt"/>
+  <path d="M274 472C351 370 388 294 462 236C548 169 627 205 705 328"
+        fill="none" stroke="url(#mexcStrokeB)" stroke-width="46" stroke-linecap="butt"/>
+  <rect width="640" height="404" fill="url(#mexcShade)"/>
+</svg>

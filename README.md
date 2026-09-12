@@ -1,12 +1,12 @@
 # FinBoard 项目总览
 
-**当前版本：0.1**
+**当前版本：0.2**
 
 FinBoard 是一个运行在 Windows 本机的股票、持仓、每日简报和境外工具管理项目。页面由 FastAPI 和 Jinja2 生成，股票与持仓数据保存在 SQLite，境外工具、卡片、号码和 AI 监控资料保存在本地 JSON 文件。项目默认仅监听 `127.0.0.1`，不应直接暴露到公网。
 
-## 运行截图
+## 公开版运行截图
 
-以下截图来自全新、无个人数据的 FinBoard v0.1 公开环境。
+以下截图来自无个人数据的FinBoard v0.1公开环境，仅用于展示与发布。
 
 ### 股票总览
 
@@ -164,8 +164,9 @@ cd 你的\FinBoard\目录
 - 公开发布请使用 `scripts/export_github.ps1`生成独立脱敏副本，不要直接上传日常使用目录。
 
 完整的安装、使用、GitHub上传和隐私检查步骤见[GitHub发布与使用指南](docs/GITHUB_PUBLISH_GUIDE.md)。
-仓库目录分类见[FinBoard v0.1项目结构](docs/PROJECT_STRUCTURE.md)。
+仓库目录分类见[FinBoard v0.2项目结构](docs/PROJECT_STRUCTURE.md)。
 以后同步新版本时，按[FinBoard后续更新指南](docs/MAINTENANCE.md)执行测试、脱敏、差异检查与推送。
+每次GitHub实际上传时间见[FinBoard上传记录](docs/UPLOAD_HISTORY.md)。
 
 
 ## 新页面设计入口

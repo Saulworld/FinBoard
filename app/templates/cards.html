@@ -142,11 +142,8 @@
             <span class="color-legend-badge" data-color="#eff6ff" title="点击过滤：蓝色 (待验证)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #eff6ff; color: #3182ce; border: 1px solid #90cdf4; cursor: pointer; user-select: none; transition: all 0.2s;">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #3182ce; display: inline-block;"></span> 蓝色 (待验证)
             </span>
-            <span class="color-legend-badge" data-color="#f0fdf4" title="点击过滤：绿色 (待注册)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #f0fdf4; color: #38a169; border: 1px solid #9ae6b4; cursor: pointer; user-select: none; transition: all 0.2s;">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #38a169; display: inline-block;"></span> 绿色 (待注册)
-            </span>
-            <span class="color-legend-badge" data-color="#f3f4f6" title="点击过滤：灰色 (无法使用)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; cursor: pointer; user-select: none; transition: all 0.2s;">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #6b7280; display: inline-block;"></span> 灰色 (无法使用)
+            <span class="color-legend-badge" data-color="#f0fdf4" title="点击过滤：绿色 (待/重新注册)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #f0fdf4; color: #38a169; border: 1px solid #9ae6b4; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #38a169; display: inline-block;"></span> 绿色 (待/重新注册)
             </span>
             <span id="colorLegendReset" title="恢复全部列表" style="display: none; font-size: 12px; color: var(--muted); cursor: pointer; text-decoration: underline; margin-left: 4px; font-weight: bold;">清除筛选</span>
         </div>
@@ -156,7 +153,7 @@
     <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center; width: 100%;">
         <div style="position: relative; flex: 1;">
             <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; pointer-events: none;">🔍</span>
-            <input type="text" id="cardsSearchInput" placeholder="输入搜索名称、KYC 方式、登录方式、类型、国家、电话、地址、备注或标识含义(好用/注销/待验证/待注册/无法使用)..." style="width: 100%; box-sizing: border-box; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; background: white; outline: none; transition: all 0.2s; box-shadow: var(--shadow-sm);">
+            <input type="text" id="cardsSearchInput" placeholder="输入搜索名称、KYC 方式、登录方式、类型、国家、电话、地址、备注或标识含义(好用/注销/待验证/待/重新注册)..." style="width: 100%; box-sizing: border-box; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; background: white; outline: none; transition: all 0.2s; box-shadow: var(--shadow-sm);">
         </div>
     </div>
 
@@ -167,10 +164,10 @@
                 <tr>
                     <th>名称</th>
                     <th>KYC 方式</th>
-                    <th>KYC 提供商</th>
+                    <th style="text-align: center;">KYC 提供商</th>
                     <th>登录方式</th>
                     <th>类型</th>
-                    <th>账户提供方</th>
+                    <th style="text-align: center;">账户提供方</th>
                     <th>国家/地区</th>
                     <th>电话号码</th>
                     <th style="text-align: center;">证明地址</th>
@@ -489,5 +486,5 @@
 </div>
 
 
-<script defer src="/static/js/cards.js?v=1.0.5"></script>
+<script defer src="/static/js/cards.js?v=1.0.7"></script>
 {% endblock %}

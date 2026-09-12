@@ -193,6 +193,8 @@
                     <th>成本市值</th>
                     <th>当前市值</th>
                     <th>浮动盈亏</th>
+                    <th>累计收益率</th>
+                    <th>当日涨跌幅</th>
                     <th>备注</th>
                     <th></th>
                 </tr>
@@ -212,6 +214,8 @@
                     <td>{{ row.cost_value_text }}</td>
                     <td data-value="market_value"><span class="loading-placeholder"></span></td>
                     <td data-value="pnl" class="quote-flat"><span class="loading-placeholder"></span></td>
+                    <td data-value="pnl_percent" class="quote-flat"><span class="loading-placeholder"></span></td>
+                    <td data-value="daily_change_percent" class="quote-flat"><span class="loading-placeholder"></span></td>
                     <td>{{ row.note or '--' }}</td>
                     <td class="table-actions" style="white-space: nowrap;">
                         <div style="display: flex; gap: 12px; align-items: center;">
@@ -596,7 +600,9 @@ document.addEventListener("DOMContentLoaded", function() {
                 totalValueEl.textContent = data.summary.total_value_text || "--";
             }
             if (totalPnlEl && data.summary) {
-                totalPnlEl.textContent = data.summary.total_pnl_text || "--";
+                const pnlText = data.summary.total_pnl_text || "--";
+                const pnlPercentText = data.summary.total_pnl_percent_text || "--";
+                totalPnlEl.textContent = pnlText === "--" ? "--" : `${pnlText} (${pnlPercentText})`;
                 totalPnlEl.className = ""; // clear loading classes
                 totalPnlEl.classList.add(`quote-${data.summary.total_pnl_class}`);
             }
@@ -613,6 +619,8 @@ document.addEventListener("DOMContentLoaded", function() {
                         const priceEl = row.querySelector('[data-value="price"]');
                         const marketValueEl = row.querySelector('[data-value="market_value"]');
                         const pnlEl = row.querySelector('[data-value="pnl"]');
+                        const pnlPercentEl = row.querySelector('[data-value="pnl_percent"]');
+                        const dailyChangePercentEl = row.querySelector('[data-value="daily_change_percent"]');
                         
                         if (priceEl) {
                             priceEl.textContent = quote.price_text || "--";
@@ -624,6 +632,16 @@ document.addEventListener("DOMContentLoaded", function() {
                             pnlEl.textContent = quote.pnl_text || "--";
                             pnlEl.className = "";
                             pnlEl.classList.add(`quote-${quote.pnl_class}`);
+                        }
+                        if (pnlPercentEl) {
+                            pnlPercentEl.textContent = quote.pnl_percent_text || "--";
+                            pnlPercentEl.className = "";
+                            pnlPercentEl.classList.add(`quote-${quote.pnl_class}`);
+                        }
+                        if (dailyChangePercentEl) {
+                            dailyChangePercentEl.textContent = quote.daily_change_percent_text || "--";
+                            dailyChangePercentEl.className = "";
+                            dailyChangePercentEl.classList.add(`quote-${quote.daily_change_class}`);
                         }
                     }
                 });

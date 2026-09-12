@@ -820,6 +820,32 @@
     border-radius: 50% 50% 0 0;
     box-shadow: 0 0 0 50px rgba(200, 43, 30, .22), inset 0 0 0 40px rgba(255, 95, 73, .55);
 }
+.wallet-card-cover-kraken-black {
+    background: linear-gradient(145deg, #2b2c2e, #17181a 72%, #242527);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+.wallet-card-cover-kraken-black::before {
+    inset: -18% -5% -26%;
+    background: repeating-radial-gradient(
+        ellipse at 50% 49%,
+        rgba(255, 255, 255, 0.12) 0 1px,
+        transparent 1.3px 4px
+    );
+    opacity: 0.72;
+}
+.wallet-card-cover-kraken-black::after { display: none; }
+.wallet-card-cover-coinbase-blue {
+    background:
+        radial-gradient(circle at 84% 18%, rgba(255, 255, 255, 0.12), transparent 32%),
+        linear-gradient(145deg, #315efb, #2450ee 72%, #1742dc);
+    border-color: rgba(255, 255, 255, 0.18);
+}
+.wallet-card-cover-coinbase-blue::before {
+    inset: 20% 32%;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+}
+.wallet-card-cover-coinbase-blue::after { display: none; }
 .wallet-card-cover-dtcpay-gold {
     background: linear-gradient(151deg, transparent 55%, #b99664 55%),
         conic-gradient(from 150deg at 65% 57%, #a38255 0deg 135deg, #c6a16d 135deg 180deg, #a18259 180deg 360deg);
@@ -857,9 +883,15 @@
 .wallet-card-cover-virtual-orange { background: #f17f30; }
 .wallet-card-cover-starryblu-night::after,.wallet-card-cover-mexc-black::after,.wallet-card-cover-bunq-cloud::after,.wallet-card-cover-yonder-dark::after,.wallet-card-cover-virtual-orange::after { display:none; }
 
-.wallet-card-cover-mexc-global { background: #080808; }
-.wallet-card-cover-mexc-global::before { inset: -35% 28% -20% -22%; border: 38px solid #333030; border-radius: 45%; transform: rotate(-33deg); }
-.wallet-card-cover-mexc-global::after { right: -38%; bottom: -72%; width: 98%; height: 125%; border: 36px solid #333030; border-radius: 38%; box-shadow: none; transform: rotate(-30deg); }
+.wallet-card-cover-mexc-global {
+    background: #050505 url("/static/images/wallet-cards/mexc-global-bg.svg") center / cover no-repeat;
+    border-color: rgba(221, 193, 126, 0.18);
+}
+.wallet-card-cover-mexc-global::before {
+    inset: 0;
+    background: radial-gradient(circle at 82% 12%, rgba(222, 192, 119, 0.08), transparent 30%);
+}
+.wallet-card-cover-mexc-global::after { display: none; }
 .wallet-card-cover-zopa-sage { background: #aebca5; color: #542d38; }
 .wallet-card-cover-zopa-sage::after { display: none; }
 .wallet-card-cover-zopa-sage .wallet-card-software,.wallet-card-cover-zopa-sage .wallet-card-scheme,.wallet-card-cover-zopa-sage .wallet-card-bottomline strong { color: #542d38; }
@@ -876,6 +908,36 @@
 }
 .wallet-card-cover-savo-green::before, .wallet-card-cover-savo-green::after { display: none; }
 .wallet-card-cover-savo-green .wallet-card-software-mark { background: transparent; box-shadow: none; padding: 0; }
+
+.wallet-card-cover-lloyds-green {
+    background: #286d54;
+    border-color: rgba(255, 255, 255, 0.16);
+}
+.wallet-card-cover-lloyds-green::before {
+    inset: 4% 7%;
+    background: url("/static/images/wallet-brands/lloyds.png") center / 58% auto no-repeat;
+    opacity: 0.24;
+}
+.wallet-card-cover-lloyds-green::after { display: none; }
+.wallet-card-cover-lloyds-green .wallet-card-software-mark { background: transparent; box-shadow: none; padding: 0; }
+
+.wallet-card-cover-digitap-green {
+    background: linear-gradient(135deg, #2dfd99, #1de383 55%, #13ce73);
+    border-color: rgba(0, 0, 0, 0.08);
+    color: #0d1e15;
+}
+.wallet-card-cover-digitap-green::before {
+    inset: 0;
+    background: radial-gradient(circle at 86% 18%, rgba(255, 255, 255, 0.35), transparent 36%);
+    opacity: 0.9;
+}
+.wallet-card-cover-digitap-green::after { display: none; }
+.wallet-card-cover-digitap-green .wallet-card-software-mark { background: transparent; box-shadow: none; padding: 0; }
+.wallet-card-cover-digitap-green .wallet-card-software,
+.wallet-card-cover-digitap-green .wallet-card-scheme,
+.wallet-card-cover-digitap-green .wallet-card-number,
+.wallet-card-cover-digitap-green .wallet-card-bottomline strong { color: #0d1e15; }
+.wallet-card-cover-digitap-green .wallet-card-bottomline small { color: rgba(13, 30, 21, 0.75); }
 
 .wallet-card-cover-bunq-cloud::before { background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 80'%3E%3Cpath fill='%23eee' d='M27 70a23 23 0 0 1-1-46 32 32 0 0 1 62-2 24 24 0 0 1 5 48Z'/%3E%3C/svg%3E") center / contain no-repeat; }
 .wallet-card-cover-mexc-black::before { inset: 14% 27% 31%; border: 0; border-radius: 0; transform: none; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 120'%3E%3Cg fill='none' stroke='%23585a5c' stroke-width='1.5'%3E%3Crect x='35' y='8' width='46' height='105' rx='23' transform='rotate(22 58 60)'/%3E%3Crect x='99' y='8' width='46' height='105' rx='23' transform='rotate(-22 122 60)'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat; }

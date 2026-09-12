@@ -1,30 +1,43 @@
 param(
-    [string]$OutputDirectory = "",
-    [string]$Version = "0.1"
+    [string]$OutputDirectory = ""
 )
 
 $ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $PSScriptRoot
-$desktop = [Environment]::GetFolderPath("Desktop")
 
 if (-not $OutputDirectory) {
-    $OutputDirectory = Join-Path $desktop "FinBoard-v$Version"
+    $OutputDirectory = Join-Path (Split-Path -Parent $projectRoot) "FinBoard"
 }
 
 $destination = [System.IO.Path]::GetFullPath($OutputDirectory)
 $source = [System.IO.Path]::GetFullPath($projectRoot)
 if ($destination.TrimEnd("\") -eq $source.TrimEnd("\") -or $destination.StartsWith($source.TrimEnd("\") + "\", [System.StringComparison]::OrdinalIgnoreCase)) {
-    throw "输出目录必须位于 FinBoard 项目目录之外。"
+    throw "输出目录必须位于 FinBoard 私人项目目录之外。"
 }
 if (Test-Path -LiteralPath $destination) {
-    throw "输出目录已存在，请换一个新目录: $destination"
+    if (-not (Test-Path -LiteralPath (Join-Path $destination ".git"))) {
+        throw "现有输出目录不是FinBoard Git工作目录，已停止覆盖: $destination"
+    }
+    $pendingChanges = @(& git -C $destination status --porcelain)
+    if ($LASTEXITCODE -ne 0) {
+        throw "无法检查FinBoard Git工作目录状态: $destination"
+    }
+    if ($pendingChanges.Count -gt 0) {
+        throw "FinBoard目录存在未提交修改，请先检查或提交后再生成脱敏副本。"
+    }
 }
 
 function Copy-PublicTree {
-    param([string]$From, [string]$To)
+    param(
+        [string]$From,
+        [string]$To,
+        [switch]$IncludeAiMonitorSkill
+    )
     Get-ChildItem -LiteralPath $From -Recurse -File -Force |
         Where-Object {
             $_.FullName -notmatch '[\\/]__pycache__[\\/]' -and
+            $_.FullName -notmatch '[\\/]\.agents[\\/]skills[\\/]update-finboard[\\/]' -and
+            ($IncludeAiMonitorSkill -or $_.FullName -notmatch '[\\/]\.agents[\\/]skills[\\/]update-ai-monitor[\\/]') -and
             $_.Extension -ne ".pyc"
         } |
         ForEach-Object {
@@ -35,41 +48,73 @@ function Copy-PublicTree {
         }
 }
 
-New-Item -ItemType Directory -Path $destination | Out-Null
+function Convert-ToPublicBrand {
+    param([string]$Root)
+
+    $textExtensions = @(".py", ".html", ".css", ".js", ".md", ".json", ".yaml", ".yml", ".txt", ".ps1", ".bat")
+    $specialTextFiles = @(".gitignore", ".env.example", "LICENSE")
+    $utf8NoBom = [System.Text.UTF8Encoding]::new($false)
+
+    Get-ChildItem -LiteralPath $Root -Recurse -File -Force |
+        Where-Object {
+            $_.FullName -notmatch '[\\/]\.git[\\/]' -and
+            (
+                $textExtensions -contains $_.Extension.ToLowerInvariant() -or
+                $specialTextFiles -contains $_.Name
+            )
+        } |
+        ForEach-Object {
+            $content = [System.IO.File]::ReadAllText($_.FullName)
+            $publicContent = [System.Text.RegularExpressions.Regex]::Replace(
+                $content,
+                "(?s)\s*",
+                ""
+            )
+            $publicContent = $publicContent.Replace("FinBoard", "FinBoard").Replace("finboard", "finboard")
+            if ($publicContent -ne $content) {
+                [System.IO.File]::WriteAllText($_.FullName, $publicContent, $utf8NoBom)
+            }
+        }
+}
+
+New-Item -ItemType Directory -Path $destination -Force | Out-Null
 
 foreach ($directory in @("app", "tests", ".agents", ".github", "scripts")) {
     Copy-PublicTree -From (Join-Path $source $directory) -To (Join-Path $destination $directory)
 }
 
-New-Item -ItemType Directory -Path (Join-Path $destination "docs") | Out-Null
-foreach ($doc in @("AI_BRIEFING.md", "DESIGN_GUIDELINES.md", "python_codebase_guide.md", "GITHUB_PUBLISH_GUIDE.md", "PROJECT_STRUCTURE.md", "LEGAL.md", "MAINTENANCE.md")) {
+New-Item -ItemType Directory -Path (Join-Path $destination "docs") -Force | Out-Null
+foreach ($doc in @("AI_BRIEFING.md", "DESIGN_GUIDELINES.md", "python_codebase_guide.md", "GITHUB_PUBLISH_GUIDE.md", "PROJECT_STRUCTURE.md", "LEGAL.md", "MAINTENANCE.md", "UPLOAD_HISTORY.md")) {
     Copy-Item -LiteralPath (Join-Path $source "docs\$doc") -Destination (Join-Path $destination "docs\$doc")
 }
+if (Test-Path -LiteralPath (Join-Path $source "docs\images")) {
+    Copy-PublicTree -From (Join-Path $source "docs\images") -To (Join-Path $destination "docs\images")
+}
+
+# Keep the reusable AI-monitor Skill in the public project without registering a
+# second live project Skill when FinBoard and FinBoard are both visible to Codex.
+Copy-PublicTree `
+    -From (Join-Path $source ".agents\skills\update-ai-monitor") `
+    -To (Join-Path $destination "docs\skills\update-ai-monitor") `
+    -IncludeAiMonitorSkill
 
 foreach ($file in @("README.md", ".env.example", "requirements.txt", "start_local.ps1", "start_local.bat", "AGENTS.md", "LICENSE")) {
     Copy-Item -LiteralPath (Join-Path $source $file) -Destination (Join-Path $destination $file)
 }
 
-foreach ($file in @("CONTRIBUTING.md", "SECURITY.md", "CODE_OF_CONDUCT.md")) {
-    Copy-Item -LiteralPath (Join-Path $source $file) -Destination (Join-Path $destination ".github\$file")
-}
-
-Copy-Item -LiteralPath (Join-Path $source "PUBLIC_CHANGELOG.md") -Destination (Join-Path $destination "CHANGELOG.md")
+Copy-Item -LiteralPath (Join-Path $source "docs\publishing\CHANGELOG.md") -Destination (Join-Path $destination "CHANGELOG.md")
 
 $publicIgnore = Get-Content -LiteralPath (Join-Path $source ".gitignore") | Where-Object { $_ -ne "/CHANGELOG.md" }
 $publicIgnore | Set-Content -LiteralPath (Join-Path $destination ".gitignore") -Encoding utf8
 
-New-Item -ItemType Directory -Path (Join-Path $destination "data") | Out-Null
+New-Item -ItemType Directory -Path (Join-Path $destination "data") -Force | Out-Null
 Copy-Item -LiteralPath (Join-Path $source "data\README.md") -Destination (Join-Path $destination "data\README.md")
 Copy-Item -LiteralPath (Join-Path $source "data\ai_monitor.json") -Destination (Join-Path $destination "data\ai_monitor.json")
 
-& (Join-Path $destination "scripts\audit_public_package.ps1") -Path $destination
+Convert-ToPublicBrand -Root $destination
 
-$zipPath = "$destination.zip"
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-[System.IO.Compression.ZipFile]::CreateFromDirectory($destination, $zipPath, [System.IO.Compression.CompressionLevel]::Optimal, $false)
+& (Join-Path $destination "scripts\audit_public_package.ps1") -Path $destination
 
 [pscustomobject]@{
     Directory = $destination
-    Zip = $zipPath
 }

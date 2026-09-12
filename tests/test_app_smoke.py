@@ -29,19 +29,19 @@ class AppSmokeTests(unittest.TestCase):
                 'id="aiUpdatesPagination"', "const updatesPerPage = 5",
                 "ChatGPT Pro 5x", "ChatGPT Pro 20x", "ChatGPT Business Premium",
                 "Claude Max 20x", "Google AI Ultra 20x", "SuperGrok Plus",
-                "Token Plan Pro", "Token Plan 共享用量包", "GLM Coding Max", "Vivace",
+                "Token Plan Pro", "Token Plan 共享用量包", "GLM Coding Max", "Andante", "Vivace",
                 "GPT-5.6 Sol", "GPT-5.6 Luna", "Claude Fable 5.1", "Claude Haiku 4.5",
                 "Gemini 3.5 Flash-Lite", "Gemini 3.1 Pro Preview", "Grok Build 0.1",
                 "Grok 4.20 Multi-Agent", "DeepSeek V4 Pro", "Qwen3.7 Plus", "Qwen3.8 Flash",
                 "GLM-5.2", "GLM-5 Turbo", "GLM-4.5 Air", "Kimi K2.7 Code", "Kimi K2.6",
-                "Muse Spark 1.2", "Muse Spark 1.1", "Muse Glimmer", "Meta Model API",
+                "Muse Spark 1.3", "Muse Spark 1.2", "Muse Spark 1.1", "Muse Glimmer", "Meta Model API",
                 "function updateModelRow(row)",
             ):
                 self.assertIn(marker, response.text)
             self.assertEqual(response.text.count(' data-plan-card>'), 9)
             self.assertEqual(response.text.count('<tr data-model-row'), 9)
             self.assertEqual(response.text.count('<select class="ai-model-select" data-model-select'), 9)
-            self.assertEqual(response.text.count('data-price='), 63)
+            self.assertEqual(response.text.count('data-price='), 67)
             self.assertIn("按量计费", response.text)
             self.assertNotIn("ai-count-badge", response.text)
             self.assertNotIn("种套餐", response.text)
@@ -57,14 +57,14 @@ class AppSmokeTests(unittest.TestCase):
         self.assertIn('/static/css/ai_monitor.css?v=', response.text)
 
         ai_data = json.loads((project_root / "data/ai_monitor.json").read_text(encoding="utf-8"))
-        self.assertEqual(len(ai_data["plans"]), 63)
+        self.assertEqual(len(ai_data["plans"]), 67)
         plans_by_key = {
             (plan["provider"], plan["plan"]): plan
             for plan in ai_data["plans"]
         }
         expected_plan_values = {
             ("OpenAI", "ChatGPT Pro 5x"): (100, "/月", "用量为Plus的5倍"),
-            ("OpenAI", "ChatGPT Pro 20x"): (200, "/月", "用量为Plus的20倍；本次固定月费待复核(保留9月2日旧值)"),
+            ("OpenAI", "ChatGPT Pro 20x"): (200, "/月", "用量为Plus的20倍；自2026-09-10起暂停售新订阅与升级，现有订阅可续费"),
             ("OpenAI", "ChatGPT Business Standard"): (25, "/席位/月", "月付价，年付$20/席位/月，至少2席位"),
             ("OpenAI", "ChatGPT Business Premium"): (125, "/席位/月", "月付价，年付$100/席位/月，5倍Standard用量；本次固定月费待复核(保留9月2日旧值)"),
             ("Google", "Google AI Plus"): (9.99, "/月", "美元官网含2TB；其他地区可能为400GB"),
@@ -77,6 +77,9 @@ class AppSmokeTests(unittest.TestCase):
             ("千问", "Token Plan 共享用量包"): (5000, "/个/月", "625,000 Credits/个，供团队共享"),
             ("智谱AI", "GLM Coding Pro"): (72, "/月", "年付折合$50.4/月；本次固定月费待复核(保留9月2日旧值)"),
             ("智谱AI", "GLM Coding Max"): (160, "/月", "年付折合$112/月；本次固定月费待复核(保留9月2日旧值)"),
+            ("Kimi", "Andante"): (49, "/月", "日常使用；连续包年更优惠"),
+            ("Kimi", "Allegro"): (699, "/月", "全能尊享；连续包年更优惠"),
+            ("Kimi", "Vivace（国际旧档）"): (199, "/月", "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核"),
         }
         for key, expected in expected_plan_values.items():
             self.assertIn(key, plans_by_key)
@@ -86,10 +89,10 @@ class AppSmokeTests(unittest.TestCase):
         provider_counts = {}
         for model in ai_data["models"]:
             provider_counts[model["provider"]] = provider_counts.get(model["provider"], 0) + 1
-        self.assertEqual(len(ai_data["models"]), 39)
+        self.assertEqual(len(ai_data["models"]), 40)
         self.assertEqual(provider_counts, {
             "OpenAI": 4, "Anthropic": 4, "Google": 5, "xAI": 7, "DeepSeek": 3,
-            "千问": 4, "智谱AI": 6, "Kimi": 3, "Meta": 3,
+            "千问": 4, "智谱AI": 6, "Kimi": 3, "Meta": 4,
         })
         models_by_name = {model["model"]: model for model in ai_data["models"]}
         self.assertEqual(
@@ -99,6 +102,16 @@ class AppSmokeTests(unittest.TestCase):
         self.assertEqual(
             (models_by_name["Qwen3.8 Flash"]["input_price"], models_by_name["Qwen3.8 Flash"]["cached_input_price"], models_by_name["Qwen3.8 Flash"]["output_price"]),
             (0.8, None, 2.7),
+        )
+        self.assertEqual(models_by_name["Qwen3.8 Max"]["cached_input_price"], 1.5)
+        self.assertEqual(
+            (
+                models_by_name["GLM-5.3-Flash"]["input_price"],
+                models_by_name["GLM-5.3-Flash"]["cached_input_price"],
+                models_by_name["GLM-5.3-Flash"]["output_price"],
+                models_by_name["GLM-5.3-Flash"]["status"],
+            ),
+            (0.15, 0.03, 0.5, "价格稳定"),
         )
         self.assertIn("class=\"ai-estimate-breakdown\"", response.text)
         self.assertIn('id="aiEstimatedInputCost"', response.text)
@@ -221,6 +234,24 @@ class AppSmokeTests(unittest.TestCase):
         self.assertIn("new AbortController()", script)
         self.assertIn("navigationId !== activeNavigationId", script)
         self.assertIn('error.name === "AbortError"', script)
+
+        script = (project_root / "app/static/js/wallet_cards.js").read_text(encoding="utf-8")
+        style = (project_root / "app/static/css/wallet_cards.css").read_text(encoding="utf-8")
+        self.assertIn("const ITEMS_PER_PAGE = 9", script)
+        self.assertIn("grid-template-columns: repeat(3", style)
+        self.assertIn(".wallet-form-grid", style)
+        self.assertIn("grid-template-columns: repeat(2", style)
+        for cover_style in ("decard-pink", "etherfi-prism", "plasma-dark", "plasma-light"):
+            self.assertIn(f"wallet-card-cover-{cover_style}", style)
+        self.assertIn("bindSourceTool", script)
+        self.assertIn("#ff4a3d", style)
+
+    def test_pjax_navigation_ignores_stale_responses(self):
+        project_root = Path(__file__).resolve().parents[1]
+        script = (project_root / "app/static/js/app.js").read_text(encoding="utf-8")
+        self.assertIn("new AbortController()", script)
+        self.assertIn("navigationId !== activeNavigationId", script)
+        self.assertIn('error.name === "AbortError"', script)
         with TestClient(app) as client:
             self.assertIn('/static/js/app.js?v=1.0.11', client.get("/").text)
 
@@ -247,9 +278,9 @@ class AppSmokeTests(unittest.TestCase):
         with TestClient(app) as client:
             cards_page = client.get("/cards")
             phones_page = client.get("/phones")
-            self.assertIn('/static/js/cards.js?v=1.0.5', cards_page.text)
+            self.assertIn('/static/js/cards.js?v=1.0.7', cards_page.text)
             self.assertIn('/static/js/phones.js?v=1.0.3', phones_page.text)
-            self.assertIn('« 上一页', client.get("/static/js/cards.js?v=1.0.5").text)
+            self.assertIn('« 上一页', client.get("/static/js/cards.js?v=1.0.7").text)
             self.assertIn('下一页 »', client.get("/static/js/phones.js?v=1.0.2").text)
 
     def test_daily_briefing_selects_latest_date_by_default(self):
@@ -293,6 +324,11 @@ class AppSmokeTests(unittest.TestCase):
             page = client.get("/holdings")
             self.assertIn('id="portfolio-base-currency"', page.text)
             self.assertIn("<span>总成本</span>", page.text)
+            self.assertIn("<th>累计收益率</th>", page.text)
+            self.assertIn("<th>当日涨跌幅</th>", page.text)
+            self.assertIn('data-value="pnl_percent"', page.text)
+            self.assertIn('data-value="daily_change_percent"', page.text)
+            self.assertIn("data.summary.total_pnl_percent_text", page.text)
             self.assertNotIn('id="summary-base-currency"', page.text)
             self.assertNotIn("总成本（", page.text)
             for currency in ("CNY", "USD", "HKD"):
