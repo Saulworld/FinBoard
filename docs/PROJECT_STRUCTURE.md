@@ -1,4 +1,4 @@
-# FinBoard v0.2 项目结构
+# FinBoard v0.3 项目结构
 
 ```text
 FinBoard/

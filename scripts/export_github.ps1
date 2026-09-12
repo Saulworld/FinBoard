@@ -65,12 +65,22 @@ function Convert-ToPublicBrand {
         } |
         ForEach-Object {
             $content = [System.IO.File]::ReadAllText($_.FullName)
+            # Build private-only sentinels from fragments so this exporter can
+            # safely sanitize a copied version of itself.
+            $privateStart = "<!-- PRIVATE_" + "LOCAL_ONLY_START -->"
+            $privateEnd = "<!-- PRIVATE_" + "LOCAL_ONLY_END -->"
+            $privatePattern = "(?s)" +
+                [System.Text.RegularExpressions.Regex]::Escape($privateStart) +
+                ".*?" +
+                [System.Text.RegularExpressions.Regex]::Escape($privateEnd) +
+                "\s*"
             $publicContent = [System.Text.RegularExpressions.Regex]::Replace(
                 $content,
-                "(?s)\s*",
+                $privatePattern,
                 ""
             )
-            $publicContent = $publicContent.Replace("FinBoard", "FinBoard").Replace("finboard", "finboard")
+            $privateBrand = "Saul" + "money"
+            $publicContent = $publicContent.Replace($privateBrand, "FinBoard").Replace($privateBrand.ToLowerInvariant(), "finboard")
             if ($publicContent -ne $content) {
                 [System.IO.File]::WriteAllText($_.FullName, $publicContent, $utf8NoBom)
             }
@@ -91,10 +101,18 @@ if (Test-Path -LiteralPath (Join-Path $source "docs\images")) {
     Copy-PublicTree -From (Join-Path $source "docs\images") -To (Join-Path $destination "docs\images")
 }
 
-# Keep the reusable AI-monitor Skill in the public project without registering a
-# second live project Skill when FinBoard and FinBoard are both visible to Codex.
+# Keep the reusable AI-monitor Skill as a non-auto-registered public attachment.
+# A public checkout can therefore export itself without requiring the private
+# project's automatic-discovery path.
+$aiSkillSource = Join-Path $source ".agents\skills\update-ai-monitor"
+if (-not (Test-Path -LiteralPath $aiSkillSource)) {
+    $aiSkillSource = Join-Path $source "docs\skills\update-ai-monitor"
+}
+if (-not (Test-Path -LiteralPath $aiSkillSource)) {
+    throw "缺少update-ai-monitor Skill公开附件。"
+}
 Copy-PublicTree `
-    -From (Join-Path $source ".agents\skills\update-ai-monitor") `
+    -From $aiSkillSource `
     -To (Join-Path $destination "docs\skills\update-ai-monitor") `
     -IncludeAiMonitorSkill
 
@@ -102,7 +120,14 @@ foreach ($file in @("README.md", ".env.example", "requirements.txt", "start_loca
     Copy-Item -LiteralPath (Join-Path $source $file) -Destination (Join-Path $destination $file)
 }
 
-Copy-Item -LiteralPath (Join-Path $source "docs\publishing\CHANGELOG.md") -Destination (Join-Path $destination "CHANGELOG.md")
+$publicChangelogSource = Join-Path $source "docs\publishing\CHANGELOG.md"
+if (-not (Test-Path -LiteralPath $publicChangelogSource)) {
+    $publicChangelogSource = Join-Path $source "CHANGELOG.md"
+}
+if (-not (Test-Path -LiteralPath $publicChangelogSource)) {
+    throw "缺少公开CHANGELOG.md。"
+}
+Copy-Item -LiteralPath $publicChangelogSource -Destination (Join-Path $destination "CHANGELOG.md")
 
 $publicIgnore = Get-Content -LiteralPath (Join-Path $source ".gitignore") | Where-Object { $_ -ne "/CHANGELOG.md" }
 $publicIgnore | Set-Content -LiteralPath (Join-Path $destination ".gitignore") -Encoding utf8
