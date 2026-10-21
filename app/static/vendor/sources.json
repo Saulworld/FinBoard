@@ -1,0 +1,8 @@
+{
+  "chart.js": {
+    "version": "4.4.3",
+    "url": "https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js",
+    "sha256": "d46d97a1fd022c5fb29fa2f45ebcbc32202d73aeebf076ce5f7248f5498fc7d7",
+    "license": "MIT"
+  }
+}

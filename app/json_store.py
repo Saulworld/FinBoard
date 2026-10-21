@@ -6,12 +6,14 @@ import os
 from pathlib import Path
 import tempfile
 import threading
+from copy import deepcopy
 from typing import Any, Callable, Iterator, TypeVar
 
 
 T = TypeVar("T")
 _locks_guard = threading.Lock()
 _locks: dict[Path, threading.RLock] = {}
+_read_cache: dict[Path, tuple[tuple[int, int], Any]] = {}
 
 
 def _lock_for(path: Path) -> threading.RLock:
@@ -30,12 +32,25 @@ def json_file_transaction(path: Path) -> Iterator[None]:
 def load_json(path: Path, default: T) -> T:
     with json_file_transaction(path):
         if not path.exists():
-            return default
+            return deepcopy(default)
         try:
+            resolved = path.resolve()
+            stat = path.stat()
+            signature = (stat.st_mtime_ns, stat.st_size)
+            cached = _read_cache.get(resolved)
+            if cached and cached[0] == signature:
+                return deepcopy(cached[1])
             with path.open("r", encoding="utf-8") as handle:
-                return json.load(handle)
-        except (OSError, json.JSONDecodeError, TypeError):
-            return default
+                value = json.load(handle)
+            # Copy on read: callers may add display-only fields without polluting the cache.
+            if len(_read_cache) > 64:
+                _read_cache.clear()
+            _read_cache[resolved] = (signature, value)
+            return deepcopy(value)
+        except (OSError, json.JSONDecodeError, TypeError) as exc:
+            raise RuntimeError(
+                f"无法读取{path.name}，已停止操作以保护原有数据。"
+            ) from exc
 
 
 def save_json_atomic(path: Path, value: Any) -> None:
@@ -57,6 +72,7 @@ def save_json_atomic(path: Path, value: Any) -> None:
                 handle.flush()
                 os.fsync(handle.fileno())
             os.replace(temp_name, path)
+            _read_cache.pop(path.resolve(), None)
             temp_name = None
         finally:
             if temp_name:

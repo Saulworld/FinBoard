@@ -3,7 +3,61 @@
 {% block sidebar_content %}{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="/static/css/cards.css?v=1.0.0">
+<link rel="stylesheet" href="/static/css/cards.css?v=1.1.4">
+
+<section class="board-card card-notices-panel" aria-labelledby="cardNoticesTitle">
+    <div class="card-head card-notices-head">
+        <div class="card-notices-heading">
+            <span class="card-notices-icon" aria-hidden="true">⚠️</span>
+            <h2 id="cardNoticesTitle">注意事项</h2>
+            {% if card_notices %}<span class="card-notices-count">{{ card_notices|length }} 项</span>{% endif %}
+        </div>
+        <button type="button" id="toggleCardNoticeForm" class="form-toggle-btn" aria-expanded="false">添加事项</button>
+    </div>
+
+    <form action="/cards/notices/add" method="post" id="cardNoticeForm" class="sidebar-form collapsible-add-form is-collapsed card-notice-form">
+        <label class="card-notice-content-field">
+            <span>事项内容</span>
+            <textarea name="content" rows="3" placeholder="填写需要提醒自己的内容" required></textarea>
+        </label>
+        <button type="submit" class="card-notice-submit">保存注意事项</button>
+    </form>
+
+    {% if card_notices %}
+    <div class="card-notices-grid">
+        {% for notice_item in card_notices %}
+        <article class="card-notice-item">
+            <span class="card-notice-bullet" aria-hidden="true">!</span>
+            <div class="card-notice-content">{{ notice_item.content }}</div>
+            <button type="button" class="edit-card-notice-btn"
+                    data-id="{{ notice_item.id }}"
+                    data-content="{{ notice_item.content }}" data-micro="edit">修改</button>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card-notices-empty">暂无注意事项，点击“添加事项”填写内容。</div>
+    {% endif %}
+</section>
+
+<div id="editCardNoticeModal" class="modal" style="display: none; position: fixed; z-index: 1020; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
+    <div class="board-card card-notice-edit-dialog">
+        <div class="card-head" style="margin-bottom: 16px; align-items: center;">
+            <h2>修改注意事项</h2>
+            <button type="button" id="closeEditCardNoticeBtn" class="card-notice-modal-close" aria-label="关闭">&times;</button>
+        </div>
+        <form id="editCardNoticeForm" method="post" class="sidebar-form" style="margin-top: 0; gap: 14px;">
+            <label style="margin: 0;">
+                <span>事项内容</span>
+                <textarea name="content" id="editCardNoticeContent" rows="4" required></textarea>
+            </label>
+            <div class="card-notice-modal-actions">
+                <button type="button" id="cancelEditCardNoticeBtn" class="card-notice-cancel-btn">取消</button>
+                <button type="submit" class="card-notice-save-btn">保存修改</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- Top Panel: Add Card Form (Full Width) -->
 <section class="board-card overseas-add-panel" style="display: flex; flex-direction: column; width: 100%;">
@@ -22,7 +76,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>KYC 申请方式</span>
-                    <button type="button" class="btn-manage-options" data-type="kyc" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="kyc" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="kyc_method" id="addCardKyc" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     {% for opt in options.kyc_methods %}
@@ -33,7 +87,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>KYC 提供商</span>
-                    <button type="button" class="btn-manage-options" data-type="kyc_provider" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="kyc_provider" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="kyc_provider" id="addCardKycProvider" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     {% for opt in options.kyc_providers %}
@@ -44,7 +98,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>登录方式</span>
-                    <button type="button" class="btn-manage-options" data-type="login" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="login" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="login_method" id="addCardLogin" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     {% for opt in options.login_methods %}
@@ -55,7 +109,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>类型</span>
-                    <button type="button" class="btn-manage-options" data-type="type" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="type" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="type" id="addCardType" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     {% for opt in options.types %}
@@ -68,7 +122,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>国家 / 地区</span>
-                    <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="country" id="addCardCountry" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     {% for opt in options.countries %}
@@ -79,7 +133,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>电话号码</span>
-                    <button type="button" class="btn-manage-options" data-type="phone" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="phone" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="phone" id="addCardPhone" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     {% for opt in options.phones %}
@@ -100,7 +154,7 @@
             <label style="margin: 0; grid-column: span 2;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>证明地址</span>
-                    <button type="button" class="btn-manage-options" data-type="address" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="address" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="address" id="addCardAddress" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     {% for opt in options.addresses %}
@@ -111,7 +165,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>行高亮颜色</span>
-                    <button type="button" class="btn-manage-options" data-type="color" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="color" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="color" id="addCardColor" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     <option value="">默认 (无颜色)</option>
@@ -139,8 +193,8 @@
             <span class="color-legend-badge" data-color="#fefbeb" title="点击过滤：黄色 (注销)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #fefbeb; color: #d69e2e; border: 1px solid #f6e05e; cursor: pointer; user-select: none; transition: all 0.2s;">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #d69e2e; display: inline-block;"></span> 黄色 (注销)
             </span>
-            <span class="color-legend-badge" data-color="#eff6ff" title="点击过滤：蓝色 (待验证)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #eff6ff; color: #3182ce; border: 1px solid #90cdf4; cursor: pointer; user-select: none; transition: all 0.2s;">
-                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #3182ce; display: inline-block;"></span> 蓝色 (待验证)
+            <span class="color-legend-badge" data-color="#eff6ff" title="点击过滤：蓝色 (待验证/开户)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #eff6ff; color: #3182ce; border: 1px solid #90cdf4; cursor: pointer; user-select: none; transition: all 0.2s;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #3182ce; display: inline-block;"></span> 蓝色 (待验证/开户)
             </span>
             <span class="color-legend-badge" data-color="#f0fdf4" title="点击过滤：绿色 (待/重新注册)" style="display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; background-color: #f0fdf4; color: #38a169; border: 1px solid #9ae6b4; cursor: pointer; user-select: none; transition: all 0.2s;">
                 <span style="width: 8px; height: 8px; border-radius: 50%; background-color: #38a169; display: inline-block;"></span> 绿色 (待/重新注册)
@@ -151,9 +205,9 @@
 
     <!-- Search Input Area -->
     <div style="display: flex; gap: 12px; margin-bottom: 16px; align-items: center; width: 100%;">
-        <div style="position: relative; flex: 1;">
+        <div data-micro-search-field style="position: relative; flex: 1;">
             <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; pointer-events: none;">🔍</span>
-            <input type="text" id="cardsSearchInput" placeholder="输入搜索名称、KYC 方式、登录方式、类型、国家、电话、地址、备注或标识含义(好用/注销/待验证/待/重新注册)..." style="width: 100%; box-sizing: border-box; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; background: white; outline: none; transition: all 0.2s; box-shadow: var(--shadow-sm);">
+            <input data-micro-search type="text" id="cardsSearchInput" placeholder="输入搜索名称、KYC 方式、登录方式、类型、国家、电话、地址、备注或标识含义(好用/注销/待验证/开户/待/重新注册)..." style="width: 100%; box-sizing: border-box; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; background: white; outline: none; transition: all 0.2s; box-shadow: var(--shadow-sm);">
         </div>
     </div>
 
@@ -229,10 +283,10 @@
                                     data-address="{{ card.address }}"
                                     data-note="{{ card.note }}"
                                     data-account-provider="{{ card.account_provider or '--' }}"
-                                    data-color="{{ card.color or '' }}">修改</button>
+                                    data-color="{{ card.color or '' }}" data-micro="edit">修改</button>
                             <button type="button" class="button-link delete-card-btn" style="color: #dc2626; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
                                     data-id="{{ card.id }}" 
-                                    data-name="{{ card.name }}">删除</button>
+                                    data-name="{{ card.name }}" data-micro="delete">删除</button>
                         </div>
                     </td>
                 </tr>
@@ -269,7 +323,7 @@
                 <label style="margin: 0;">
                     <span style="display: flex; justify-content: space-between; align-items: center;">
                         <span>KYC 提供商</span>
-                        <button type="button" class="btn-manage-options" data-type="kyc_provider" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                        <button type="button" class="btn-manage-options" data-type="kyc_provider" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                     </span>
                     <select name="kyc_provider" id="editCardKycProvider" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                         {% for opt in options.kyc_providers %}
@@ -280,7 +334,7 @@
                 <label style="margin: 0;">
                     <span style="display: flex; justify-content: space-between; align-items: center;">
                         <span>登录方式</span>
-                        <button type="button" class="btn-manage-options" data-type="login" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                        <button type="button" class="btn-manage-options" data-type="login" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                     </span>
                     <select name="login_method" id="editCardLogin" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                         {% for opt in options.login_methods %}
@@ -299,7 +353,7 @@
                 <label style="margin: 0;">
                     <span style="display: flex; justify-content: space-between; align-items: center;">
                         <span>国家 / 地区</span>
-                        <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                        <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                     </span>
                     <select name="country" id="editCardCountry" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                         {% for opt in options.countries %}
@@ -310,7 +364,7 @@
                 <label style="margin: 0;">
                     <span style="display: flex; justify-content: space-between; align-items: center;">
                         <span>电话号码</span>
-                        <button type="button" class="btn-manage-options" data-type="phone" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                        <button type="button" class="btn-manage-options" data-type="phone" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                     </span>
                     <select name="phone" id="editCardPhone" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                         {% for opt in options.phones %}
@@ -321,7 +375,7 @@
                 <label style="margin: 0;">
                     <span style="display: flex; justify-content: space-between; align-items: center;">
                         <span>证明地址</span>
-                        <button type="button" class="btn-manage-options" data-type="address" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                        <button type="button" class="btn-manage-options" data-type="address" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                     </span>
                     <select name="address" id="editCardAddress" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                         {% for opt in options.addresses %}
@@ -340,7 +394,7 @@
                 <label style="margin: 0;">
                     <span style="display: flex; justify-content: space-between; align-items: center;">
                         <span>行高亮颜色</span>
-                        <button type="button" class="btn-manage-options" data-type="color" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                        <button type="button" class="btn-manage-options" data-type="color" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                     </span>
                     <select name="color" id="editCardColor" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                         <option value="">默认 (无颜色)</option>
@@ -371,7 +425,7 @@
             </div>
             <div style="display: flex; gap: 12px;">
                 <button type="button" id="cancelDeleteModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer;">取消</button>
-                <button type="submit" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">确认删除</button>
+                <button type="submit" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;" data-micro="delete" data-micro-confirm>确认删除</button>
             </div>
         </form>
     </div>
@@ -444,8 +498,8 @@
             <!-- Option items will be populated dynamically -->
         </div>
         
-        <div style="margin-top: 20px;">
-            <button type="button" id="closeManageModalBtn2" style="width: 100%; background: var(--line); color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">关闭</button>
+        <div class="option-manager-footer">
+            <button type="button" id="closeManageModalBtn2" style="width: 100%; background: var(--line); color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">取消</button><button type="button" id="saveManageOptionsBtn">保存</button>
         </div>
     </div>
 </div>
@@ -461,7 +515,7 @@
         </div>
         <div style="display: flex; gap: 12px;">
             <button type="button" id="customConfirmCancelBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">取消</button>
-            <button type="button" id="customConfirmOkBtn" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">确认</button>
+            <button type="button" id="customConfirmOkBtn" data-micro="delete" data-micro-confirm style="flex: 1; background: #dc2626; color: white; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">确认</button>
         </div>
     </div>
 </div>
@@ -486,5 +540,5 @@
 </div>
 
 
-<script defer src="/static/js/cards.js?v=1.0.7"></script>
+<script defer src="/static/js/cards.js?v=20260930-3"></script>
 {% endblock %}

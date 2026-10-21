@@ -1,12 +1,67 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const cardNoticeForm = document.getElementById("cardNoticeForm");
+    const toggleCardNoticeForm = document.getElementById("toggleCardNoticeForm");
+    const cardNoticesPanel = document.querySelector(".card-notices-panel");
+    toggleCardNoticeForm?.addEventListener("click", () => {
+        const expanded = cardNoticeForm?.classList.contains("is-collapsed") ?? false;
+        window.saulSetFormExpanded(cardNoticeForm, expanded);
+        cardNoticesPanel?.classList.toggle("is-managing", expanded);
+        toggleCardNoticeForm.setAttribute("aria-expanded", String(expanded));
+        toggleCardNoticeForm.textContent = expanded ? "收起" : "添加事项";
+    });
+
+    const editCardNoticeModal = document.getElementById("editCardNoticeModal");
+    const editCardNoticeForm = document.getElementById("editCardNoticeForm");
+    const editCardNoticeContent = document.getElementById("editCardNoticeContent");
+    const closeEditCardNoticeBtn = document.getElementById("closeEditCardNoticeBtn");
+    const cancelEditCardNoticeBtn = document.getElementById("cancelEditCardNoticeBtn");
+    let activeCardNoticeItem = null;
+
+    const hideCardNoticeModal = () => {
+        if (editCardNoticeModal) editCardNoticeModal.style.display = "none";
+        activeCardNoticeItem = null;
+    };
+
+    document.querySelectorAll(".edit-card-notice-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+            activeCardNoticeItem = button.closest(".card-notice-item");
+            editCardNoticeForm.action = `/cards/notices/${button.dataset.id}/update`;
+            editCardNoticeContent.value = button.dataset.content || "";
+            editCardNoticeModal.style.display = "flex";
+            window.setTimeout(() => editCardNoticeContent.focus(), 0);
+        });
+    });
+
+    closeEditCardNoticeBtn?.addEventListener("click", hideCardNoticeModal);
+    cancelEditCardNoticeBtn?.addEventListener("click", hideCardNoticeModal);
+
+    editCardNoticeForm?.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+            const response = await fetch(editCardNoticeForm.action, {
+                method: "POST",
+                body: new FormData(editCardNoticeForm),
+            });
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || "保存失败");
+            const content = data.content || editCardNoticeContent.value.trim();
+            activeCardNoticeItem?.querySelector(".card-notice-content")?.replaceChildren(content);
+            const editButton = activeCardNoticeItem?.querySelector(".edit-card-notice-btn");
+            if (editButton) editButton.dataset.content = content;
+            hideCardNoticeModal();
+            showToast("注意事项已更新");
+        } catch (error) {
+            showToast(`注意事项更新失败：${error.message}`, true);
+        }
+    });
+
     const cardAddForm = document.getElementById("cardAddForm");
     const toggleCardAddForm = document.getElementById("toggleCardAddForm");
     toggleCardAddForm?.addEventListener("click", () => {
         const expanded = cardAddForm?.classList.contains("is-collapsed") ?? false;
-        cardAddForm?.classList.toggle("is-collapsed", !expanded);
+        window.saulSetFormExpanded(cardAddForm, expanded);
         toggleCardAddForm.setAttribute("aria-expanded", String(expanded));
         toggleCardAddForm.textContent = expanded ? "收起" : "添加工具";
-        if (expanded) window.setTimeout(() => cardAddForm?.querySelector("input")?.focus(), 220);
     });
 
     // Select helper
@@ -168,9 +223,10 @@ document.addEventListener("DOMContentLoaded", () => {
             list = currentOptions.countries;
         }
         
+        optionsContainer.classList.add("option-manager-list");
         list.forEach((item, index) => {
             const row = document.createElement("div");
-            row.className = "draggable-option-item";
+            row.className = "draggable-option-item option-manager-row";
             row.draggable = true;
             row.style.display = "flex";
             row.style.justifyContent = "space-between";
@@ -194,64 +250,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // Drag event listeners
-            row.addEventListener("dragstart", (e) => {
-                row.classList.add("dragging");
-                e.dataTransfer.effectAllowed = "move";
-                setTimeout(() => {
-                    row.style.opacity = "0.4";
-                    row.style.background = "var(--bg)";
-                }, 0);
-            });
-
-            row.addEventListener("dragend", () => {
-                row.classList.remove("dragging");
-                row.style.opacity = "";
-                row.style.background = "white";
-                reorderOptionsFromDOM();
-            });
-
-            // Touch event listeners for mobile drag
-            row.addEventListener("touchstart", (e) => {
-                row.classList.add("dragging");
-                row.style.opacity = "0.4";
-                row.style.background = "var(--bg)";
-            });
-
-            row.addEventListener("touchmove", (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const draggingElement = document.querySelector(".dragging");
-                if (!draggingElement) return;
-
-                const elementAtTouch = document.elementFromPoint(touch.clientX, touch.clientY);
-                if (!elementAtTouch) return;
-                
-                const targetRow = elementAtTouch.closest(".draggable-option-item");
-                if (targetRow && targetRow !== draggingElement && targetRow.parentNode === optionsContainer) {
-                    const bounding = targetRow.getBoundingClientRect();
-                    const offset = touch.clientY - bounding.top - bounding.height / 2;
-                    if (offset < 0) {
-                        optionsContainer.insertBefore(draggingElement, targetRow);
-                    } else {
-                        optionsContainer.insertBefore(draggingElement, targetRow.nextSibling);
-                    }
-                }
-            });
-
-            row.addEventListener("touchend", () => {
-                row.classList.remove("dragging");
-                row.style.opacity = "";
-                row.style.background = "white";
-                reorderOptionsFromDOM();
-            });
-
             const leftPart = document.createElement("div");
+            leftPart.className = "option-manager-label";
             leftPart.style.display = "flex";
             leftPart.style.alignItems = "center";
             leftPart.style.gap = "10px";
 
-            const handle = document.createElement("span");
-            handle.textContent = "☰";
+            const handle = document.createElement("button");
+            handle.type = "button";
+            handle.className = "option-manager-handle";
+            handle.textContent = "≡";
             handle.style.color = "var(--muted)";
             handle.style.cursor = "grab";
             handle.style.userSelect = "none";
@@ -269,6 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
             
             // Right: Actions (Edit + Delete)
             const actions = document.createElement("div");
+            actions.className = "option-manager-actions";
             actions.style.display = "flex";
             actions.style.gap = "8px";
             
@@ -281,6 +290,8 @@ document.addEventListener("DOMContentLoaded", () => {
             editBtn.style.cursor = "pointer";
             editBtn.style.padding = "2px";
             editBtn.title = "重命名";
+            editBtn.dataset.micro = "edit";
+            editBtn.setAttribute("aria-label", "修改选项名称");
             editBtn.addEventListener("click", async () => {
                 let titleText = "修改选项";
                 let labelText = "名称：";
@@ -331,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
             delBtn.style.cursor = "pointer";
             delBtn.style.padding = "2px";
             delBtn.title = "删除";
+            delBtn.dataset.micro = "delete";
             delBtn.addEventListener("click", async () => {
                 const ok = await showCustomConfirm("删除确认", `确定要删除选项 "${itemName}" 吗？`);
                 if (ok) {
@@ -343,6 +355,7 @@ document.addEventListener("DOMContentLoaded", () => {
             row.appendChild(actions);
             optionsContainer.appendChild(row);
         });
+        window.saulBindOptionOrder(optionsContainer, () => { reorderOptionsFromDOM(); renderManageOptionsList(); });
     }
 
     function reorderOptionsFromDOM() {
@@ -374,7 +387,11 @@ document.addEventListener("DOMContentLoaded", () => {
         saveOptionsToServer(true);
     }
 
-    async function saveOptionsToServer(skipRender = false) {
+    async function saveOptionsToServer(skipRender = false, persist = false) {
+        if (!persist) {
+            if (!skipRender) renderManageOptionsList();
+            return;
+        }
         try {
             const res = await fetch("/api/cards/options", {
                 method: "POST",
@@ -388,10 +405,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             updateAllDOMSelects();
             showToast("选项已更新");
+            document.getElementById("manageOptionsModal").style.display = "none";
         } catch (err) {
             showToast("保存选项失败: " + err.message, true);
         }
     }
+
+    document.getElementById("saveManageOptionsBtn").addEventListener("click", async event => {
+        const button = event.currentTarget;
+        button.disabled = true;
+        try { await saveOptionsToServer(false, true); }
+        finally { button.disabled = false; }
+    });
 
     function updateAllDOMSelects() {
         const addKycSelect = document.getElementById("addCardKyc");
@@ -622,17 +647,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (closeManageBtn) closeManageBtn.addEventListener("click", hideManageModal);
     if (closeManageBtn2) closeManageBtn2.addEventListener("click", hideManageModal);
 
-    optionsContainer.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        const draggingElement = document.querySelector(".dragging");
-        if (!draggingElement) return;
-        const afterElement = getDragAfterElement(optionsContainer, e.clientY);
-        if (afterElement == null) {
-            optionsContainer.appendChild(draggingElement);
-        } else {
-            optionsContainer.insertBefore(draggingElement, afterElement);
-        }
-    });
+
 
     function getDragAfterElement(container, y) {
         const draggableElements = [...container.querySelectorAll(".draggable-option-item:not(.dragging)")];
@@ -742,11 +757,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (!query) return true;
 
-            // Semantic Color Meaning Query Matching (好用/注销/待验证/待/重新注册)
+            // Semantic Color Meaning Query Matching (好用/注销/待验证/开户/待/重新注册)
             let queryMatchesColor = false;
             if ((query === '好用' || query === '红色' || query === '红') && (rowColor === '#fff5f5' || rowColor === 'red')) queryMatchesColor = true;
             if ((query === '注销' || query === '黄色' || query === '黄') && (rowColor === '#fefbeb' || rowColor === 'yellow')) queryMatchesColor = true;
-            if ((query === '待验证' || query === '蓝色' || query === '蓝') && (rowColor === '#eff6ff' || rowColor === 'blue')) queryMatchesColor = true;
+            if ((query === '待验证' || query === '开户' || query === '待验证/开户' || query === '蓝色' || query === '蓝') && (rowColor === '#eff6ff' || rowColor === 'blue')) queryMatchesColor = true;
             if ((query === '待注册' || query === '待/重新注册' || query === '重新注册' || query === '绿色' || query === '绿') && (rowColor === '#f0fdf4' || rowColor === 'green')) queryMatchesColor = true;
             if ((query === '无法使用' || query === '不可用' || query === '灰色' || query === '灰' || query === '无') && (rowColor === '#f3f4f6' || rowColor === 'gray' || rowColor === 'grey')) queryMatchesColor = true;
             if (queryMatchesColor) return true;

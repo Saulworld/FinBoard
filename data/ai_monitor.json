@@ -1,7 +1,75 @@
 {
-  "last_checked": "2026-09-12",
+  "last_checked": "2026-10-21",
   "unit": "每100万Token",
   "models": [
+    {
+      "provider": "OpenAI",
+      "provider_code": "openai",
+      "model": "GPT-6.1 Sol",
+      "positioning": "复杂编码与专业工作",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 2.0,
+      "cached_input_price": 0.1,
+      "output_price": 10.0,
+      "context": "1.05M",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": "标准价；>272K输入及缓存2倍、输出1.5倍；缓存写入$2.50，Fast为2倍、Ultrafast为6倍，地区处理另加10%",
+      "source_label": "OpenAI 官方定价",
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+    },
+    {
+      "provider": "OpenAI",
+      "provider_code": "openai",
+      "model": "GPT-6 Sol",
+      "positioning": "上一代通用智能体与编码",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 2.0,
+      "cached_input_price": 0.2,
+      "output_price": 10.0,
+      "context": "1.05M",
+      "status": "前代仍在售",
+      "status_tone": "stable",
+      "pricing_note": ">272K输入及缓存按2倍、输出1.5倍；缓存写入$2.5",
+      "source_label": "OpenAI 官方定价",
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-6-sol"
+    },
+    {
+      "provider": "OpenAI",
+      "provider_code": "openai",
+      "model": "GPT-6 Astra",
+      "positioning": "复杂推理与智能体旗舰",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 10.0,
+      "cached_input_price": 1.0,
+      "output_price": 50.0,
+      "context": "1.05M",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": "标准价；>272K输入及缓存2倍、输出1.5倍；缓存写入$12.5，Fast为2倍、Ultrafast为6倍，地区处理另加10%",
+      "source_label": "OpenAI 官方定价",
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra"
+    },
+    {
+      "provider": "OpenAI",
+      "provider_code": "openai",
+      "model": "GPT-6 Luna",
+      "positioning": "高速低成本",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 0.1,
+      "cached_input_price": 0.01,
+      "output_price": 0.5,
+      "context": "1.05M",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": ">272K输入及缓存按2倍、输出1.5倍；缓存写入$0.125",
+      "source_label": "OpenAI 官方定价",
+      "source_url": "https://developers.openai.com/api/docs/models/gpt-6-luna"
+    },
     {
       "provider": "OpenAI",
       "provider_code": "openai",
@@ -18,23 +86,6 @@
       "pricing_note": ">272K输入按2倍输入、1.5倍输出",
       "source_label": "OpenAI 官方定价",
       "source_url": "https://developers.openai.com/api/docs/models/gpt-5.6-terra"
-    },
-    {
-      "provider": "OpenAI",
-      "provider_code": "openai",
-      "model": "GPT-6 Astra",
-      "positioning": "复杂推理与智能体旗舰",
-      "currency": "USD",
-      "currency_symbol": "$",
-      "input_price": 10.0,
-      "cached_input_price": 1.0,
-      "output_price": 50.0,
-      "context": "1.05M",
-      "status": "新品",
-      "status_tone": "new",
-      "pricing_note": ">272K输入及缓存按2倍、输出1.5倍；缓存写入$12.5",
-      "source_label": "OpenAI 官方定价",
-      "source_url": "https://developers.openai.com/api/docs/models/gpt-6-astra"
     },
     {
       "provider": "OpenAI",
@@ -73,6 +124,23 @@
     {
       "provider": "Anthropic",
       "provider_code": "anthropic",
+      "model": "Claude Sonnet 5.5",
+      "positioning": "速度与智能兼顾",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 2.0,
+      "cached_input_price": 0.1,
+      "output_price": 10.0,
+      "context": "1M",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": "缓存命中$0.10（输入价5%）；5分钟/1小时缓存写入$2.50/$4；1M上下文",
+      "source_label": "Anthropic 官方定价",
+      "source_url": "https://platform.claude.com/docs/en/about-claude/pricing"
+    },
+    {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
       "model": "Claude Sonnet 5",
       "positioning": "生产级通用",
       "currency": "USD",
@@ -90,6 +158,23 @@
     {
       "provider": "Anthropic",
       "provider_code": "anthropic",
+      "model": "Claude Opus 5.5",
+      "positioning": "长程编码与知识工作",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 4.0,
+      "cached_input_price": 0.2,
+      "output_price": 20.0,
+      "context": "1M",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": "缓存命中$0.20；5分钟缓存写入$5；1M上下文，Fast为2倍、US推理另加10%",
+      "source_label": "Anthropic 官方定价",
+      "source_url": "https://platform.claude.com/docs/en/about-claude/pricing"
+    },
+    {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
       "model": "Claude Fable 5.1",
       "positioning": "长程智能体最高能力",
       "currency": "USD",
@@ -100,7 +185,7 @@
       "context": "1M",
       "status": "新品",
       "status_tone": "new",
-      "pricing_note": "缓存命中$0.25；5分钟缓存写入$12.5",
+      "pricing_note": "缓存命中$0.25；5分钟/1小时缓存写入$12.5/$20；1M上下文无长文本加价，US推理另加10%",
       "source_label": "Anthropic 官方定价",
       "source_url": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
@@ -115,11 +200,11 @@
       "cached_input_price": 0.5,
       "output_price": 25.0,
       "context": "1M",
-      "status": "新品",
-      "status_tone": "new",
+      "status": "前代仍在售",
+      "status_tone": "stable",
       "pricing_note": "缓存命中$0.5；自适应思考",
       "source_label": "Anthropic 官方模型页",
-      "source_url": "https://platform.claude.com/docs/en/about-claude/models/overview"
+      "source_url": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
     {
       "provider": "Anthropic",
@@ -139,6 +224,23 @@
       "source_url": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
     {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
+      "model": "Claude Haiku 5.5",
+      "positioning": "高速分类、抽取与路由",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 0.1,
+      "cached_input_price": 0.01,
+      "output_price": 0.5,
+      "context": "1M",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": "≤100K标准档；>100K为$0.50/$0.05/$2.50；5分钟缓存写入$0.125/$0.625，US推理另加10%",
+      "source_label": "Anthropic 官方定价",
+      "source_url": "https://platform.claude.com/docs/en/about-claude/pricing"
+    },
+    {
       "provider": "Google",
       "provider_code": "google",
       "model": "Gemini 3.8 Flash",
@@ -149,44 +251,44 @@
       "cached_input_price": 0.075,
       "output_price": 3.75,
       "context": "1M",
-      "status": "优惠价格",
-      "status_tone": "promo",
-      "pricing_note": "优惠至2026-12-31；2027-01-01起$1.5/$0.15/$7.5",
+      "status": "即将调价",
+      "status_tone": "warning",
+      "pricing_note": "优惠至2026-12-31；2027-01-01起$1.5/$0.15/$7.5；旧3.7 Flash请求自动转发至本模型；旧端点不关闭，但AI Studio不再可选",
       "source_label": "Google 官方定价",
       "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
     },
     {
       "provider": "Google",
       "provider_code": "google",
-      "model": "Gemini 3.7 Flash",
-      "positioning": "多模态高吞吐",
+      "model": "Gemini 4 Argon",
+      "positioning": "旗舰推理与智能体",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 2.0,
+      "cached_input_price": 0.1,
+      "output_price": 10.0,
+      "context": "1M（输入输出合计）",
+      "status": "即将调价",
+      "status_tone": "warning",
+      "pricing_note": "现价至2026-11-30；12月1日起$4/$0.2/$20；仅隐式缓存，Batch/Flex半价、Priority为1.8倍，免费层不开放",
+      "source_label": "Google官方API定价",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "model": "Gemini 3.6 Flash",
+      "positioning": "高速通用与智能体（上一代）",
       "currency": "USD",
       "currency_symbol": "$",
       "input_price": 0.75,
       "cached_input_price": 0.075,
       "output_price": 3.75,
       "context": "1M",
-      "status": "优惠价格",
-      "status_tone": "promo",
-      "pricing_note": "优惠至2026-12-31；2027-01-01起$1.5/$0.15/$7.5",
-      "source_label": "Google 官方定价",
-      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
-    },
-    {
-      "provider": "Google",
-      "provider_code": "google",
-      "model": "Gemini 3.5 Flash",
-      "positioning": "智能高速通用",
-      "currency": "USD",
-      "currency_symbol": "$",
-      "input_price": 1.5,
-      "cached_input_price": 0.15,
-      "output_price": 9.0,
-      "context": "1M",
-      "status": "价格稳定",
-      "status_tone": "stable",
-      "pricing_note": "标准付费层；输出含思考Token",
-      "source_label": "Google 官方定价",
+      "status": "即将调价",
+      "status_tone": "warning",
+      "pricing_note": "优惠至2026-12-31；2027-01-01起$1.5/$0.15/$7.5；旧3.5 Flash请求自动转发至本模型；旧端点不关闭，但AI Studio不再可选",
+      "source_label": "Google Gemini API官方定价",
       "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
     },
     {
@@ -226,6 +328,23 @@
     {
       "provider": "xAI",
       "provider_code": "xai",
+      "model": "Grok 4.7",
+      "positioning": "新一代通用与代码智能体",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 2.0,
+      "cached_input_price": 0.5,
+      "output_price": 6.0,
+      "context": "500K",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": "≥200K按$4/$1/$12；Fast仅Cursor/Grok Build，非公开API，低于200K按标准价2倍、长上下文1.5倍；搜索另计；美国区域端点Token价另加10%",
+      "source_label": "xAI 官方定价",
+      "source_url": "https://docs.x.ai/developers/pricing"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
       "model": "Grok 4.6",
       "positioning": "代码与智能体",
       "currency": "USD",
@@ -236,7 +355,7 @@
       "context": "500K",
       "status": "价格稳定",
       "status_tone": "stable",
-      "pricing_note": "≥200K按$4输入、$1缓存、$12输出；搜索工具另计",
+      "pricing_note": "≥200K按$4输入、$1缓存、$12输出；搜索工具另计；美国区域端点Token价另加10%",
       "source_label": "xAI 官方模型页",
       "source_url": "https://docs.x.ai/developers/pricing"
     },
@@ -345,34 +464,17 @@
     {
       "provider": "DeepSeek",
       "provider_code": "deepseek",
-      "model": "DeepSeek V4 Flash",
-      "positioning": "高性价比推理",
+      "model": "DeepSeek V4.1 Flash",
+      "positioning": "视觉与推理通用",
       "currency": "USD",
       "currency_symbol": "$",
-      "input_price": 0.44,
-      "cached_input_price": 0.014,
-      "output_price": 1.32,
+      "input_price": 0.3,
+      "cached_input_price": 0.006,
+      "output_price": 1.2,
       "context": "1M",
       "status": "峰谷计费",
       "status_tone": "warning",
-      "pricing_note": "工作日峰值01-04、06-10 UTC；其余时段半价$0.22/$0.007/$0.66",
-      "source_label": "DeepSeek 官方定价",
-      "source_url": "https://api-docs.deepseek.com/quick_start/pricing/"
-    },
-    {
-      "provider": "DeepSeek",
-      "provider_code": "deepseek",
-      "model": "DeepSeek V4 Flash Vision Exp",
-      "positioning": "视觉理解实验版",
-      "currency": "USD",
-      "currency_symbol": "$",
-      "input_price": 0.44,
-      "cached_input_price": 0.014,
-      "output_price": 1.32,
-      "context": "1M",
-      "status": "实验版/峰谷计费",
-      "status_tone": "warning",
-      "pricing_note": "工作日01-04、06-10 UTC峰价；其余半价，图像转输入Token",
+      "pricing_note": "当前别名deepseek-flash对应V4.1-Flash-1017；工作日01–04、06–10 UTC峰价（中国法定节假日除外），其余$0.15/$0.003/$0.60；搜索/抓取另计",
       "source_label": "DeepSeek 官方定价",
       "source_url": "https://api-docs.deepseek.com/quick_start/pricing/"
     },
@@ -389,7 +491,7 @@
       "context": "1M",
       "status": "峰谷计费",
       "status_tone": "warning",
-      "pricing_note": "工作日峰值01-04、06-10 UTC；其余时段半价$0.66/$0.022/$1.98",
+      "pricing_note": "工作日01–04、06–10 UTC峰价（中国法定节假日除外）；其余时段半价$0.66/$0.022/$1.98",
       "source_label": "DeepSeek 官方定价",
       "source_url": "https://api-docs.deepseek.com/quick_start/pricing/"
     },
@@ -404,11 +506,11 @@
       "cached_input_price": 1.5,
       "output_price": 36.0,
       "context": "1M",
-      "status": "新品",
-      "status_tone": "new",
-      "pricing_note": "华北2标准价；隐式缓存命中¥1.5，显式缓存读取¥1、创建¥15",
+      "status": "价格稳定",
+      "status_tone": "stable",
+      "pricing_note": "华北2标准¥12/¥1.5/¥36；显式缓存读¥1、写¥15；Prime输入/输出¥24/¥72",
       "source_label": "阿里云百炼官方定价",
-      "source_url": "https://help.aliyun.com/en/model-studio/model-pricing"
+      "source_url": "https://help.aliyun.com/en/model-studio/qwen3-8-max"
     },
     {
       "provider": "千问",
@@ -421,9 +523,9 @@
       "cached_input_price": 0.32,
       "output_price": 6.4,
       "context": "1M",
-      "status": "优惠价格",
-      "status_tone": "promo",
-      "pricing_note": "华北≤256K八折¥1.6/¥6.4；>256K为¥4.8/¥19.2，标价¥2/¥8与¥6/¥24",
+      "status": "部分待复核",
+      "status_tone": "warning",
+      "pricing_note": "华北≤256K输入/输出八折¥1.6/¥6.4，标价¥2/¥0.4/¥8；优惠缓存¥0.32仍待复核；>256K输入/输出八折¥4.8/¥19.2、缓存标价¥1.2",
       "source_label": "阿里云百炼官方定价",
       "source_url": "https://help.aliyun.com/en/model-studio/model-pricing"
     },
@@ -435,31 +537,31 @@
       "currency": "CNY",
       "currency_symbol": "¥",
       "input_price": 0.8,
-      "cached_input_price": null,
+      "cached_input_price": 0.1,
       "output_price": 2.7,
       "context": "1M",
-      "status": "新品",
-      "status_tone": "new",
-      "pricing_note": "华北2百万上下文标准价；缓存命中价仅在百炼控制台公开",
+      "status": "价格稳定",
+      "status_tone": "stable",
+      "pricing_note": "华北2标准¥0.8/¥0.1/¥2.7；显式缓存写¥1.25、读¥0.1；1M上下文",
       "source_label": "阿里云百炼官方定价",
-      "source_url": "https://help.aliyun.com/en/model-studio/model-pricing"
+      "source_url": "https://help.aliyun.com/en/model-studio/qwen3-8-flash"
     },
     {
       "provider": "千问",
       "provider_code": "qwen",
-      "model": "Qwen Turbo",
-      "positioning": "轻量低延迟",
+      "model": "Qwen3 Coder Flash",
+      "positioning": "代码专用与补全",
       "currency": "CNY",
       "currency_symbol": "¥",
-      "input_price": 0.3,
-      "cached_input_price": 0.06,
-      "output_price": 0.6,
+      "input_price": 1.0,
+      "cached_input_price": 0.2,
+      "output_price": 4.0,
       "context": "1M",
       "status": "价格稳定",
       "status_tone": "stable",
-      "pricing_note": "华北非思考输出¥0.6；思考模式输出¥3",
+      "pricing_note": "华北≤32K标准档；32–128K为¥1.5/¥0.3/¥6，128–256K为¥2.5/¥0.5/¥10，>256K为¥5/¥1/¥25",
       "source_label": "阿里云百炼官方定价",
-      "source_url": "https://help.aliyun.com/en/model-studio/model-pricing"
+      "source_url": "https://help.aliyun.com/en/model-studio/qwen3-coder-flash"
     },
     {
       "provider": "智谱AI",
@@ -474,9 +576,26 @@
       "context": "1M",
       "status": "待复核",
       "status_tone": "warning",
-      "pricing_note": "本次官方价格表未能读取，保留9月2日旧值；缓存存储限时免费；缓存命中¥2",
+      "pricing_note": "国内旧价待复核；10月21日定价页仅返回JS壳；缓存存储免费活动亦未确认",
       "source_label": "智谱AI官方定价",
       "source_url": "https://bigmodel.cn/pricing"
+    },
+    {
+      "provider": "智谱AI",
+      "provider_code": "glm",
+      "model": "GLM-5.3（国际）",
+      "positioning": "国际站旗舰编码与智能体",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 1.4,
+      "cached_input_price": 0.26,
+      "output_price": 4.4,
+      "context": "1M",
+      "status": "价格稳定",
+      "status_tone": "stable",
+      "pricing_note": "国际站标准价；缓存存储限时免费，与国内人民币价格分开",
+      "source_label": "Z.AI国际站官方定价",
+      "source_url": "https://docs.z.ai/guides/overview/pricing"
     },
     {
       "provider": "智谱AI",
@@ -498,6 +617,23 @@
     {
       "provider": "智谱AI",
       "provider_code": "glm",
+      "model": "GLM-5.3-FlashX",
+      "positioning": "多模态高速推理(国际站)",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 0.37,
+      "cached_input_price": 0.075,
+      "output_price": 1.25,
+      "context": "1M",
+      "status": "新品",
+      "status_tone": "new",
+      "pricing_note": "1M上下文、最高128K输出；官方标称200Token/s；尚未包含在Coding Plan，缓存存储限时免费",
+      "source_label": "Z.AI官方定价",
+      "source_url": "https://docs.z.ai/guides/overview/pricing"
+    },
+    {
+      "provider": "智谱AI",
+      "provider_code": "glm",
       "model": "GLM-5.2",
       "positioning": "长程工程旗舰",
       "currency": "CNY",
@@ -508,7 +644,7 @@
       "context": "1M",
       "status": "待复核",
       "status_tone": "warning",
-      "pricing_note": "本次官方价格表未能读取，保留9月2日旧值；缓存存储限时免费；最大输出128K",
+      "pricing_note": "国内旧价待复核；10月21日定价页仅返回JS壳；Coding套餐调用此型号会转发GLM-5.3",
       "source_label": "智谱AI官方定价",
       "source_url": "https://bigmodel.cn/pricing"
     },
@@ -525,7 +661,7 @@
       "context": "200K",
       "status": "待复核",
       "status_tone": "warning",
-      "pricing_note": "本次官方价格表未能读取，保留9月2日旧值；输入<32K标准档；更长输入为¥7/¥1.8/¥26",
+      "pricing_note": "国内旧价待复核；<32K旧档，更长输入旧档¥7/¥1.8/¥26；Coding套餐会转发GLM-5.3-Flash",
       "source_label": "智谱AI官方定价",
       "source_url": "https://bigmodel.cn/pricing"
     },
@@ -542,7 +678,7 @@
       "context": "200K",
       "status": "待复核",
       "status_tone": "warning",
-      "pricing_note": "本次官方价格表未能读取，保留9月2日旧值；输入<32K且短输出标准档；长输出采用阶梯价",
+      "pricing_note": "国内旧价待复核；<32K且短输出旧档；Coding套餐调用此型号会转发GLM-5.3-Flash",
       "source_label": "智谱AI官方定价",
       "source_url": "https://bigmodel.cn/pricing"
     },
@@ -559,7 +695,7 @@
       "context": "128K",
       "status": "待复核",
       "status_tone": "warning",
-      "pricing_note": "本次官方价格表未能读取，保留9月2日旧值；输入<32K且短输出标准档；长输出采用阶梯价",
+      "pricing_note": "国内旧价待复核；10月21日定价页仅返回JS壳；<32K且短输出旧档",
       "source_label": "智谱AI官方定价",
       "source_url": "https://bigmodel.cn/pricing"
     },
@@ -574,9 +710,9 @@
       "cached_input_price": 2.0,
       "output_price": 100.0,
       "context": "1M",
-      "status": "价格稳定",
-      "status_tone": "stable",
-      "pricing_note": "官方公开平台统一按量价",
+      "status": "待复核",
+      "status_tone": "warning",
+      "pricing_note": "官方标准¥20/¥2/¥100；1M上下文；缓存写入按5分钟/1小时TTL单独计费，首页写入价¥20；10月21日API官网超时，保留旧价待复核",
       "source_label": "Kimi 官方定价",
       "source_url": "https://platform.kimi.com/"
     },
@@ -591,9 +727,9 @@
       "cached_input_price": 1.3,
       "output_price": 27.0,
       "context": "256K",
-      "status": "价格稳定",
-      "status_tone": "stable",
-      "pricing_note": "代码专用模型；官方公开平台统一按量价",
+      "status": "待复核",
+      "status_tone": "warning",
+      "pricing_note": "官方代码专用模型；¥6.5/¥1.3/¥27；256K上下文；10月21日API官网超时，保留旧价待复核",
       "source_label": "Kimi 官方定价",
       "source_url": "https://platform.kimi.com/"
     },
@@ -608,62 +744,96 @@
       "cached_input_price": 1.1,
       "output_price": 27.0,
       "context": "256K",
-      "status": "价格稳定",
-      "status_tone": "stable",
-      "pricing_note": "支持视觉、思考与非思考模式；官方公开平台统一按量价",
+      "status": "待复核",
+      "status_tone": "warning",
+      "pricing_note": "官方通用视觉与思考模型；¥6.5/¥1.1/¥27；256K上下文；10月21日API官网超时，保留旧价待复核",
       "source_label": "Kimi 官方定价",
       "source_url": "https://platform.kimi.com/"
     },
     {
       "provider": "Meta",
       "provider_code": "meta",
+      "model": "Muse Wonder",
+      "positioning": "旗舰编码、长任务与计算机操作",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 4,
+      "cached_input_price": 0.2,
+      "output_price": 20,
+      "context": "1M",
+      "status": "公开预览",
+      "status_tone": "new",
+      "pricing_note": "Standard API；无长上下文加价，搜索$2.50/千次；API不提供Contributor模式",
+      "source_label": "Meta官方API定价",
+      "source_url": "https://dev.meta.ai/docs/pricing-rate-limits"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
       "model": "Muse Spark 1.3",
       "positioning": "长程编码智能体旗舰",
-      "currency": null,
-      "currency_symbol": "",
-      "input_price": null,
-      "cached_input_price": null,
-      "output_price": null,
-      "context": "未公开",
-      "status": "新品",
-      "status_tone": "new",
-      "pricing_note": "Meta Model API全球扩大公测；官方公开页未列固定Token单价",
-      "source_label": "Meta 官方发布",
-      "source_url": "https://ai.meta.com/llama/"
-    },
-    {
-      "provider": "Meta",
-      "provider_code": "meta",
-      "model": "Muse Spark 1.2",
-      "positioning": "编码智能体",
-      "currency": null,
-      "currency_symbol": "",
-      "input_price": null,
-      "cached_input_price": null,
-      "output_price": null,
-      "context": "未公开",
-      "status": "价格未公开",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 1.25,
+      "cached_input_price": 0.15,
+      "output_price": 4.25,
+      "context": "1M",
+      "status": "价格稳定",
       "status_tone": "stable",
-      "pricing_note": "Meta Model API公测；官方公开页未列固定Token单价",
-      "source_label": "Meta 官方发布",
-      "source_url": "https://ai.meta.com/llama/"
+      "pricing_note": "Standard模式，不用于训练；无长上下文加价，搜索$2.50/千次；Contributor模式$0.10/$0.002/$0.20，允许内容用于训练",
+      "source_label": "Meta官方API定价",
+      "source_url": "https://dev.meta.ai/docs/pricing-rate-limits"
     },
     {
       "provider": "Meta",
       "provider_code": "meta",
-      "model": "Muse Spark 1.1",
-      "positioning": "历史多模态智能体",
+      "model": "Muse Wonder Full",
+      "positioning": "最高能力订阅专属",
       "currency": null,
       "currency_symbol": "",
       "input_price": null,
       "cached_input_price": null,
       "output_price": null,
       "context": "1M",
-      "status": "历史版本",
+      "status": "仅订阅",
+      "status_tone": "warning",
+      "pricing_note": "仅Muse Code Power Usage或Maximum Usage；无独立API，不等同于Wonder的max推理档",
+      "source_label": "Meta官方模型供给说明",
+      "source_url": "https://dev.meta.ai/docs/models"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "model": "Muse Spark 1.2",
+      "positioning": "编码智能体",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 1.25,
+      "cached_input_price": 0.15,
+      "output_price": 4.25,
+      "context": "1M",
+      "status": "前代仍在售",
       "status_tone": "stable",
-      "pricing_note": "保留历史记录；Meta Model API首个公测版本，官方未公开固定Token单价",
-      "source_label": "Meta 官方发布",
-      "source_url": "https://ai.meta.com/blog/introducing-muse-spark-meta-model-api/"
+      "pricing_note": "Standard模式，不用于训练；无长上下文加价，搜索$2.50/千次；Contributor模式$0.10/$0.002/$0.20，允许内容用于训练",
+      "source_label": "Meta官方API定价",
+      "source_url": "https://dev.meta.ai/docs/pricing-rate-limits"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "model": "Muse Spark 1.1",
+      "positioning": "历史多模态智能体",
+      "currency": "USD",
+      "currency_symbol": "$",
+      "input_price": 1.25,
+      "cached_input_price": 0.15,
+      "output_price": 4.25,
+      "context": "1M",
+      "status": "前代仍在售",
+      "status_tone": "stable",
+      "pricing_note": "Standard模式，不用于训练；无长上下文加价，搜索$2.50/千次；仅Standard API，不可用于Muse Code",
+      "source_label": "Meta官方API定价",
+      "source_url": "https://dev.meta.ai/docs/pricing-rate-limits"
     },
     {
       "provider": "Meta",
@@ -677,10 +847,27 @@
       "output_price": null,
       "context": "本地部署",
       "status": "自托管",
-      "status_tone": "stable",
-      "pricing_note": "30B开放模型；本地部署无统一官方API单价",
-      "source_label": "Meta 官方模型页",
-      "source_url": "https://ai.meta.com/llama/"
+      "status_tone": "opensource",
+      "pricing_note": "开放权重多模态模型；自行部署，无统一官方API单价，硬件和推理服务费用另计",
+      "source_label": "Meta官方模型文档",
+      "source_url": "https://dev.meta.ai/docs/models"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "model": "Muse Spark Open",
+      "positioning": "开放权重智能体与代码",
+      "currency": null,
+      "currency_symbol": "",
+      "input_price": null,
+      "cached_input_price": null,
+      "output_price": null,
+      "context": "本地部署",
+      "status": "自托管",
+      "status_tone": "opensource",
+      "pricing_note": "816B总参数、42B激活的开放权重MoE；不通过Meta Model API调用，无统一官方API价",
+      "source_label": "Meta官方模型文档",
+      "source_url": "https://dev.meta.ai/docs/models"
     }
   ],
   "plans": [
@@ -692,7 +879,7 @@
       "currency_symbol": "$",
       "billing": "/月",
       "note": "个人版，API另计",
-      "source_url": "https://openai.com/chatgpt/pricing"
+      "source_url": "https://learn.chatgpt.com/docs/pricing"
     },
     {
       "provider": "OpenAI",
@@ -702,7 +889,7 @@
       "currency_symbol": "",
       "billing": "免费",
       "note": "基础限额",
-      "source_url": "https://openai.com/chatgpt/pricing"
+      "source_url": "https://learn.chatgpt.com/docs/pricing"
     },
     {
       "provider": "OpenAI",
@@ -712,26 +899,36 @@
       "currency_symbol": "$",
       "billing": "/月",
       "note": "美国价，部分地区本地化",
-      "source_url": "https://openai.com/index/introducing-chatgpt-go/"
+      "source_url": "https://learn.chatgpt.com/docs/pricing"
     },
     {
       "provider": "OpenAI",
       "provider_code": "openai",
-      "plan": "ChatGPT Pro 5x",
+      "plan": "ChatGPT Pro 100",
       "price": 100,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "用量为Plus的5倍",
+      "note": "现行$100月付档；不含Ultrafast，具体用量以官网为准",
+      "source_url": "https://learn.chatgpt.com/docs/pricing"
+    },
+    {
+      "provider": "OpenAI",
+      "provider_code": "openai",
+      "plan": "ChatGPT Pro 200",
+      "price": 200,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "标准月付$200；9月22日至29日符合资格的旧订阅保留原额度至2026-10-29，之后降低；不含Ultrafast",
       "source_url": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
     },
     {
       "provider": "OpenAI",
       "provider_code": "openai",
-      "plan": "ChatGPT Pro 20x",
-      "price": 200,
+      "plan": "ChatGPT Pro 500",
+      "price": 500,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "用量为Plus的20倍；自2026-09-10起暂停售新订阅与升级，现有订阅可续费",
+      "note": "最高包含用量；含Astra与Sol Ultrafast，包含额度按8倍消耗、购买Credits按6倍，仅月付，API另计",
       "source_url": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
     },
     {
@@ -742,7 +939,7 @@
       "currency_symbol": "$",
       "billing": "/席位/月",
       "note": "月付价，年付$20/席位/月，至少2席位",
-      "source_url": "https://help.openai.com/en/articles/8792536-manage-billing-on-the-chatgpt-team-subscription-plan"
+      "source_url": "https://help.openai.com/en/articles/8792536-managing-billing-and-seats-in-chatgpt-business"
     },
     {
       "provider": "OpenAI",
@@ -751,8 +948,8 @@
       "price": 125,
       "currency_symbol": "$",
       "billing": "/席位/月",
-      "note": "月付价，年付$100/席位/月，5倍Standard用量；本次固定月费待复核(保留9月2日旧值)",
-      "source_url": "https://help.openai.com/en/articles/8792536-manage-billing-on-the-chatgpt-team-subscription-plan"
+      "note": "月付$125/席位，年付折算$100/席位/月；5倍Standard用量、无5小时限额，至少2席位，可混配",
+      "source_url": "https://help.openai.com/en/articles/8792536-managing-billing-and-seats-in-chatgpt-business"
     },
     {
       "provider": "OpenAI",
@@ -762,7 +959,7 @@
       "currency_symbol": "",
       "billing": "联系销售",
       "note": "企业定制价格",
-      "source_url": "https://openai.com/business/chatgpt-pricing/"
+      "source_url": "https://learn.chatgpt.com/docs/pricing"
     },
     {
       "provider": "OpenAI",
@@ -785,6 +982,16 @@
       "source_url": "https://developers.openai.com/api/docs/pricing"
     },
     {
+      "provider": "OpenAI",
+      "provider_code": "openai",
+      "plan": "ChatGPT Credits",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "按量计费",
+      "note": "用于符合资格的Codex、Work及Office功能；具体额度与购买价格以账号为准，不等于API余额",
+      "source_url": "https://help.openai.com/en/articles/9793128-about-chatgpt-pro-tiers"
+    },
+    {
       "provider": "Anthropic",
       "provider_code": "anthropic",
       "plan": "Claude Pro",
@@ -792,7 +999,7 @@
       "currency_symbol": "$",
       "billing": "/月",
       "note": "月付$20；年付$200，API另计",
-      "source_url": "https://support.claude.com/en/articles/11049762-choose-a-claude-plan"
+      "source_url": "https://claude.com/pricing"
     },
     {
       "provider": "Anthropic",
@@ -802,7 +1009,7 @@
       "currency_symbol": "",
       "billing": "免费",
       "note": "个人基础版",
-      "source_url": "https://support.claude.com/en/articles/11049762-choose-a-claude-plan"
+      "source_url": "https://claude.com/pricing"
     },
     {
       "provider": "Anthropic",
@@ -811,8 +1018,8 @@
       "price": 100,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "约5倍Pro会话容量",
-      "source_url": "https://support.claude.com/en/articles/11049762-choose-a-claude-plan"
+      "note": "约5倍Pro会话容量；可领取每月$100官方API额度，新订阅满7天后申领，期末清零，不抵Claude Code用量",
+      "source_url": "https://support.claude.com/en/articles/11049741-what-is-the-max-plan"
     },
     {
       "provider": "Anthropic",
@@ -821,8 +1028,8 @@
       "price": 200,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "约20倍Pro会话容量",
-      "source_url": "https://support.claude.com/en/articles/11049762-choose-a-claude-plan"
+      "note": "约20倍Pro会话容量；可领取每月$200官方API额度，新订阅满7天后申领，期末清零，不抵Claude Code用量",
+      "source_url": "https://support.claude.com/en/articles/11049741-what-is-the-max-plan"
     },
     {
       "provider": "Anthropic",
@@ -831,7 +1038,7 @@
       "price": 25,
       "currency_symbol": "$",
       "billing": "/席位/月",
-      "note": "至少2人，年付折合$20",
+      "note": "至少2人，年付折合$20；每席位每月$20 API额度，团队合计上限$500，需申领、到期清零",
       "source_url": "https://support.claude.com/en/articles/9266767-what-is-the-team-plan"
     },
     {
@@ -841,17 +1048,17 @@
       "price": 125,
       "currency_symbol": "$",
       "billing": "/席位/月",
-      "note": "年付折合$100",
+      "note": "年付折合$100；每席位每月$100 API额度，团队合计上限$500，需申领、到期清零",
       "source_url": "https://support.claude.com/en/articles/9266767-what-is-the-team-plan"
     },
     {
       "provider": "Anthropic",
       "provider_code": "anthropic",
-      "plan": "Claude Enterprise",
+      "plan": "Claude Enterprise（自助）",
       "price": null,
       "currency_symbol": "",
       "billing": "按量计费",
-      "note": "官网列$20/席位基础费，另加API用量；合同周期需确认",
+      "note": "年约基础费$20/席位/月，另按API用量计费；非独立固定月付总价",
       "source_url": "https://claude.com/pricing"
     },
     {
@@ -875,14 +1082,84 @@
       "source_url": "https://platform.claude.com/docs/en/about-claude/pricing"
     },
     {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
+      "plan": "Claude Enterprise（销售协助）",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "联系销售",
+      "note": "年约与合同报价，支持发票及AWS Marketplace；席位费之外另计用量",
+      "source_url": "https://claude.com/pricing"
+    },
+    {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
+      "plan": "Claude使用额度",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "按量计费",
+      "note": "Pro、Max及团队套餐可用额外使用额度；与API账单分开，固定购买单价未公开",
+      "source_url": "https://claude.com/pricing"
+    },
+    {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
+      "plan": "Team Scientists Standard",
+      "price": 0,
+      "currency_symbol": "$",
+      "billing": "免费",
+      "note": "科研组通过PI资格审核后免费12个月，1–25席位；续期与闲置90天按官方规则；API额度须另行申领",
+      "source_url": "https://support.claude.com/en/articles/16634237-claude-team-plan-for-scientists"
+    },
+    {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
+      "plan": "Team Scientists Premium",
+      "price": 15,
+      "currency_symbol": "$",
+      "billing": "/席位/月",
+      "note": "科研组审核后$15月付、年付$180，优惠12个月，1–25席位；期后按当时价格续费；API额度须申领",
+      "source_url": "https://support.claude.com/en/articles/16634237-claude-team-plan-for-scientists"
+    },
+    {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
+      "plan": "Team Nonprofit Standard",
+      "price": 8,
+      "currency_symbol": "$",
+      "billing": "/席位/月",
+      "note": "非营利机构经Goodstack验证；2–150席位；公开标准月价，税费另计",
+      "source_url": "https://claude.com/solutions/nonprofits"
+    },
+    {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
+      "plan": "Team Nonprofit Access",
+      "price": 3,
+      "currency_symbol": "$",
+      "billing": "/席位/月",
+      "note": "仅符合资格的低中收入国家非营利机构，至少2席位，需Goodstack验证",
+      "source_url": "https://claude.com/solutions/nonprofits"
+    },
+    {
+      "provider": "Anthropic",
+      "provider_code": "anthropic",
+      "plan": "Enterprise Nonprofit",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "联系销售",
+      "note": "机构销售审核；当前产品页未列固定月付总价",
+      "source_url": "https://claude.com/solutions/nonprofits"
+    },
+    {
       "provider": "Google",
       "provider_code": "google",
       "plan": "Google AI Pro",
       "price": 19.99,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "含5TB存储",
-      "source_url": "https://one.google.com/about/plans"
+      "note": "美国标准月付$19.99，含5TB及Gemini 4 Argon；其他地区按当地结账页",
+      "source_url": "https://one.google.com/about/plans?hl=en_US"
     },
     {
       "provider": "Google",
@@ -901,7 +1178,47 @@
       "price": 9.99,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "美元官网含2TB；其他地区可能为400GB",
+      "note": "美国标准月付$9.99，含2TB；AI介绍页另列部分地区400GB，具体权益以地区结账页为准",
+      "source_url": "https://one.google.com/about/plans?hl=en_US"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Google AI Plus（英国）",
+      "price": 7.99,
+      "currency_symbol": "£",
+      "billing": "/月",
+      "note": "英国Google One公开月付价，含2TB存储；10月21日地区语言页均返回美元价，原币种旧价及地区权益待复核",
+      "source_url": "https://one.google.com/about/plans"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Google AI Plus（台湾）",
+      "price": 330,
+      "currency_symbol": "NT$",
+      "billing": "/月",
+      "note": "台湾Google One价格页：2TB；另一个AI介绍页显示400GB，权益以结账页为准；10月21日地区语言页均返回美元价，原币种旧价及地区权益待复核",
+      "source_url": "https://one.google.com/about/plans"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Google AI Pro（台湾）",
+      "price": 650,
+      "currency_symbol": "NT$",
+      "billing": "/月",
+      "note": "台湾公开月付价，含5TB存储；保留新台币原币种；10月21日地区语言页均返回美元价，原币种旧价及地区权益待复核",
+      "source_url": "https://one.google.com/about/plans"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Google AI Pro（英国）",
+      "price": 18.99,
+      "currency_symbol": "£",
+      "billing": "/月",
+      "note": "英国Google One公开月付价，含5TB存储；10月21日地区语言页均返回美元价，原币种旧价及地区权益待复核",
       "source_url": "https://one.google.com/about/plans"
     },
     {
@@ -911,7 +1228,7 @@
       "price": null,
       "currency_symbol": "",
       "billing": "地区定价",
-      "note": "含20TB存储，Gemini用量为Pro的5倍",
+      "note": "官方比较表确认5倍Pro用量、20TB；固定月费未公开，待地区结账页复核",
       "source_url": "https://one.google.com/about/google-ai-plans/"
     },
     {
@@ -921,7 +1238,7 @@
       "price": null,
       "currency_symbol": "",
       "billing": "地区定价",
-      "note": "含30TB存储，Gemini用量为Pro的20倍",
+      "note": "官方比较表确认20倍Pro用量、30TB；固定月费未公开，待地区结账页复核",
       "source_url": "https://one.google.com/about/google-ai-plans/"
     },
     {
@@ -941,7 +1258,17 @@
       "price": null,
       "currency_symbol": "$",
       "billing": "按量计费",
-      "note": "预付余额与按量计费",
+      "note": "API与会员分开；Standard、Batch、Flex、Priority按模型计费，Argon现价至11月30日",
+      "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Gemini API Contributor（邀请预览）",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "按量计费",
+      "note": "仅受邀私测；Argon当前$1/$0.05/$5每百万输入/缓存/输出，12月1日起翻倍，内容可用于改进产品",
       "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
     },
     {
@@ -955,74 +1282,204 @@
       "source_url": "https://ai.google.dev/gemini-api/docs/pricing"
     },
     {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Google AI Plus（学生优惠）",
+      "price": null,
+      "currency_symbol": "",
+      "billing": "地区定价",
+      "note": "保留历史学生方案；10月21日美国及地区语言公开页未确认本档价格与资格，待登录复核",
+      "source_url": "https://one.google.com/about/google-ai-plans/"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Google AI学生方案",
+      "price": null,
+      "currency_symbol": "",
+      "billing": "地区定价",
+      "note": "保留历史学生方案；10月21日美国及地区语言公开页未确认本档价格与资格，待登录复核",
+      "source_url": "https://one.google.com/about/google-ai-plans/"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Google AI Plus（香港）",
+      "price": 79,
+      "currency_symbol": "HK$",
+      "billing": "/月",
+      "note": "香港官方月付价、2TB；AI介绍页另列400GB，最终权益以结账页为准；10月21日地区语言页均返回美元价，原币种旧价及地区权益待复核",
+      "source_url": "https://one.google.com/about/plans"
+    },
+    {
+      "provider": "Google",
+      "provider_code": "google",
+      "plan": "Google AI Ultra",
+      "price": null,
+      "currency_symbol": "",
+      "billing": "地区定价",
+      "note": "官方Ultra总类，含Gemini 4 Argon、20TB起及最高20倍Pro用量；5x/20x固定月费待地区结账页",
+      "source_url": "https://one.google.com/about/google-ai-plans/"
+    },
+    {
       "provider": "xAI",
       "provider_code": "xai",
-      "plan": "SuperGrok",
+      "plan": "X Subscription Premium",
       "price": 30,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "更高限额与旗舰模型",
-      "source_url": "https://x.ai/pricing"
+      "note": "标准月付$30；年付$300/年；4倍Plus周用量，Grok与Cursor共享；含Grok Bot，Cursor第三方模型另计",
+      "source_url": "https://docs.x.ai/x-subscription/pricing"
     },
     {
       "provider": "xAI",
       "provider_code": "xai",
-      "plan": "SuperGrok Plus",
+      "plan": "X Subscription Free",
+      "price": 0,
+      "currency_symbol": "$",
+      "billing": "免费",
+      "note": "Grok、Cursor与标准X的有限免费用量；付费档统一周额度池",
+      "source_url": "https://docs.x.ai/x-subscription/pricing"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "X Subscription Plus",
+      "price": 8,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "标准月付$8；年付$80/年；基础周用量，Grok与Cursor共享；不含Grok Bot",
+      "source_url": "https://docs.x.ai/x-subscription/pricing"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "X Subscription Super",
       "price": 100,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "显著提高用量并支持1080p视频",
+      "note": "标准月付$100；年付$1000/年；15倍Plus周用量，Grok与Cursor共享；含Grok Bot，Cursor第三方模型另计",
+      "source_url": "https://docs.x.ai/x-subscription/pricing"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "X Subscription Ultra",
+      "price": 200,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "标准月付$200；年付$2000/年；50倍Plus周用量，Grok与Cursor共享；含Grok Bot，Cursor第三方模型另计",
+      "source_url": "https://docs.x.ai/x-subscription/pricing"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "X Subscription Teams Premium",
+      "price": 30,
+      "currency_symbol": "$",
+      "billing": "/席位/月",
+      "note": "每席位匹配个人同档额度，可混配；每席位周额度独立，额外预付余额由团队共享",
+      "source_url": "https://docs.x.ai/x-subscription/pricing"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "X Subscription Teams Super",
+      "price": 100,
+      "currency_symbol": "$",
+      "billing": "/席位/月",
+      "note": "每席位匹配个人同档额度，可混配；每席位周额度独立，额外预付余额由团队共享",
+      "source_url": "https://docs.x.ai/x-subscription/pricing"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "X Subscription Teams Ultra",
+      "price": 200,
+      "currency_symbol": "$",
+      "billing": "/席位/月",
+      "note": "每席位匹配个人同档额度，可混配；每席位周额度独立，额外预付余额由团队共享",
+      "source_url": "https://docs.x.ai/x-subscription/pricing"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "X Subscription Enterprise",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "联系销售",
+      "note": "企业统一Grok与Cursor管理及用量；合同报价，无统一固定月费",
       "source_url": "https://x.ai/pricing"
     },
     {
       "provider": "xAI",
       "provider_code": "xai",
-      "plan": "Grok Free",
-      "price": 0,
-      "currency_symbol": "",
-      "billing": "免费",
-      "note": "基础使用限额",
-      "source_url": "https://x.ai/pricing"
+      "plan": "X Subscription Additional Usage",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "按量计费",
+      "note": "预付充值支付超额及Cursor第三方模型；第三方从首次调用收费，自动充值需自行启用",
+      "source_url": "https://docs.x.ai/x-subscription/extra-usage"
     },
     {
       "provider": "xAI",
       "provider_code": "xai",
-      "plan": "SuperGrok Lite",
+      "plan": "SuperGrok（旧档）",
+      "price": 30,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "更高限额与旗舰模型；旧订阅继续原价与权益，新用户改选X Subscription；未公开旧档价格不补猜；旧金额保留待复核",
+      "source_url": "https://x.ai/news/x-subscription"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "SuperGrok Plus（旧档）",
+      "price": 100,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "显著提高用量并支持1080p视频；旧订阅继续原价与权益，新用户改选X Subscription；未公开旧档价格不补猜；旧金额保留待复核",
+      "source_url": "https://x.ai/news/x-subscription"
+    },
+    {
+      "provider": "xAI",
+      "provider_code": "xai",
+      "plan": "SuperGrok Lite（旧档）",
       "price": null,
       "currency_symbol": "",
       "billing": "地区定价",
-      "note": "以登录后的结账页为准",
-      "source_url": "https://x.ai/pricing"
+      "note": "以登录后的结账页为准；旧订阅继续原价与权益，新用户改选X Subscription；未公开旧档价格不补猜",
+      "source_url": "https://x.ai/news/x-subscription"
     },
     {
       "provider": "xAI",
       "provider_code": "xai",
-      "plan": "SuperGrok Heavy",
+      "plan": "SuperGrok Heavy（旧档）",
       "price": null,
       "currency_symbol": "",
       "billing": "地区定价",
-      "note": "以登录后的结账页为准",
-      "source_url": "https://x.ai/pricing"
+      "note": "以登录后的结账页为准；旧订阅继续原价与权益，新用户改选X Subscription；未公开旧档价格不补猜",
+      "source_url": "https://x.ai/news/x-subscription"
     },
     {
       "provider": "xAI",
       "provider_code": "xai",
-      "plan": "Grok Business",
+      "plan": "Grok Business（旧档）",
       "price": null,
       "currency_symbol": "",
       "billing": "联系销售",
-      "note": "团队管理与统一账单；官方公开页未列固定月费",
-      "source_url": "https://x.ai/pricing"
+      "note": "团队管理与统一账单；官方公开页未列固定月费；旧订阅继续原价与权益，新用户改选X Subscription；未公开旧档价格不补猜",
+      "source_url": "https://x.ai/news/x-subscription"
     },
     {
       "provider": "xAI",
       "provider_code": "xai",
-      "plan": "Grok Enterprise",
+      "plan": "Grok Enterprise（旧档）",
       "price": null,
       "currency_symbol": "",
       "billing": "联系销售",
-      "note": "企业定制价格",
-      "source_url": "https://x.ai/pricing"
+      "note": "企业定制价格；旧订阅继续原价与权益，新用户改选X Subscription；未公开旧档价格不补猜",
+      "source_url": "https://x.ai/news/x-subscription"
     },
     {
       "provider": "xAI",
@@ -1031,7 +1488,7 @@
       "price": null,
       "currency_symbol": "$",
       "billing": "按量计费",
-      "note": "按模型Token及工具计费",
+      "note": "Token与工具分开计费；X搜索$5/千条帖子、$10/千个用户资料，网页搜索$5/千次",
       "source_url": "https://docs.x.ai/developers/pricing"
     },
     {
@@ -1041,7 +1498,7 @@
       "price": 0,
       "currency_symbol": "",
       "billing": "免费",
-      "note": "API按量计费",
+      "note": "保留免费旧记录；10月21日官网未公开可核验的价格与完整权益，仍待复核",
       "source_url": "https://www.deepseek.com/"
     },
     {
@@ -1051,37 +1508,57 @@
       "price": null,
       "currency_symbol": "",
       "billing": "按量计费",
-      "note": "按模型Token单价结算",
+      "note": "Flash与Pro按Token峰谷计费；搜索与抓取独立计费，客户端服务端工具调用11月1日起收费",
+      "source_url": "https://api-docs.deepseek.com/quick_start/pricing/"
+    },
+    {
+      "provider": "DeepSeek",
+      "provider_code": "deepseek",
+      "plan": "Search / Fetch API",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "按量计费",
+      "note": "Search与Fetch各$0.75/千次成功请求；Harness、Claude Code、Codex中的服务端工具调用现免费，2026-11-01北京0时起收费",
       "source_url": "https://api-docs.deepseek.com/quick_start/pricing/"
     },
     {
       "provider": "千问",
       "provider_code": "qwen",
       "plan": "Token Plan Lite",
-      "price": 39,
+      "price": 60,
       "currency_symbol": "¥",
       "billing": "/月",
-      "note": "限时价，原价¥60",
+      "note": "标准月付¥60；官网现行限时¥39，11,500 Credits/月，华北2限定；活动未列截止日",
+      "source_url": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"
+    },
+    {
+      "provider": "千问",
+      "provider_code": "qwen",
+      "plan": "Token Plan Essential",
+      "price": 120,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "标准月付¥120；官网现行限时¥79，25,500 Credits/月，华北2限定；活动未列截止日",
       "source_url": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"
     },
     {
       "provider": "千问",
       "provider_code": "qwen",
       "plan": "Token Plan Standard",
-      "price": 139,
+      "price": 180,
       "currency_symbol": "¥",
       "billing": "/月",
-      "note": "限时价，原价¥180",
+      "note": "标准月付¥180；官网现行限时¥139，45,000 Credits/月，华北2限定；活动未列截止日；附赠Harness额度与折扣",
       "source_url": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"
     },
     {
       "provider": "千问",
       "provider_code": "qwen",
       "plan": "Token Plan Pro",
-      "price": 499,
+      "price": 600,
       "currency_symbol": "¥",
       "billing": "/月",
-      "note": "限时价，原价¥600",
+      "note": "标准月付¥600；官网现行限时¥499，180,000 Credits/月，华北2限定；活动未列截止日；附赠Harness额度与折扣",
       "source_url": "https://help.aliyun.com/zh/model-studio/token-plan-personal-overview"
     },
     {
@@ -1098,20 +1575,20 @@
       "provider": "千问",
       "provider_code": "qwen",
       "plan": "Token Plan 标准座席",
-      "price": 150,
+      "price": 198,
       "currency_symbol": "¥",
       "billing": "/座席/月",
-      "note": "限时价，原价¥198，25,000 Credits/座席/月",
+      "note": "标准月付¥198；官网限时¥150，25,000 Credits/座席/月，华北2限定；活动未列截止日",
       "source_url": "https://help.aliyun.com/zh/model-studio/token-plan-overview"
     },
     {
       "provider": "千问",
       "provider_code": "qwen",
       "plan": "Token Plan 高级座席",
-      "price": 550,
+      "price": 698,
       "currency_symbol": "¥",
       "billing": "/座席/月",
-      "note": "限时价，原价¥698，100,000 Credits/座席/月",
+      "note": "标准月付¥698；官网限时¥550，100,000 Credits/座席/月，华北2限定；活动未列截止日",
       "source_url": "https://help.aliyun.com/zh/model-studio/token-plan-overview"
     },
     {
@@ -1141,8 +1618,18 @@
       "price": null,
       "currency_symbol": "¥",
       "billing": "按量计费",
-      "note": "按地域、模型及Token计费",
+      "note": "按地域、模型及Token计费；官方中文与英文价格表分别核对",
       "source_url": "https://help.aliyun.com/en/model-studio/model-pricing"
+    },
+    {
+      "provider": "千问",
+      "provider_code": "qwen",
+      "plan": "Coding Plan Pro",
+      "price": 200,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "标准月费¥200，新客首月¥39.90；每日09:30补充限量名额，实际以下单页为准",
+      "source_url": "https://help.aliyun.com/zh/model-studio/coding-plan"
     },
     {
       "provider": "智谱AI",
@@ -1151,58 +1638,58 @@
       "price": 18,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "年付折合$12.6/月",
-      "source_url": "https://z.ai/subscribe"
+      "note": "官方标价$18/月；另列优惠$12.6/月，周期与期限以结账为准；每周10,000积分、另有5小时上限",
+      "source_url": "https://zcode.z.ai/en"
     },
     {
       "provider": "智谱AI",
       "provider_code": "glm",
       "plan": "GLM Coding Pro",
-      "price": 72,
+      "price": 80,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "年付折合$50.4/月；本次固定月费待复核(保留9月2日旧值)",
-      "source_url": "https://z.ai/subscribe"
+      "note": "官方标价$80/月；另列优惠$56/月，周期与期限以结账为准；每周60,000积分、另有5小时上限",
+      "source_url": "https://zcode.z.ai/en"
     },
     {
       "provider": "智谱AI",
       "provider_code": "glm",
       "plan": "GLM Coding Max",
-      "price": 160,
+      "price": 168,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "年付折合$112/月；本次固定月费待复核(保留9月2日旧值)",
-      "source_url": "https://z.ai/subscribe"
+      "note": "官方标价$168/月；另列优惠$117.6/月，周期与期限以结账为准；每周140,000积分、另有5小时上限",
+      "source_url": "https://zcode.z.ai/en"
     },
     {
       "provider": "智谱AI",
       "provider_code": "glm",
       "plan": "GLM Coding Lite(国内)",
-      "price": null,
+      "price": 118,
       "currency_symbol": "¥",
-      "billing": "地区定价",
-      "note": "国内独立套餐；本次固定月费待复核",
-      "source_url": "https://docs.bigmodel.cn/cn/coding-plan/overview"
+      "billing": "/月",
+      "note": "官方标价¥118/月；另列优惠¥94.4/月，周期与期限以结账为准；每周10,000积分，非高峰半额抵扣",
+      "source_url": "https://zcode.z.ai/cn"
     },
     {
       "provider": "智谱AI",
       "provider_code": "glm",
       "plan": "GLM Coding Pro(国内)",
-      "price": null,
+      "price": 538,
       "currency_symbol": "¥",
-      "billing": "地区定价",
-      "note": "国内独立套餐；本次固定月费待复核",
-      "source_url": "https://docs.bigmodel.cn/cn/coding-plan/overview"
+      "billing": "/月",
+      "note": "官方标价¥538/月；另列优惠¥430.4/月，周期与期限以结账为准；每周60,000积分，非高峰半额抵扣",
+      "source_url": "https://zcode.z.ai/cn"
     },
     {
       "provider": "智谱AI",
       "provider_code": "glm",
       "plan": "GLM Coding Max(国内)",
-      "price": null,
+      "price": 1078,
       "currency_symbol": "¥",
-      "billing": "地区定价",
-      "note": "国内独立套餐；本次固定月费待复核",
-      "source_url": "https://docs.bigmodel.cn/cn/coding-plan/overview"
+      "billing": "/月",
+      "note": "官方标价¥1078/月；另列优惠¥862.4/月，周期与期限以结账为准；每周140,000积分，非高峰半额抵扣",
+      "source_url": "https://zcode.z.ai/cn"
     },
     {
       "provider": "智谱AI",
@@ -1211,7 +1698,7 @@
       "price": null,
       "currency_symbol": "$",
       "billing": "地区定价",
-      "note": "至少2席位；公开权益页未列固定月费",
+      "note": "至少2席位、不能混配；每5小时15,000/每周66,000积分，公开文档未列固定美元月费",
       "source_url": "https://docs.z.ai/devpack/teamplan"
     },
     {
@@ -1221,8 +1708,28 @@
       "price": null,
       "currency_symbol": "$",
       "billing": "地区定价",
-      "note": "至少2席位；公开权益页未列固定月费",
+      "note": "至少2席位、不能混配；每5小时35,000/每周155,000积分，文档亦称Advanced，固定美元月费待复核",
       "source_url": "https://docs.z.ai/devpack/teamplan"
+    },
+    {
+      "provider": "智谱AI",
+      "provider_code": "glm",
+      "plan": "GLM Coding Team Premium（国内）",
+      "price": null,
+      "currency_symbol": "¥",
+      "billing": "地区定价",
+      "note": "官方文档截图列团队档¥1198，具体计费周期、每席位口径及优惠待结账复核",
+      "source_url": "https://zcode.z.ai/cn/docs/configuration"
+    },
+    {
+      "provider": "智谱AI",
+      "provider_code": "glm",
+      "plan": "GLM Coding Team Standard（国内）",
+      "price": null,
+      "currency_symbol": "¥",
+      "billing": "地区定价",
+      "note": "官方文档截图列团队档¥598，具体计费周期、每席位口径及优惠待结账复核",
+      "source_url": "https://zcode.z.ai/cn/docs/configuration"
     },
     {
       "provider": "智谱AI",
@@ -1235,43 +1742,133 @@
       "source_url": "https://docs.z.ai/guides/overview/pricing"
     },
     {
-      "provider": "Kimi",
-      "provider_code": "kimi",
-      "plan": "Andante",
-      "price": 49,
+      "provider": "智谱AI",
+      "provider_code": "glm",
+      "plan": "GLM API免费模型",
+      "price": 0,
+      "currency_symbol": "$",
+      "billing": "免费",
+      "note": "国际GLM-4.7-Flash、GLM-4.5-Flash等免费API；配额及适用模型以官方页为准",
+      "source_url": "https://docs.z.ai/guides/overview/pricing"
+    },
+    {
+      "provider": "智谱AI",
+      "provider_code": "glm",
+      "plan": "ZCode BigModel新用户体验",
+      "price": 0,
       "currency_symbol": "¥",
-      "billing": "/月",
-      "note": "日常使用；连续包年更优惠",
-      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+      "billing": "免费",
+      "note": "仅首次使用起5天；每日GLM-5.3 300万、Flash 500万Token，期满失效，并非长期免费额度",
+      "source_url": "https://zcode.z.ai/cn/docs/configuration"
+    },
+    {
+      "provider": "智谱AI",
+      "provider_code": "glm",
+      "plan": "GLM Coding Team超额用量",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "按量计费",
+      "note": "需团队启用超额用量并设预算；官方限时按API标价9折，截止日未公开",
+      "source_url": "https://docs.z.ai/devpack/teamplan"
     },
     {
       "provider": "Kimi",
       "provider_code": "kimi",
-      "plan": "Moderato",
+      "plan": "Kimi Plus",
       "price": 99,
       "currency_symbol": "¥",
       "billing": "/月",
-      "note": "效率升级；连续包年更优惠",
+      "note": "标准月付¥99；年付¥948/年（折合¥79/月）；含Kimi Code与Agent集群；Code保留滚动5小时限额、取消周限额，月度共享额度不结转",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
       "provider": "Kimi",
       "provider_code": "kimi",
-      "plan": "Allegretto",
+      "plan": "Kimi Go",
+      "price": 49,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "标准月付¥49；年付¥468/年（折合¥39/月）；不含Kimi Code，月度共享额度不结转",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Kimi Pro",
       "price": 199,
       "currency_symbol": "¥",
       "billing": "/月",
-      "note": "专业优选；连续包年更优惠",
+      "note": "标准月付¥199；年付¥1908/年（折合¥159/月）；含目标模式、专属Kimi Claw与更多额度；Code保留滚动5小时限额、取消周限额，月度共享额度不结转",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
       "provider": "Kimi",
       "provider_code": "kimi",
-      "plan": "Allegro",
+      "plan": "Kimi Max",
       "price": 699,
       "currency_symbol": "¥",
       "billing": "/月",
-      "note": "全能尊享；连续包年更优惠",
+      "note": "标准月付¥699；年付¥6708（折合¥559/月）；14倍Agent额度，新Code无周限额、保留滚动5小时限额",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Kimi Ultra",
+      "price": 1399,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "标准月付¥1399；年付¥13428（折合¥1119/月）；28倍Agent额度、4任务并行，定时与小组件任务各25个",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Andante（旧档）",
+      "price": 49,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "日常使用；连续包年更优惠；原用户可续费，保留Kimi Code滚动5小时及周限额；非每周只能使用5小时",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Moderato（旧档）",
+      "price": 99,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "效率升级；连续包年更优惠；原用户可续费，保留Kimi Code滚动5小时及周限额；非每周只能使用5小时",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Allegretto（旧档）",
+      "price": 199,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "专业优选；连续包年更优惠；原用户可续费，保留Kimi Code滚动5小时及周限额；非每周只能使用5小时",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Allegro（旧档）",
+      "price": 699,
+      "currency_symbol": "¥",
+      "billing": "/月",
+      "note": "全能尊享；连续包年更优惠；原用户可续费，保留Kimi Code滚动5小时及周限额；非每周只能使用5小时",
+      "source_url": "https://www.kimi.com/help/membership/membership-pricing"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "会员加油包",
+      "price": null,
+      "currency_symbol": "¥",
+      "billing": "按量计费",
+      "note": "会员额度用尽后可开启；官方帮助页未列固定单价",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
@@ -1281,7 +1878,7 @@
       "price": 19,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核",
+      "note": "保留2026-09-02官方美元旧价；10月21日公开帮助页仍仅列人民币新档，国际旧档待复核",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
@@ -1291,7 +1888,7 @@
       "price": 39,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核",
+      "note": "保留2026-09-02官方美元旧价；10月21日公开帮助页仍仅列人民币新档，国际旧档待复核",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
@@ -1301,7 +1898,7 @@
       "price": 99,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核",
+      "note": "保留2026-09-02官方美元旧价；10月21日公开帮助页仍仅列人民币新档，国际旧档待复核",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
@@ -1311,7 +1908,7 @@
       "price": 199,
       "currency_symbol": "$",
       "billing": "/月",
-      "note": "保留2026-09-02官方公开价；当前官方页面未直接展示，待复核",
+      "note": "保留2026-09-02官方美元旧价；10月21日公开帮助页仍仅列人民币新档，国际旧档待复核",
       "source_url": "https://www.kimi.com/help/membership/membership-pricing"
     },
     {
@@ -1321,18 +1918,68 @@
       "price": null,
       "currency_symbol": "¥",
       "billing": "按量计费",
-      "note": "API与会员分开；K3、K2.7 Code和K2.6按Token计费",
+      "note": "API与会员分开；K3、K2.7 Code及K2.6按Token计费，K3缓存写入按TTL另计；10月21日API官网超时，待复核",
       "source_url": "https://platform.kimi.com/"
+    },
+    {
+      "provider": "Kimi",
+      "provider_code": "kimi",
+      "plan": "Kimi企业服务",
+      "price": null,
+      "currency_symbol": "¥",
+      "billing": "联系销售",
+      "note": "官方提供SLA、弹性限速、多项目与专属支持，固定总价未公开；10月21日API官网超时，待复核",
+      "source_url": "https://platform.kimi.com/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Muse Code High Usage",
+      "price": 15,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "标准月付$15，5倍Everyday用量；默认Contributor允许内容用于训练，可关闭；仅CLI订阅凭据适用；韩国不含Wonder系列，印度不含Muse Image",
+      "source_url": "https://dev.meta.ai/help/subscriptions/what-is-a-muse-code-subscription"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Muse Code Everyday Usage",
+      "price": 5,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "标准月付$5，1倍Everyday用量；默认Contributor允许内容用于训练，可关闭；仅CLI订阅凭据适用；韩国不含Wonder系列，印度不含Muse Image",
+      "source_url": "https://dev.meta.ai/help/subscriptions/what-is-a-muse-code-subscription"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Muse Code Power Usage",
+      "price": 50,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "标准月付$50，20倍Everyday用量；含Wonder Full；默认Contributor允许内容用于训练，可关闭；仅CLI订阅凭据适用；韩国不含Wonder系列，印度不含Muse Image",
+      "source_url": "https://dev.meta.ai/help/subscriptions/what-is-a-muse-code-subscription"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Muse Code Maximum Usage",
+      "price": 200,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "标准月付$200，80倍Everyday用量；含Wonder Full；默认Contributor允许内容用于训练，可关闭；仅CLI订阅凭据适用；韩国不含Wonder系列，印度不含Muse Image",
+      "source_url": "https://dev.meta.ai/help/subscriptions/what-is-a-muse-code-subscription"
     },
     {
       "provider": "Meta",
       "provider_code": "meta",
       "plan": "Meta Model API",
       "price": null,
-      "currency_symbol": "",
+      "currency_symbol": "$",
       "billing": "按量计费",
-      "note": "Muse Spark 1.3；公开预览已扩大至全球，固定Token单价未公开",
-      "source_url": "https://ai.meta.com/llama/"
+      "note": "Wonder及Spark按Token计费；Standard内容不用于训练，搜索另计；订阅专用凭据以外的API密钥按量计费",
+      "source_url": "https://dev.meta.ai/docs/pricing-rate-limits"
     },
     {
       "provider": "Meta",
@@ -1341,8 +1988,8 @@
       "price": 0,
       "currency_symbol": "",
       "billing": "免费",
-      "note": "Llama自托管成本另计",
-      "source_url": "https://www.meta.ai/"
+      "note": "官方公告确认日常基础体验免费；Meta One扩展AI权益另行订阅",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
     },
     {
       "provider": "Meta",
@@ -1351,106 +1998,242 @@
       "price": null,
       "currency_symbol": "",
       "billing": "自托管",
-      "note": "成本取决于硬件或云平台",
+      "note": "无统一官方API价；10月21日旧入口跳转llama.com后无法读取，授权与部署资料待复核",
       "source_url": "https://ai.meta.com/llama/get-started/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Muse开放权重自托管",
+      "price": null,
+      "currency_symbol": "",
+      "billing": "自托管",
+      "note": "Muse Spark Open与Muse Glimmer自行部署；硬件或第三方推理费用另计，无Meta统一API单价",
+      "source_url": "https://dev.meta.ai/docs/models"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Muse Code按量使用",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "按量计费",
+      "note": "使用Model API密钥按Token收费；与CLI月费订阅分开",
+      "source_url": "https://dev.meta.ai/docs/pricing-rate-limits"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta Model API Contributor",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "按量计费",
+      "note": "仅Spark 1.3/1.2，$0.10/$0.002/$0.20每百万输入/缓存/输出；允许内容用于模型训练，Wonder API不支持",
+      "source_url": "https://dev.meta.ai/docs/pricing-rate-limits"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Muse订阅",
+      "price": null,
+      "currency_symbol": "",
+      "billing": "地区定价",
+      "note": "官方公告确认Muse订阅入口，但10月21日跳转登录；固定月费与细分档位待登录复核",
+      "source_url": "https://about.fb.com/news/2026/10/introducing-muse-wonder-models/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One Instagram Plus",
+      "price": 3.99,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "官方公告月标价$3.99；Instagram单产品权益；10月21日已复核官方公告；购买页，地区与账号价格待复核",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One WhatsApp Plus",
+      "price": 2.99,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "官方公告月标价$2.99；WhatsApp单产品权益；10月21日已复核官方公告；购买页，地区与账号价格待复核",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One Facebook Plus",
+      "price": 3.99,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "官方公告月标价$3.99；Facebook单产品权益；10月21日已复核官方公告；购买页，地区与账号价格待复核",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One Core",
+      "price": 7.99,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "官方公告月标价$7.99；多App个人权益及更多AI图像、视频生成；10月21日已复核官方公告；购买页，地区与账号价格待复核",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One Premium",
+      "price": 19.99,
+      "currency_symbol": "$",
+      "billing": "/月",
+      "note": "官方公告月标价$19.99；Core全部权益与更高AI创作用量；10月21日已复核官方公告；购买页，地区与账号价格待复核",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One Essential",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "地区定价",
+      "note": "创作者及企业档，官方公告起价$14.99/月；非统一固定月费，地区、App与账号权益需结账确认",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One Advanced",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "地区定价",
+      "note": "创作者及企业档，官方公告起价$49.99/月；非统一固定月费，地区、App与账号权益需结账确认",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One Expert",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "地区定价",
+      "note": "创作者及企业档，官方公告起价$149/月；非统一固定月费，地区、App与账号权益需结账确认",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
+    },
+    {
+      "provider": "Meta",
+      "provider_code": "meta",
+      "plan": "Meta One Max",
+      "price": null,
+      "currency_symbol": "$",
+      "billing": "地区定价",
+      "note": "创作者及企业档，官方公告起价$499/月；非统一固定月费，地区、App与账号权益需结账确认",
+      "source_url": "https://about.fb.com/news/2026/09/introducing-meta-one-subscription-service-more-features-ai/"
     }
   ],
   "updates": [
     {
-      "date": "2026-09-12",
-      "provider": "OpenAI",
-      "tag": "套餐",
-      "title": "Pro 20x暂停售新订阅与升级"
-    },
-    {
-      "date": "2026-09-12",
-      "provider": "智谱AI",
-      "tag": "价格",
-      "title": "GLM-5.3-Flash恢复标准价格"
-    },
-    {
-      "date": "2026-09-09",
-      "provider": "Meta",
-      "tag": "模型",
-      "title": "Muse Spark 1.3成为最新编码旗舰"
-    },
-    {
-      "date": "2026-09-09",
-      "provider": "Meta",
-      "tag": "套餐",
-      "title": "Model API公开预览扩大至全球"
-    },
-    {
-      "date": "2026-09-09",
-      "provider": "Kimi",
-      "tag": "价格",
-      "title": "会员更新为人民币四档49至699元"
-    },
-    {
-      "date": "2026-09-09",
-      "provider": "Kimi",
-      "tag": "复核",
-      "title": "K3与K2.7、K2.6价格完成官方复核"
-    },
-    {
-      "date": "2026-09-09",
-      "provider": "千问",
-      "tag": "价格",
-      "title": "补齐Qwen3.8 Max隐式缓存单价"
-    },
-    {
-      "date": "2026-09-09",
-      "provider": "xAI",
-      "tag": "价格",
-      "title": "X搜索将于9月21日起按结果计费"
-    },
-    {
-      "date": "2026-09-09",
-      "provider": "智谱AI",
-      "tag": "价格",
-      "title": "GLM-5.3-Flash半价优惠今晚结束"
-    },
-    {
-      "date": "2026-09-06",
-      "provider": "OpenAI",
-      "tag": "模型",
-      "title": "新增GPT-6 Astra百万上下文旗舰"
-    },
-    {
-      "date": "2026-09-06",
+      "date": "2026-10-21",
       "provider": "Google",
       "tag": "模型",
-      "title": "Gemini 3.8 Flash沿用年底优惠价"
+      "title": "新增Gemini 4 Argon及12月调价"
     },
     {
-      "date": "2026-09-06",
-      "provider": "智谱AI",
-      "tag": "价格",
-      "title": "GLM-5.3-Flash半价至9月9日"
+      "date": "2026-10-21",
+      "provider": "Kimi",
+      "tag": "套餐",
+      "title": "新增Ultra月付1399元与年付口径"
     },
     {
-      "date": "2026-09-06",
+      "date": "2026-10-21",
+      "provider": "Meta",
+      "tag": "开源",
+      "title": "补齐Muse Spark Open自托管"
+    },
+    {
+      "date": "2026-10-21",
+      "provider": "DeepSeek",
+      "tag": "计费",
+      "title": "搜索抓取工具11月1日起收费"
+    },
+    {
+      "date": "2026-10-21",
       "provider": "DeepSeek",
       "tag": "模型",
-      "title": "新增V4 Flash视觉实验版"
+      "title": "Flash别名已更新至1017版本"
     },
     {
-      "date": "2026-09-06",
+      "date": "2026-10-21",
+      "provider": "智谱AI",
+      "tag": "套餐",
+      "title": "补齐国内团队档与5天体验"
+    },
+    {
+      "date": "2026-10-21",
       "provider": "Google",
       "tag": "套餐",
-      "title": "美元AI Plus页面存储更新为2TB"
+      "title": "美元Plus与Pro重新取得确认"
     },
     {
-      "date": "2026-09-06",
-      "provider": "xAI",
-      "tag": "价格",
-      "title": "长上下文从达到200K起计费"
-    },
-    {
-      "date": "2026-09-06",
-      "provider": "Kimi",
+      "date": "2026-10-21",
+      "provider": "多厂商",
       "tag": "复核",
-      "title": "部分官方价格表不可读，旧值已标注"
+      "title": "国内API与地区旧价继续待复核"
+    },
+    {
+      "date": "2026-10-12",
+      "provider": "Meta",
+      "tag": "模型",
+      "title": "Muse Wonder上线，Full仅供订阅"
+    },
+    {
+      "date": "2026-10-13",
+      "provider": "Meta",
+      "tag": "价格",
+      "title": "补齐Spark标准价与Contributor优惠"
+    },
+    {
+      "date": "2026-10-12",
+      "provider": "xAI",
+      "tag": "套餐",
+      "title": "X整合订阅四档，旧订阅可保留"
+    },
+    {
+      "date": "2026-10-13",
+      "provider": "xAI",
+      "tag": "团队",
+      "title": "团队三档可混配，充值与周额度分开"
+    },
+    {
+      "date": "2026-10-12",
+      "provider": "Kimi",
+      "tag": "套餐",
+      "title": "Go至Max四档上线，旧档仍可续费"
+    },
+    {
+      "date": "2026-10-13",
+      "provider": "Kimi",
+      "tag": "额度",
+      "title": "新Code取消周限额，Go不含Code"
+    },
+    {
+      "date": "2026-10-13",
+      "provider": "千问",
+      "tag": "下线",
+      "title": "Turbo已下线，移除独立旧价"
+    },
+    {
+      "date": "2026-10-10",
+      "provider": "Anthropic",
+      "tag": "模型",
+      "title": "新增Haiku 5.5与100K阶梯价格"
+    },
+    {
+      "date": "2026-10-10",
+      "provider": "Anthropic",
+      "tag": "价格",
+      "title": "Sonnet 5.5缓存降至$0.10"
     }
   ]
 }

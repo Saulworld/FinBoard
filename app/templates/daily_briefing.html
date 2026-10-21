@@ -697,8 +697,8 @@
     <!-- Top Search and Filter Bar -->
     <div class="briefing-header-bar">
         <form action="/daily-briefing" method="get" class="search-form-inline">
-            <input type="text" name="q" placeholder="输入股票代码 (如 NVDA) 或 评级/分析内容 搜索..." value="{{ q }}" class="search-input">
-            <button type="submit" class="search-btn">搜索</button>
+            <input data-micro-search type="text" name="q" placeholder="输入股票代码 (如 NVDA) 或 评级/分析内容 搜索..." value="{{ q }}" class="search-input">
+            <button type="submit" class="search-btn" data-micro="search">搜索</button>
             {% if q %}
             <a href="/daily-briefing" class="clear-search-btn">清除</a>
             {% endif %}
@@ -710,7 +710,7 @@
         <aside class="briefing-dates-aside">
             <div class="aside-title">
                 <span>历史简报日期</span>
-                <button type="button" id="refresh-briefings-btn" class="refresh-btn-aside" onclick="refreshBriefings(event)">
+                <button type="button" id="refresh-briefings-btn" class="refresh-btn-aside" onclick="refreshBriefings(event)" data-micro="refresh">
                     <span class="refresh-icon">🔄</span> 刷新
                 </button>
             </div>
@@ -1318,74 +1318,5 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<!-- Stock Card Detail Modal -->
-<div id="stock-card-modal-overlay" class="modal-overlay" onclick="closeStockCardModal(event)">
-    <div class="modal-dialog-card" onclick="event.stopPropagation()">
-        <div class="modal-card-header">
-            <div class="modal-card-title-group">
-                <span id="modal-card-icon">🏷️</span>
-                <span id="modal-card-title">股票深度评估报告</span>
-            </div>
-            <button class="modal-close-btn" onclick="closeStockCardModal()">&times;</button>
-        </div>
-        <div id="modal-card-body" class="modal-card-body">
-            <div class="modal-loading-spinner" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 0;">
-                <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1a73e8;border-radius:50%;animation:spinModal 0.8s linear infinite;"></div>
-                <p style="margin-top:16px;color:#5f6368;font-size:14px;font-weight:600;">正在加载分析卡片正文...</p>
-            </div>
-        </div>
-    </div>
-</div>
-
-<script>
-function openStockCardModal(date, ticker) {
-    const overlay = document.getElementById('stock-card-modal-overlay');
-    const titleEl = document.getElementById('modal-card-title');
-    const bodyEl = document.getElementById('modal-card-body');
-    
-    if (!overlay || !bodyEl) return;
-    
-    titleEl.textContent = `${ticker} 当日深度评估报告 (${date})`;
-    bodyEl.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 0;">
-            <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1a73e8;border-radius:50%;animation:spinModal 0.8s linear infinite;"></div>
-            <p style="margin-top:16px;color:#5f6368;font-size:14px;font-weight:600;">正在提取 ${ticker} 完整评估分析卡片...</p>
-        </div>
-    `;
-    
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    fetch(`/api/briefing/stock-card?date=${encodeURIComponent(date)}&ticker=${encodeURIComponent(ticker)}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success' && data.html) {
-                bodyEl.innerHTML = data.html;
-            } else {
-                bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#c5221f;font-weight:600;">⚠️ 未能提取到 ${ticker} 在 ${date} 的详细评估卡片</div>`;
-            }
-        })
-        .catch(err => {
-            bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#c5221f;font-weight:600;">⚠️ 加载出错: ${err.message}</div>`;
-        });
-}
-
-function closeStockCardModal(event) {
-    if (event && event.target && !event.target.classList.contains('modal-overlay') && !event.target.classList.contains('modal-close-btn')) {
-        return;
-    }
-    const overlay = document.getElementById('stock-card-modal-overlay');
-    if (overlay) {
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-}
-
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeStockCardModal();
-    }
-});
-</script>
-
+{# Shared report dialog is provided by base.html. #}
 {% endblock %}

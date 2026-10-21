@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% macro document_fields(prefix) %}
+<div class="documents-form-grid">
+    <div class="documents-select-field"><div class="documents-field-heading"><label for="{{ prefix }}DocumentCountry">国家/地区 *</label><button type="button" class="documents-manage-countries" data-micro="manage">管理</button></div><input id="{{ prefix }}DocumentCountry" name="country" type="text" required maxlength="80" list="documentCountryOptions" placeholder="例如：英国"></div>
+    <div class="documents-select-field">
+        <div class="documents-field-heading"><label for="{{ prefix }}DocumentType">证件类型 *</label><button type="button" class="documents-manage-types" data-micro="manage">⚙ 管理</button></div>
+        <select name="document_type" id="{{ prefix }}DocumentType" required><option value="" disabled selected>请选择证件类型</option>{% for type in document_types %}<option value="{{ type }}">{{ type }}</option>{% endfor %}</select>
+    </div>
+    <label><span>证件号 *</span><input name="number" type="text" required maxlength="100" autocomplete="off" spellcheck="false" placeholder="按证件原样填写"></label>
+    <label><span>持有人</span><input name="holder" type="text" maxlength="100" autocomplete="off" placeholder="选填"></label>
+    <label><span>签发日期</span><input name="issued_on" type="date"></label>
+    <label><span>到期日期</span><input name="expires_on" type="date"></label>
+    <label class="documents-form-wide"><span>签发机构</span><input name="issuer" type="text" maxlength="150" placeholder="选填"></label>
+    <label class="documents-form-wide"><span>地址</span><input name="address" type="text" maxlength="300" list="documentAddressOptions" autocomplete="off" placeholder="选填，可选择常用地址"></label>
+    <label class="documents-form-wide"><span>备注</span><textarea name="note" rows="1" maxlength="500" placeholder="选填"></textarea></label>
+</div>
+{% endmacro %}
+
+{% block content %}
+<link rel="stylesheet" href="/static/css/overseas_documents.css?v=1.3.0">
+<div id="overseasDocumentsPage" class="documents-page">
+    <datalist id="documentCountryOptions">{% for country in country_options %}<option value="{{ country }}">{% endfor %}</datalist>
+    <datalist id="documentAddressOptions">{% for item in address_options %}<option value="{{ item.address }}" data-country="{{ item.country }}">{% endfor %}</datalist>
+
+    <section class="board-card overseas-add-panel">
+        <div class="card-head">
+            <h2>添加境外证件</h2>
+            <button type="button" class="form-toggle-btn" id="toggleDocumentForm" aria-expanded="false" aria-controls="documentAddForm">添加证件</button>
+        </div>
+        <form action="/overseas-documents/add" method="post" id="documentAddForm" class="collapsible-add-form is-collapsed documents-add-form" autocomplete="off" inert>
+            {{ document_fields('add') }}
+            <div class="documents-form-actions"><button type="submit" class="documents-primary-btn">保存证件</button></div>
+        </form>
+    </section>
+
+    <section class="board-card documents-summary">
+        <div class="card-head"><h2>持有国家/地区</h2></div>
+        {% if countries %}
+        <div class="documents-country-list" aria-label="国家和地区汇总">
+            {% for country in countries %}
+            <span class="documents-country-chip">
+                {{ country.name }} <strong>{{ country.total }}</strong>{% for type, count in country.types.items() %}<small>{{ type }}{{ count }}</small>{% endfor %}
+            </span>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="documents-empty-intro">还没有记录。添加证件后，这里会按国家/地区汇总。</p>
+        {% endif %}
+    </section>
+
+    <section class="board-card documents-list-section">
+        <div class="card-head"><h2>证件</h2></div>
+        <div class="documents-grid{% if documents|length >= 5 %} has-many{% endif %}" id="documentsGrid">
+            {% for item in documents %}
+            <button type="button" class="document-tile documents-view" data-id="{{ item.id }}" aria-label="查看{{ item.country }}{{ item.document_type }}详情">
+                <span class="document-cover document-cover-{{ item.flag_theme }}">
+                    <span class="document-cover-top"><span class="document-cover-country">{{ item.country }}</span><span class="document-cover-type">{{ item.document_type }}</span></span>
+                    <span class="document-cover-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/static/images/ui-icons.svg#document"></use></svg></span>
+                    <span class="document-cover-number">{{ item.masked_number }}</span>
+                    <span class="document-cover-bottom"><span><small>持有人</small><strong>{{ item.holder or '未填写' }}</strong></span><span><small>到期日期</small><strong>{{ item.expires_on or '未填写' }}</strong></span></span>
+                    {% if item.expiry_status == 'expired' %}<span class="document-cover-expiry expired">已过期</span>
+                    {% elif item.expiry_status == 'soon' %}<span class="document-cover-expiry soon">即将到期</span>{% endif %}
+                </span>
+            </button>
+            {% endfor %}
+        </div>
+        <div class="documents-no-results" id="documentsNoResults" {% if documents %}hidden{% endif %}>暂无证件记录。</div>
+        <div id="documentsPagination" class="pagination-container" aria-label="证件列表分页" hidden></div>
+    </section>
+
+    <div class="document-modal" id="documentDetailModal" role="dialog" aria-modal="true" aria-labelledby="documentModalTitle" hidden>
+        <div class="board-card document-modal-card">
+            <div class="document-modal-head"><h2 id="documentModalTitle">证件详情</h2><button type="button" class="document-modal-close" data-close-modal aria-label="关闭">×</button></div>
+            <p class="documents-modal-error" id="documentModalError" role="alert" hidden></p>
+            <div id="documentDetailView">
+                <dl class="documents-detail-grid">
+                    <div><dt>国家/地区</dt><dd data-detail="country"></dd></div>
+                    <div><dt>证件类型</dt><dd data-detail="document_type"></dd></div>
+                    <div class="documents-detail-wide"><dt>证件号</dt><dd class="documents-detail-number"><span data-detail="number"></span><button type="button" id="documentCopyNumber">复制</button></dd></div>
+                    <div><dt>持有人</dt><dd data-detail="holder"></dd></div>
+                    <div><dt>签发机构</dt><dd data-detail="issuer"></dd></div>
+                    <div><dt>签发日期</dt><dd data-detail="issued_on"></dd></div>
+                    <div><dt>到期日期</dt><dd data-detail="expires_on"></dd></div>
+                    <div class="documents-detail-wide"><dt>地址</dt><dd data-detail="address"></dd></div>
+                    <div class="documents-detail-wide"><dt>备注</dt><dd data-detail="note"></dd></div>
+                </dl>
+                <div class="documents-modal-actions"><button type="button" id="documentEdit" class="documents-secondary-btn" data-micro="edit">修改</button><button type="button" id="documentDelete" class="documents-danger-btn" data-micro="delete">删除</button></div>
+            </div>
+            <form id="documentEditForm" autocomplete="off" hidden>
+                {{ document_fields('edit') }}
+                <div class="documents-modal-actions"><button type="button" id="documentEditCancel" class="documents-secondary-btn">取消</button><button type="submit" class="documents-primary-btn">保存修改</button></div>
+            </form>
+            <div id="documentDeleteConfirm" hidden><p>确定删除这条证件记录吗？</p><div class="documents-modal-actions"><button type="button" id="documentDeleteCancel" class="documents-secondary-btn">取消</button><button type="button" id="documentDeleteSubmit" class="documents-danger-btn" data-micro="delete" data-micro-confirm>确认删除</button></div></div>
+        </div>
+    </div>
+    <div class="document-modal" id="documentTypeModal" role="dialog" aria-modal="true" aria-labelledby="documentTypeTitle" hidden>
+        <div class="board-card document-modal-card document-types-card">
+            <div class="document-modal-head"><h2 id="documentTypeTitle">管理证件类型</h2><button type="button" class="document-modal-close" data-close-types aria-label="关闭">×</button></div>
+            <div class="documents-type-add"><input id="documentNewType" type="text" maxlength="80" placeholder="输入证件类型名称" aria-label="新证件类型"><button type="button" id="documentAddType" class="documents-secondary-btn">添加</button></div>
+            <div id="documentTypeList" class="documents-type-list"></div>
+            <p id="documentTypeError" class="documents-modal-error" role="alert" hidden></p>
+            <div class="documents-modal-actions"><button type="button" class="documents-secondary-btn" data-close-types>取消</button><button type="button" class="documents-primary-btn" id="documentSaveTypes">保存</button></div>
+        </div>
+    </div>
+</div>
+<script defer src="/static/js/overseas_documents.js?v=20260930-2"></script>
+{% endblock %}

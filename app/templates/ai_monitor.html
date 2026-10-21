@@ -34,7 +34,7 @@
 
     <div data-ai-panel="api">
         <div class="ai-toolbar">
-            <label class="ai-search-box"><span aria-hidden="true">🔍</span><input id="aiModelSearch" type="search" aria-label="搜索厂商或模型" placeholder="输入搜索厂商或模型..."></label>
+            <label data-micro-search-field class="ai-search-box"><span aria-hidden="true">🔍</span><input data-micro-search id="aiModelSearch" type="search" aria-label="搜索厂商或模型" placeholder="输入搜索厂商或模型..."></label>
             <select id="aiProviderFilter" aria-label="按厂商筛选">
                 <option value="">所有厂商</option>
                 {% for group in model_groups %}<option value="{{ group.provider }}">{{ group.provider }}</option>{% endfor %}

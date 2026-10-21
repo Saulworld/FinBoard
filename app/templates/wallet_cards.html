@@ -3,7 +3,7 @@
 {% block sidebar_content %}{% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="/static/css/wallet_cards.css?v=1.8.3">
+<link rel="stylesheet" href="/static/css/wallet_cards.css?v=1.9.8">
 
 <div id="walletCardsPage" class="wallet-cards-page" data-wallet-card-count="{{ wallet_cards|length }}">
 {% with expiry_alerts=wallet_alerts(), alert_title='境外卡到期提醒', alert_link='/wallet-cards', alert_action='更新有效期', alert_kind='wallet' %}{% include 'expiry_alert_panel.html' %}{% endwith %}
@@ -37,7 +37,7 @@
                     </select>
                 </label>
                 <label>
-                    <span class="wallet-field-heading">卡组织<button type="button" class="wallet-manage-schemes">⚙ 管理</button></span>
+                    <span class="wallet-field-heading">卡组织<button type="button" class="wallet-manage-schemes" data-micro="manage">⚙ 管理</button></span>
                     <select name="scheme">{% for scheme in scheme_options %}<option value="{{ scheme }}">{{ scheme }}</option>{% endfor %}</select>
                 </label>
                 <label>
@@ -86,10 +86,10 @@
         </div>
 
         {% if wallet_cards %}
-        <label class="wallet-search wallet-search-full">
+        <label data-micro-search-field class="wallet-search wallet-search-full">
             <span class="sr-only">搜索卡片</span>
             <span class="wallet-search-icon" aria-hidden="true">🔍</span>
-            <input type="search" id="walletCardSearch" placeholder="输入搜索名称、软件、卡组织或卡片类型..." autocomplete="off">
+            <input data-micro-search type="search" id="walletCardSearch" placeholder="输入卡号后四位、名称、软件、卡组织或卡片类型..." autocomplete="off">
         </label>
         <div id="walletCardGrid" class="wallet-card-grid">
             {% for card in wallet_cards %}
@@ -99,14 +99,14 @@
                 data-card-id="{{ card.id }}"
                 data-expiry="{{ card.expiry }}"
                 data-card-name="{{ card.name }}"
-                data-search="{{ card.name }} {{ card.software }} {{ card.scheme }} {{ card.card_variant }}"
+                data-search="{{ card.card_number_masked[-4:] }} {{ card.name }} {{ card.software }} {{ card.scheme }} {{ card.card_variant }} {{ card.bin_country }} {{ card.bin_alpha2 }} {{ card.bin_issuer }}"
                 aria-label="查看{{ card.name }}详情"
             >
                 <span class="wallet-card-cover wallet-card-cover-{{ card.cover_style }}">
                     <span class="wallet-card-topline">
                         <span class="wallet-card-software-mark" aria-hidden="true"><img src="{{ card.brand_icon }}" alt="" width="30" height="30"></span>
                         <span class="wallet-card-software">{{ card.software }}</span>
-                        <span class="wallet-card-scheme">{% if '虚拟卡' in card.card_variant %}虚拟卡 · {% endif %}{{ card.scheme }}</span>
+                        <span class="wallet-card-scheme">{% if '虚拟卡' in card.card_variant %}虚拟卡 · {% endif %}{{ card.scheme }}{% if card.cover_style in ['metamask-orange', 'maya-purple', 'trading212-black', 'trading212-virtual-black'] %}{% if card.bin_alpha2 %} · {{ card.bin_alpha2 }}{% endif %}{% elif card.bin_badge %} · {{ card.bin_badge }}{% endif %}</span>
                     </span>
                     {% if card.expiry_alert %}<span class="wallet-expiry-badge">{{ card.expiry_alert.label }}</span>{% endif %}
                     <span class="wallet-card-chip" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -141,7 +141,7 @@
         <div class="board-card wallet-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="walletDeleteTitle">
             <div class="card-head"><h2 id="walletDeleteTitle">确认删除卡片</h2><button type="button" data-wallet-modal-close aria-label="关闭">×</button></div>
             <p>您确定要删除卡片 <strong id="walletDeleteName"></strong> 吗？删除后将无法恢复。</p>
-            <div class="wallet-delete-actions"><button type="button" data-wallet-modal-close>取消</button><button type="button" id="confirmWalletDelete">确认删除</button></div>
+            <div class="wallet-delete-actions"><button type="button" data-wallet-modal-close>取消</button><button type="button" id="confirmWalletDelete" data-micro="delete" data-micro-confirm>确认删除</button></div>
         </div>
     </div>
     <div id="walletCardDetailModal" class="wallet-modal" aria-hidden="true">
@@ -180,8 +180,12 @@
                     <dt>账单地址</dt>
                     <dd id="walletDetailAddress">--</dd>
                 </div>
+                <div class="wallet-detail-address">
+                    <dt>卡段归属（卡BIN）</dt>
+                    <dd id="walletDetailBinCountry">--</dd>
+                </div>
                 <div>
-                    <dt>国家 / 地区</dt>
+                    <dt>工具账号注册国</dt>
                     <dd id="walletDetailCountry">--</dd>
                 </div>
                 <div>
@@ -207,11 +211,11 @@
             </dl>
             <div class="wallet-modal-actions">
                 <form id="deleteWalletCardForm" method="post">
-                    <button type="submit" class="wallet-danger-btn">删除</button>
+                    <button type="submit" class="wallet-danger-btn" data-micro="delete">删除</button>
                 </form>
                 <div>
                     <button type="button" class="wallet-secondary-btn" data-wallet-modal-close>关闭</button>
-                    <button type="button" id="editWalletCardButton">修改资料</button>
+                    <button type="button" id="editWalletCardButton" data-micro="edit">修改资料</button>
                 </div>
             </div>
         </div>
@@ -240,7 +244,7 @@
                         </select>
                     </label>
                     <label>
-                        <span class="wallet-field-heading">卡组织<button type="button" class="wallet-manage-schemes">⚙ 管理</button></span>
+                        <span class="wallet-field-heading">卡组织<button type="button" class="wallet-manage-schemes" data-micro="manage">⚙ 管理</button></span>
                         <select name="scheme" id="editWalletCardScheme">{% for scheme in scheme_options %}<option value="{{ scheme }}">{{ scheme }}</option>{% endfor %}</select>
                     </label>
                     <label><span>卡片版本 / 类型</span><input type="text" name="card_variant" id="editWalletCardVariant" maxlength="80"></label>
@@ -261,5 +265,5 @@
     </div>
 </div>
 
-<script defer src="/static/js/wallet_cards.js?v=1.7.0"></script>
+<script defer src="/static/js/wallet_cards.js?v=20260930-2"></script>
 {% endblock %}

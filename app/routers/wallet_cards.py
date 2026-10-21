@@ -6,6 +6,7 @@ import re
 from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 
+from app.bin_database import get_card_bin_info
 from app.expiry_alerts import card_expiry_status
 from app.json_store import json_file_transaction, load_json, save_json_atomic
 from app.utils import (
@@ -41,10 +42,10 @@ async def set_wallet_options(request: Request):
     return {"schemes": values}
 
 
-COVER_STYLES = {"standard", "decard-pink", "etherfi-prism", "plasma-dark", "plasma-light", "pokepay-green", "prepaid-green", "krak-red", "kraken-black", "coinbase-blue", "blackcat-photo", "payfun-gold", "dtcpay-gold", "starryblu-night", "mexc-black", "bunq-cloud", "yonder-dark", "virtual-orange", "mexc-global", "zopa-sage", "gmgn-green", "lava-black", "savo-green", "lloyds-green", "digitap-green"}
+COVER_STYLES = {"standard", "decard-pink", "etherfi-prism", "plasma-dark", "plasma-light", "pokepay-green", "prepaid-green", "krak-red", "kraken-black", "coinbase-blue", "blackcat-photo", "payfun-gold", "dtcpay-gold", "starryblu-night", "mexc-black", "bunq-cloud", "yonder-dark", "virtual-orange", "mexc-global", "zopa-sage", "gmgn-green", "lava-black", "savo-green", "lloyds-green", "digitap-green", "trading212-black", "trading212-virtual-black", "sumup-pink", "gate-dark", "avalanche-red", "peanut-pink", "redotpay-dark", "tria-prism", "kolo-cypherpunk", "metamask-orange", "maya-purple"}
 
 
-BRAND_ICONS = {103: 'decard.ico', 105: 'etherfi.png', 89: 'plasma.ico', 80: 'pokepay.png', 122: 'uu.ico', 24: 'krak.png', 23: 'krak.png', 91: 'blackcat.png', 83: 'skrill.ico', 93: 'payfun.svg', 79: 'dtcpay.ico', 69: 'starryblu.png', 99: 'mexc.png', 67: 'bunq.png', 45: 'yonder.png', 53: 'altery.png', 128: 'zopa.ico', 130: 'gmgn.png', 66: 'lava.png', 10: 'savo.png', 129: 'lloyds.png', 48: 'coinbase.svg', 12: 'digitap.ico'}
+BRAND_ICONS = {103: 'decard.ico', 105: 'etherfi.png', 89: 'plasma.ico', 80: 'pokepay.png', 122: 'uu.ico', 24: 'krak.png', 23: 'krak.png', 158: 'krak.png', 91: 'blackcat.png', 83: 'skrill.ico', 93: 'payfun.svg', 79: 'dtcpay.ico', 69: 'starryblu.png', 99: 'mexc.png', 67: 'bunq.png', 45: 'yonder.png', 53: 'altery.png', 128: 'zopa.ico', 130: 'gmgn.png', 66: 'lava.png', 10: 'savo.png', 129: 'lloyds.png', 48: 'coinbase.svg', 12: 'digitap.ico', 56: 'trading212.svg', 68: 'sumup.svg', 154: 'gate.png', 136: 'avalanche.svg', 121: 'peanut.ico', 135: 'redotpay.svg', 131: 'tria.ico', 160: 'kolo.svg', 47: 'metamask.svg', 85: 'maya.png'}
 
 def _brand_icon(record: dict) -> str:
     return "/static/images/wallet-brands/" + BRAND_ICONS.get(int(record.get("source_tool_id") or 0), "card.svg")
@@ -91,6 +92,7 @@ def _validate_card_input(card_number: str, expiry: str, cvc: str) -> str | None:
 
 def _page_card(record: dict) -> dict:
     cover_style = str(record.get("cover_style") or "standard")
+    bin_info = get_card_bin_info(str(record.get("card_number") or ""))
     return {
         "id": int(record.get("id", 0)),
         "name": record.get("name") or "未命名卡片",
@@ -102,12 +104,18 @@ def _page_card(record: dict) -> dict:
         "card_variant": record.get("card_variant") or "",
         "cover_style": cover_style if cover_style in COVER_STYLES else "standard",
         "card_number_masked": _mask_card_number(str(record.get("card_number") or "")),
+        "bin_country": bin_info["country"],
+        "bin_alpha2": bin_info["alpha2"],
+        "bin_flag": bin_info["flag"],
+        "bin_badge": bin_info["badge"],
+        "bin_issuer": bin_info["issuer"],
     }
 
 
 def _detail_card(record: dict, source_tool: dict | None = None) -> dict:
     tool = source_tool or {}
     cover_style = str(record.get("cover_style") or "standard")
+    bin_info = get_card_bin_info(str(record.get("card_number") or ""))
     return {
         "id": int(record.get("id", 0)),
         "name": record.get("name") or "",
@@ -128,6 +136,11 @@ def _detail_card(record: dict, source_tool: dict | None = None) -> dict:
         "login_method": tool.get("login_method") or "",
         "account_provider": tool.get("account_provider") or "",
         "kyc_provider": tool.get("kyc_provider") or "",
+        "bin_country": bin_info["country"],
+        "bin_alpha2": bin_info["alpha2"],
+        "bin_flag": bin_info["flag"],
+        "bin_issuer": bin_info["issuer"],
+        "bin_info_display": bin_info["display"],
     }
 
 

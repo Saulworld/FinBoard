@@ -9,7 +9,9 @@ from fastapi.responses import HTMLResponse
 
 
 router = APIRouter(tags=["ai-monitor"])
-DATA_FILE = Path(__file__).resolve().parents[2] / "data" / "ai_monitor.json"
+from app.config import DATA_DIR
+
+DATA_FILE = DATA_DIR / "ai_monitor.json"
 
 
 def load_ai_monitor_data() -> dict[str, Any]:
@@ -44,13 +46,6 @@ def page_ai_monitor(request: Request):
             model_groups.append(group)
         group["models"].append(model)
 
-    # Sort each provider by input price, then output price; unknown prices last.
-    for group in model_groups:
-        group["models"].sort(key=lambda model: (
-            model.get("input_price") if model.get("input_price") is not None else float("inf"),
-            model.get("output_price") if model.get("output_price") is not None else float("inf"),
-        ))
-
     plan_groups: list[dict[str, Any]] = []
     plan_groups_by_provider: dict[str, dict[str, Any]] = {}
     for plan in plans:
@@ -68,15 +63,13 @@ def page_ai_monitor(request: Request):
             plan_groups.append(group)
         group["plans"].append(plan)
 
-    # Stable order: free first, ascending listed price, unpriced plans last.
-    for group in plan_groups:
-        group["plans"].sort(key=lambda plan: (plan.get("price") is None, plan.get("price") or 0))
-
     stats = {
         "providers": len(model_groups),
         "models": len(models),
         "plans": len(plans),
-        "price_changes": sum(1 for model in models if model.get("status") == "即将调价"),
+        "price_changes": sum(
+            1 for model in models if model.get("status") == "即将调价"
+        ),
     }
 
     return request.app.state.templates.TemplateResponse(

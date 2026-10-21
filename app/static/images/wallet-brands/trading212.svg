@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Trading 212">
+  <rect width="64" height="64" rx="13" fill="#24262a"/>
+  <path d="m18 24 5-12 5 12h-4l-1-3h-1l-1 3z" fill="#299be2"/>
+  <text x="32" y="47" fill="#f4f5f7" font-family="Arial,sans-serif" font-size="26" font-weight="800" text-anchor="middle">212</text>
+</svg>

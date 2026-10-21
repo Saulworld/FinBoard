@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 260">
+  <!-- Geometric fox redrawn from the user's MetaMask card reference. -->
+  <path fill="#ff8d5d" d="M22 0 112 52H168L258 0 276 70 258 126 276 192 258 250 166 220H114L22 250 4 192 22 126 4 70Z"/>
+  <path fill="#6e1e00" d="M22 0 108 90 62 126H22L4 70ZM258 0 172 90 218 126H258L276 70Z"/>
+  <path fill="#ff5c16" d="m22 0 90 52-4 38Zm236 0-90 52 4 38ZM62 126l46-36 13 83-59-12ZM218 126l-46-36-13 83 59-12Z"/>
+  <path fill="#f66b23" d="M62 161h49l10 12-59-10ZM218 161h-49l-10 12 59-10Z"/>
+  <path fill="#752600" d="M91 157h18l6 17-33-5ZM189 157h-18l-6 17 33-5Z"/>
+  <path fill="#ff8c5a" d="M112 52h56l-28 168Z"/>
+  <path fill="#ffac85" d="M22 126h40v37l59 10 19 47-48-22H4ZM258 126h-40v37l-59 10-19 47 48-22h88Z"/>
+  <path fill="#e74e00" d="M4 192h76l34 28-92 30ZM276 192h-76l-34 28 92 30Z"/>
+  <path fill="#f75c08" d="M80 192v43l34-15ZM200 192v43l-34-15Z"/>
+  <path fill="#fff3ed" d="m80 235 34-15h52l34 15-45 25h-30Z"/>
+  <path fill="#441607" d="m125 213-11 7 11 17h30l11-17-11-7Z"/>
+  <path fill="#bdc1c8" d="M125 237h30v23h-30Z"/>
+</svg>

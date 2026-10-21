@@ -1,31 +1,20 @@
-﻿# Keep this script encoded as UTF-8 with BOM for Windows PowerShell 5.1.
+﻿param([ValidateSet("start","backup","restore","stop")][string]$Action = "start", [switch]$NoBrowser)
+$ErrorActionPreference = "Stop"
 $projectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
-Set-Location $projectRoot
-
-$pythonCandidates = @(
-    (Join-Path $projectRoot ".venv\Scripts\python.exe")
-)
-
-$pythonExe = $null
-foreach ($candidate in $pythonCandidates) {
-    if (Test-Path $candidate) {
-        $pythonExe = $candidate
-        break
-    }
+Set-Location -LiteralPath $projectRoot
+$pythonExe = Join-Path $projectRoot ".venv\Scripts\python.exe"
+if (-not (Test-Path -LiteralPath $pythonExe)) {
+    Write-Host "正在准备新版独立运行环境…"
+    & python -m venv (Join-Path $projectRoot ".venv")
+    if ($LASTEXITCODE -ne 0) { throw "创建运行环境失败。" }
+    & $pythonExe -m pip install -r (Join-Path $projectRoot "requirements-local.lock.txt")
+    if ($LASTEXITCODE -ne 0) { throw "安装依赖失败。" }
 }
-
-if (-not $pythonExe) {
-    $pythonCommand = Get-Command python -ErrorAction SilentlyContinue
-    if ($pythonCommand) {
-        $pythonExe = $pythonCommand.Source
-    } else {
-        Write-Host ""
-        Write-Host "没有找到 Python。请先按 README 创建 .venv 并安装依赖。" -ForegroundColor Red
-        Write-Host ""
-        Pause
-        exit 1
-    }
+if ($Action -eq "start") {
+    $runArgs = @((Join-Path $projectRoot "scripts\run_local.py"))
+    if ($NoBrowser) { $runArgs += "--no-browser" }
+    & $pythonExe @runArgs
+} else {
+    & $pythonExe (Join-Path $projectRoot "scripts\local_actions.py") $Action
 }
-
-Start-Process powershell -ArgumentList "-NoProfile", "-Command", "Start-Sleep -Seconds 2; Start-Process 'http://127.0.0.1:18010'" -WindowStyle Hidden
-& $pythonExe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 18010
+exit $LASTEXITCODE

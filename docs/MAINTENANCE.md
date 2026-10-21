@@ -11,7 +11,7 @@
 3. 运行项目测试：
 
    ```powershell
-   .\.venv\Scripts\python.exe -m unittest discover -s tests -q
+   .\.venv\Scripts\python.exe scripts/run_checks.py
    ```
 
 4. 重新打包并更新固定的`FinBoard/`脱敏副本：

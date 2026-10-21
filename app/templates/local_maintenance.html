@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="board-card">
+  <div class="card-head"><h2>备份与恢复</h2><button id="makeLocalBackup" type="button">立即备份</button></div>
+  <p style="color:var(--muted);line-height:1.8;margin:0">每次启动前保存完整快照，修改数据前自动保存数据快照。恢复前还会备份当时的状态。</p>
+  <p style="color:var(--muted);line-height:1.8;margin-bottom:0">需要恢复时，先停止新版，再双击项目文件夹中的“恢复新版”。原项目保持独立。</p>
+  <p id="localBackupStatus" role="status" aria-live="polite"></p>
+</section>
+<section class="board-card">
+  <div class="card-head"><h2>最近备份</h2><button id="reloadLocalBackups" class="form-toggle-btn" type="button" data-micro="refresh">刷新列表</button></div>
+  <div class="table-wrap"><table><thead><tr><th>时间</th><th>范围</th><th>原因</th><th>大小</th></tr></thead><tbody id="backupRows"></tbody></table></div>
+  <p id="backupEmpty" hidden>还没有快照。</p>
+</section>
+<section class="board-card"><div class="card-head"><h2>维护记录</h2></div><p style="line-height:1.9;color:var(--muted)">项目的CHANGELOG.md记录代码与界面改动；backups/local/operations.jsonl记录备份和恢复操作。历史备份保留在原有目录中，不会自动删除。</p></section>
+<script>
+(()=>{
+const status=document.getElementById('localBackupStatus'),button=document.getElementById('makeLocalBackup'),tbody=document.getElementById('backupRows');
+const controller=new AbortController();window.pjaxCleanupTasks.push(()=>controller.abort());
+async function list(){try{const response=await fetch('/api/local/backups',{signal:controller.signal});if(!response.ok)throw Error('无法读取备份记录');const data=await response.json();tbody.replaceChildren();document.getElementById('backupEmpty').hidden=!!data.backups.length;data.backups.forEach(item=>{const tr=document.createElement('tr');[new Date(item.created_at).toLocaleString('zh-CN'),item.scope==='full'?'完整项目':'业务数据',item.reason.startsWith('before-change')?'修改前':({'before-start':'启动前','manual-from-app':'手动备份','manual-launcher':'手动备份','before-restore':'恢复前'}[item.reason]||item.reason),(item.bytes/1048576).toFixed(1)+' MB'].forEach(value=>{const td=document.createElement('td');td.textContent=value;tr.append(td)});tbody.append(tr)})}catch(e){if(e.name!=='AbortError')status.textContent=e.message}}
+button.addEventListener('click',async()=>{button.disabled=true;status.textContent='正在备份并校验…';try{const response=await fetch('/api/local/backup',{method:'POST',signal:controller.signal});if(!response.ok)throw Error('备份未完成，请检查磁盘空间。');const data=await response.json();status.textContent='备份完成，已校验：'+data.name;await list()}catch(e){if(e.name!=='AbortError')status.textContent=e.message}finally{button.disabled=false}});
+document.getElementById('reloadLocalBackups').addEventListener('click',list);list();
+})();
+</script>
+{% endblock %}

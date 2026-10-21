@@ -55,7 +55,10 @@ input, select, textarea { min-width: 0; max-width: 100%; }
     height: auto; min-height: 24px; line-height: 24px;
     white-space: normal; overflow: visible; overflow-wrap: anywhere; min-width: 0;
 }
-.metric-box strong { height: auto; min-height: 24px; line-height: 24px; }
+.metric-box strong { height: auto; min-height: 24px; line-height: 24px; overflow-y: hidden; scrollbar-width: none; }
+.metric-box strong::-webkit-scrollbar { display: none; }
+/* Skeletons are values, not labels: keep their loaded and loading heights equal. */
+.metric-box strong > .loading-placeholder-large { display: block; margin: 0; }
 [data-ai-panel] { height: auto; overflow: visible; scrollbar-gutter: auto; }
 .ai-price-table .ai-note, .ai-price-table .ai-price-muted,
 .ai-price-table .ai-context, .ai-plan-result, .ai-plan-result p {
@@ -85,6 +88,8 @@ input, select, textarea { min-width: 0; max-width: 100%; }
 #phonesTable th { white-space: normal; padding: 10px 6px; }
 #phonesTable td { height: 56px; padding: 7px 6px; white-space: normal !important; }
 #phonesTable .stable-cell-content { height: 41px; overflow: hidden; white-space: normal; line-height: 20px; }
+#phonesTable .phone-expiry-cell .stable-cell-content { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; }
+#phonesTable .phone-expiry-cell .expiry-badge { flex-shrink: 0; margin-left: 0 !important; font-size: 11px !important; line-height: 15px; white-space: nowrap; }
 #phonesTable .stable-cell-content > div { flex-wrap: wrap; gap: 4px !important; }
 
 /* Compact, aligned overseas records; preserve existing row status colors. */

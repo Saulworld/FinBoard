@@ -5,318 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ app_name }}</title>
     <link rel="stylesheet" href="/static/css/style.css?v=1.0.21">
-    <script defer src="/static/js/app.js?v=1.0.11"></script>
-    <script>
-        // Global Client-side Pagination Function
-        window.paginateTable = function(tableId, itemsPerPage = 5) {
-            const table = document.getElementById(tableId);
-            if (!table) return;
-            
-            const tbody = table.querySelector("tbody");
-            if (!tbody) return;
-            
-            const rows = Array.from(tbody.querySelectorAll("tr"));
-            
-            let pagContainer = table.parentNode.nextElementSibling;
-            if (pagContainer && pagContainer.classList.contains("pagination-container")) {
-                pagContainer.innerHTML = "";
-                if (rows.length <= itemsPerPage) {
-                    pagContainer.style.display = "none";
-                    rows.forEach(r => r.style.display = "");
-                    return;
-                }
-                pagContainer.style.display = "flex";
-            } else if (rows.length > itemsPerPage) {
-                pagContainer = document.createElement("div");
-                pagContainer.className = "pagination-container";
-                table.parentNode.after(pagContainer);
-            } else {
-                return;
-            }
-            
-            let currentPage = parseInt(sessionStorage.getItem("page_" + tableId)) || 1;
-            const totalPages = Math.ceil(rows.length / itemsPerPage);
-            
-            function updatePage() {
-                if (currentPage > totalPages) currentPage = totalPages;
-                if (currentPage < 1) currentPage = 1;
-                sessionStorage.setItem("page_" + tableId, currentPage);
-                
-                rows.forEach((row, idx) => {
-                    const start = (currentPage - 1) * itemsPerPage;
-                    const end = start + itemsPerPage;
-                    if (idx >= start && idx < end) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
-                renderControls();
-            }
-            
-            function renderControls() {
-                pagContainer.innerHTML = "";
-                
-                // Prev button
-                const prevBtn = document.createElement("button");
-                prevBtn.type = "button";
-                prevBtn.className = "page-btn";
-                prevBtn.innerHTML = "&laquo; 上一页";
-                prevBtn.disabled = currentPage === 1;
-                prevBtn.addEventListener("click", () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        updatePage();
-                    }
-                });
-                pagContainer.appendChild(prevBtn);
-                
-                // Page numbers
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageBtn = document.createElement("button");
-                    pageBtn.type = "button";
-                    pageBtn.className = "page-btn" + (i === currentPage ? " active" : "");
-                    pageBtn.textContent = i;
-                    pageBtn.addEventListener("click", () => {
-                        currentPage = i;
-                        updatePage();
-                    });
-                    pagContainer.appendChild(pageBtn);
-                }
-                
-                // Next button
-                const nextBtn = document.createElement("button");
-                nextBtn.type = "button";
-                nextBtn.className = "page-btn";
-                nextBtn.innerHTML = "下一页 &raquo;";
-                nextBtn.disabled = currentPage === totalPages;
-                nextBtn.addEventListener("click", () => {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        updatePage();
-                    }
-                });
-                pagContainer.appendChild(nextBtn);
-            }
-            
-            updatePage();
-        };
+    <script defer src="/static/js/app.js?v=2.1.0"></script>
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const sidebar = document.getElementById("appSidebar");
-            const sidebarToggle = document.getElementById("sidebarToggle");
-            const sidebarBackdrop = document.getElementById("sidebarBackdrop");
 
-            function setSidebarOpen(open) {
-                if (!sidebar || !sidebarToggle || !sidebarBackdrop) return;
-                sidebar.classList.toggle("is-open", open);
-                sidebarBackdrop.classList.toggle("is-visible", open);
-                document.body.classList.toggle("sidebar-open", open);
-                sidebarToggle.setAttribute("aria-expanded", open ? "true" : "false");
-            }
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener("click", () => {
-                    setSidebarOpen(!sidebar.classList.contains("is-open"));
-                });
-            }
-            if (sidebarBackdrop) {
-                sidebarBackdrop.addEventListener("click", () => setSidebarOpen(false));
-            }
-            document.addEventListener("keydown", event => {
-                if (event.key === "Escape") setSidebarOpen(false);
-            });
-
-            // Setup page resets on sidebar navigation links click
-            document.querySelectorAll(".sidebar-nav a").forEach(link => {
-                link.addEventListener("click", () => {
-                    setSidebarOpen(false);
-                    Object.keys(sessionStorage).forEach(key => {
-                        if (key.startsWith("page_") || key === "cards_current_page") {
-                            sessionStorage.removeItem(key);
-                        }
-                    });
-                });
-            });
-        });
-    </script>
-    <style>
-        /* PJAX Loading Styles */
-        .content-area {
-            transition: opacity 0.15s ease-in-out;
-        }
-        .content-area.pjax-loading {
-            opacity: 0.35;
-            pointer-events: none;
-        }
-        
-        /* Shimmer Skeletons */
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-            } else {
-                return;
-            }
-            
-            let currentPage = parseInt(sessionStorage.getItem("page_" + tableId)) || 1;
-            const totalPages = Math.ceil(rows.length / itemsPerPage);
-            
-            function updatePage() {
-                if (currentPage > totalPages) currentPage = totalPages;
-                if (currentPage < 1) currentPage = 1;
-                sessionStorage.setItem("page_" + tableId, currentPage);
-                
-                rows.forEach((row, idx) => {
-                    const start = (currentPage - 1) * itemsPerPage;
-                    const end = start + itemsPerPage;
-                    if (idx >= start && idx < end) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
-                renderControls();
-            }
-            
-            function renderControls() {
-                pagContainer.innerHTML = "";
-                
-                // Prev button
-                const prevBtn = document.createElement("button");
-                prevBtn.type = "button";
-                prevBtn.className = "page-btn";
-                prevBtn.innerHTML = "&laquo; 上一页";
-                prevBtn.disabled = currentPage === 1;
-                prevBtn.addEventListener("click", () => {
-                    if (currentPage > 1) {
-                        currentPage--;
-                        updatePage();
-                    }
-                });
-                pagContainer.appendChild(prevBtn);
-                
-                // Page numbers
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageBtn = document.createElement("button");
-                    pageBtn.type = "button";
-                    pageBtn.className = "page-btn" + (i === currentPage ? " active" : "");
-                    pageBtn.textContent = i;
-                    pageBtn.addEventListener("click", () => {
-                        currentPage = i;
-                        updatePage();
-                    });
-                    pagContainer.appendChild(pageBtn);
-                }
-                
-                // Next button
-                const nextBtn = document.createElement("button");
-                nextBtn.type = "button";
-                nextBtn.className = "page-btn";
-                nextBtn.innerHTML = "下一页 &raquo;";
-                nextBtn.disabled = currentPage === totalPages;
-                nextBtn.addEventListener("click", () => {
-                    if (currentPage < totalPages) {
-                        currentPage++;
-                        updatePage();
-                    }
-                });
-                pagContainer.appendChild(nextBtn);
-            }
-            
-            updatePage();
-        };
-
-        document.addEventListener("DOMContentLoaded", () => {
-            const sidebar = document.getElementById("appSidebar");
-            const sidebarToggle = document.getElementById("sidebarToggle");
-            const sidebarBackdrop = document.getElementById("sidebarBackdrop");
-
-            function setSidebarOpen(open) {
-                if (!sidebar || !sidebarToggle || !sidebarBackdrop) return;
-                sidebar.classList.toggle("is-open", open);
-                sidebarBackdrop.classList.toggle("is-visible", open);
-                document.body.classList.toggle("sidebar-open", open);
-                sidebarToggle.setAttribute("aria-expanded", open ? "true" : "false");
-            }
-
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener("click", () => {
-                    setSidebarOpen(!sidebar.classList.contains("is-open"));
-                });
-            }
-            if (sidebarBackdrop) {
-                sidebarBackdrop.addEventListener("click", () => setSidebarOpen(false));
-            }
-            document.addEventListener("keydown", event => {
-                if (event.key === "Escape") setSidebarOpen(false);
-            });
-
-            // Setup page resets on sidebar navigation links click
-            document.querySelectorAll(".sidebar-nav a").forEach(link => {
-                link.addEventListener("click", () => {
-                    setSidebarOpen(false);
-                    Object.keys(sessionStorage).forEach(key => {
-                        if (key.startsWith("page_") || key === "cards_current_page") {
-                            sessionStorage.removeItem(key);
-                        }
-                    });
-                });
-            });
-        });
-    </script>
-    <style>
-        /* PJAX Loading Styles */
-        .content-area {
-            transition: opacity 0.15s ease-in-out;
-        }
-        .content-area.pjax-loading {
-            opacity: 0.35;
-            pointer-events: none;
-        }
-        
-        /* Shimmer Skeletons */
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
-        }
-        .skeleton {
-            background: linear-gradient(90deg, #f1f3f5 25%, #e9ecef 50%, #f1f3f5 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-            border-radius: 8px;
-            display: inline-block;
-            color: transparent !important;
-        }
-        .skeleton-text {
-            height: 14px;
-            margin: 6px 0;
-            width: 100%;
-        }
-        .skeleton-title {
-            height: 24px;
-            margin: 10px 0;
-            width: 60%;
-        }
-        .skeleton-block {
-            display: block;
-            height: 120px;
-            width: 100%;
-        }
-        .skeleton-inline {
-            width: 60px;
-            height: 16px;
-        }
-        .skeleton-btn {
-            width: 100px;
-            height: 36px;
-            border-radius: 12px;
-        }
-
-    </style>
+    <script defer src="/static/js/shell.js?v=2.0.1"></script>
+    <script defer src="/static/js/backgrounds.js?v=1.0.0"></script>
+    <script defer src="/static/js/glass.js?v=2.0.6"></script>
+    <script defer src="/static/js/option_manager.js?v=1.0.0"></script>
+    <script defer src="/static/js/micro_interactions.js?v=1.1.0"></script>
     {% block head %}{% endblock %}
 </head>
-<body>
+<body class="local-glass" data-page="{{ active_page }}">
+    <div class="landscape-stage" aria-hidden="true"><div class="landscape-layer landscape-a"></div><div class="landscape-layer landscape-b"></div><div class="landscape-wash"></div></div>
     <div class="app-shell">
         <aside class="sidebar" id="appSidebar">
             <div class="sidebar-head">
@@ -324,19 +24,20 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="/" class="{{ 'active' if active_page == 'dashboard' else '' }}">股票总览</a>
-                <a href="/daily-briefing" class="{{ 'active' if active_page == 'daily-briefing' else '' }}">每日简报</a>
-                <a href="/holdings" class="{{ 'active' if active_page == 'holdings' else '' }}">持仓记录</a>
-                <a href="/cards" class="{{ 'active' if active_page == 'cards' else '' }}">境外工具</a>
-                <a href="/wallet-cards" class="{{ 'active' if active_page == 'wallet-cards' else '' }}">境外卡片</a>
-                <a href="/phones" class="{{ 'active' if active_page == 'phones' else '' }}">境外号码</a>
-                <a href="/ai-monitor" class="{{ 'active' if active_page == 'ai-monitor' else '' }}">AI监控</a>
+                <a href="/" class="{{ 'active' if active_page == 'dashboard' else '' }}"><svg class="nav-icon" aria-hidden="true"><use href="/static/images/ui-icons.svg#overview"></use></svg><span>股票总览</span></a>
+                <a href="/daily-briefing" class="{{ 'active' if active_page == 'daily-briefing' else '' }}"><svg class="nav-icon" aria-hidden="true"><use href="/static/images/ui-icons.svg#briefing"></use></svg><span>每日简报</span></a>
+                <a href="/holdings" class="{{ 'active' if active_page == 'holdings' else '' }}"><svg class="nav-icon" aria-hidden="true"><use href="/static/images/ui-icons.svg#holdings"></use></svg><span>持仓记录</span></a>
+                <a href="/cards" class="{{ 'active' if active_page == 'cards' else '' }}"><svg class="nav-icon" aria-hidden="true"><use href="/static/images/ui-icons.svg#tools"></use></svg><span>境外工具</span></a>
+                <a href="/overseas-documents" class="{{ 'active' if active_page == 'overseas-documents' else '' }}"><svg class="nav-icon" aria-hidden="true"><use href="/static/images/ui-icons.svg?v=20260929-1#document"></use></svg><span>境外证件</span></a>
+                <a href="/wallet-cards" class="{{ 'active' if active_page == 'wallet-cards' else '' }}"><svg class="nav-icon" aria-hidden="true"><use href="/static/images/ui-icons.svg#card"></use></svg><span>境外卡片</span></a>
+                <a href="/phones" class="{{ 'active' if active_page == 'phones' else '' }}"><svg class="nav-icon" aria-hidden="true"><use href="/static/images/ui-icons.svg#phone"></use></svg><span>境外号码</span></a>
+                <a href="/ai-monitor" class="{{ 'active' if active_page == 'ai-monitor' else '' }}"><svg class="nav-icon" aria-hidden="true"><use href="/static/images/ui-icons.svg#spark"></use></svg><span>AI监控</span></a>
             </nav>
 
             <section class="sidebar-card" id="analysisHistoryCard" style="display: none; margin-top: 16px;">
                 <div class="sidebar-card-head" style="display: flex; justify-content: space-between; align-items: center;">
                     <h3>分析历史</h3>
-                    <button id="clearHistoryBtn" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 500; padding: 4px 8px; border-radius: 6px; transition: all 0.2s;">清空</button>
+                    <button id="clearHistoryBtn" style="background: none; border: none; color: var(--muted); cursor: pointer; font-size: 12px; font-weight: 500; padding: 4px 8px; border-radius: 6px; transition: all 0.2s;" data-micro="delete">清空</button>
                 </div>
                 <div class="history-list" id="sidebarHistoryList" style="display: flex; flex-direction: column; gap: 8px; margin-top: 12px; max-height: 182px; overflow-y: auto; padding-right: 4px; scrollbar-width: thin;">
                     <!-- History items will be inserted here dynamically -->
@@ -370,10 +71,10 @@
                 </form>
             </section>
 
-            <section class="sidebar-card">
-                <div class="sidebar-card-head">
+            <details class="sidebar-card sidebar-utility">
+                <summary class="sidebar-card-head">
                     <h3>数据源选择</h3>
-                </div>
+                </summary>
                 <div class="sidebar-form" style="display: flex; flex-direction: column; gap: 10px;">
                     <label style="margin: 0;">
                         <span>美股/ETF 数据源</span>
@@ -403,16 +104,16 @@
                     </label>
                     <button type="button" id="applyDataSourceBtn" style="margin-top: 6px; padding: 10px 14px; border-radius: 10px; background: linear-gradient(135deg, #ff6b57 0%, #ff4a3d 100%); color: white; cursor: pointer; text-align: center; font-size: 14px; font-weight: bold; border: 0; line-height: 1.2; width: 100%; transition: all 0.2s;">应用数据源</button>
                 </div>
-            </section>
+            </details>
 
             <div id="dynamic-sidebar-content">
                 {% block sidebar_content %}{% endblock %}
             </div>
 
-            <section class="sidebar-card">
-                <div class="sidebar-card-head">
+            <details class="sidebar-card sidebar-utility" open>
+                <summary class="sidebar-card-head">
                     <h3>刷新间隔</h3>
-                </div>
+                </summary>
                 <div class="sidebar-form">
                     <label>
                         <span>设置间隔时间 (秒)</span>
@@ -422,12 +123,14 @@
                         </div>
                     </label>
                 </div>
-            </section>
+            </details>
+            <button type="button" id="openBackgroundSettings" class="background-settings-trigger">背景设置</button>
         </aside>
 
         <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
 
         <div class="main-shell">
+            <div class="workspace-caption"><span id="sceneName">远山湖泊</span></div>
             <header class="page-topbar">
                 <button type="button" class="sidebar-toggle" id="sidebarToggle" aria-controls="appSidebar" aria-expanded="false" aria-label="打开导航菜单">☰</button>
                 <h1 class="page-title">{{ page_title or app_name }}</h1>
@@ -474,7 +177,7 @@
 
 <!-- Global Stock Card Detail Modal -->
 <div id="stock-card-modal-overlay" class="modal-overlay" onclick="window.closeStockCardModal(event)">
-    <div class="modal-dialog-card" onclick="event.stopPropagation()">
+    <div class="modal-dialog-card" role="dialog" aria-modal="true" aria-labelledby="modal-card-title" onclick="event.stopPropagation()">
         <div class="modal-card-header">
             <div class="modal-card-title-group">
                 <span id="modal-card-icon">🏷️</span>
@@ -583,58 +286,23 @@
 }
 </style>
 
-<script>
-window.openStockCardModal = function(date, ticker) {
-    const overlay = document.getElementById('stock-card-modal-overlay');
-    const titleEl = document.getElementById('modal-card-title');
-    const bodyEl = document.getElementById('modal-card-body');
-    
-    if (!overlay || !bodyEl) return;
-    
-    titleEl.textContent = `${ticker} 当日深度评估报告 (${date})`;
-    bodyEl.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 0;">
-            <div style="width:36px;height:36px;border:3px solid #e2e8f0;border-top-color:#1a73e8;border-radius:50%;animation:spinModal 0.8s linear infinite;"></div>
-            <p style="margin-top:16px;color:#5f6368;font-size:14px;font-weight:600;">正在提取 ${ticker} 完整评估分析卡片...</p>
-        </div>
-    `;
-    
-    overlay.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    fetch(`/api/briefing/stock-card?date=${encodeURIComponent(date)}&ticker=${encodeURIComponent(ticker)}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success' && data.html) {
-                bodyEl.innerHTML = data.html;
-            } else {
-                bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#c5221f;font-weight:600;">⚠️ 未能提取到 ${ticker} 在 ${date} 的详细评估卡片</div>`;
-            }
-        })
-        .catch(err => {
-            bodyEl.innerHTML = `<div style="padding:40px;text-align:center;color:#c5221f;font-weight:600;">⚠️ 加载出错: ${err.message}</div>`;
-        });
-};
 
-window.closeStockCardModal = function(event) {
-    if (event && event.target && !event.target.classList.contains('modal-overlay') && !event.target.classList.contains('modal-close-btn')) {
-        return;
-    }
-    const overlay = document.getElementById('stock-card-modal-overlay');
-    if (overlay) {
-        overlay.classList.remove('active');
-        document.body.style.overflow = '';
-    }
-};
 
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        window.closeStockCardModal();
-    }
-});
-</script>
-
-<link rel="stylesheet" href="/static/css/layout_stability.css?v=1.0.15">
-<script defer src="/static/js/layout_stability.js?v=1.0.7"></script>
+<dialog id="backgroundDialog" class="background-dialog">
+    <div class="card-head"><h2>背景设置</h2><button type="button" id="closeBackgroundSettings" aria-label="关闭">×</button></div>
+    <p>选择电脑里的图片作为背景，多张图片会自动轮换。</p>
+    <div class="background-actions">
+        <button type="button" id="chooseBackgrounds">选择本地图片</button>
+        <button type="button" id="restoreDefaultBackgrounds">恢复默认风景</button>
+    </div>
+    <input id="backgroundFiles" type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/gif" multiple hidden>
+    <div id="backgroundPreview" class="background-preview"></div>
+    <p id="backgroundStatus" role="status">正在读取背景…</p>
+    <small>图片仅保存在本机浏览器，不会上传。</small>
+</dialog>
+<link rel="stylesheet" href="/static/css/layout_stability.css?v=1.0.18">
+<link rel="stylesheet" href="/static/css/glass.css?v=2.1.7">
+<link rel="stylesheet" href="/static/css/micro_interactions.css?v=1.1.0">
+<script defer src="/static/js/layout_stability.js?v=1.0.12"></script>
 </body>
 </html>

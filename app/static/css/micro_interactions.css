@@ -1,0 +1,128 @@
+/* Keep the local 10px controls and palette; animate only the action icons. */
+.local-glass button[data-micro] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.micro-icon, .micro-morph {
+  display: inline-block;
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  vertical-align: middle;
+  pointer-events: none;
+}
+.micro-icon svg { display: block; width: 100%; height: 100%; }
+.micro-morph > .micro-icon {
+  position: absolute;
+  inset: 0;
+  transition: transform 260ms cubic-bezier(.2,.8,.2,1.25), opacity 180ms ease;
+}
+.micro-morph > .micro-icon-close { opacity: 0; transform: scale(.5); }
+.local-glass button[data-micro="search"]:is(:hover, :focus-visible) .micro-icon-search,
+.micro-search-control:is(:hover, :focus-visible) .micro-icon-search,
+.micro-has-query .micro-icon-search { opacity: 0; transform: scale(.5); }
+.local-glass button[data-micro="search"]:is(:hover, :focus-visible) .micro-icon-close,
+.micro-search-control:is(:hover, :focus-visible) .micro-icon-close,
+.micro-has-query .micro-icon-close { opacity: 1; transform: scale(1); }
+.local-glass .micro-search-field {
+  display: block;
+  position: relative;
+  min-width: 0;
+}
+.local-glass .search-form-inline > .micro-search-field { flex: 1; }
+.local-glass .micro-search-field input[data-micro-search] {
+  width: 100%;
+  min-width: 0;
+  padding-left: 40px !important;
+}
+.micro-search-field input::-webkit-search-cancel-button { display: none; }
+.local-glass .micro-search-control {
+  position: absolute;
+  inset: 50% auto auto 5px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  min-height: 0;
+  padding: 0;
+  z-index: 1;
+  border: 0 !important;
+  border-radius: 7px;
+  background: transparent !important;
+  color: var(--muted) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+.local-glass .micro-search-control:hover { color: var(--accent) !important; }
+.local-glass button[data-micro="delete"] .micro-icon-trash { color: var(--muted); transition: color 180ms ease; }
+.local-glass button[data-micro="delete"]:not(:disabled):is(:hover, :focus-visible) .micro-icon-trash {
+  color: #e05252;
+  animation: micro-trash-shake 400ms ease-in-out;
+}
+.local-glass button[data-micro="delete"][data-micro-confirm] {
+  background: #b34739 !important;
+  color: #fff !important;
+}
+.local-glass button[data-micro="delete"][data-micro-confirm] .micro-icon-trash { color: #fff; }
+@keyframes micro-trash-shake {
+  0%, 100% { transform: translateY(0) rotate(0); }
+  25% { transform: translateY(-2px) rotate(-10deg); }
+  50% { transform: translateY(0) rotate(10deg); }
+  75% { transform: translateY(-2px) rotate(-10deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .micro-morph > .micro-icon { transition: none; }
+  .local-glass button[data-micro="delete"] .micro-icon-trash { animation: none !important; transition: none; }
+}
+.micro-morph > .micro-icon-check { opacity: 0; transform: scale(.5); }
+.local-glass button[data-micro="edit"]:is(:hover, :focus-visible) .micro-icon-edit { opacity: 0; transform: scale(.5) rotate(-12deg); }
+.local-glass button[data-micro="edit"]:is(:hover, :focus-visible) .micro-icon-check { opacity: 1; transform: scale(1); }
+.local-glass button[data-micro="edit"] .micro-morph { color: #2670bb; }
+.micro-icon-refresh, .micro-icon-manage { transition: transform 180ms ease; }
+.local-glass button[data-micro="refresh"]:not(:disabled):is(:hover, :focus-visible) .micro-icon-refresh { transform: rotate(180deg); }
+.local-glass button[data-micro="manage"]:is(:hover, :focus-visible) .micro-icon-manage { transform: rotate(60deg); }
+.refresh-icon { display: inline-flex; align-items: center; }
+.refresh-icon.rotating { animation: none; }
+.local-glass button[data-micro="manage"] {
+  background: transparent !important; border: 0; box-shadow: none !important;
+  color: #2670b0 !important; padding: 0; font-size: 12px;
+}
+.local-glass button[data-micro="refresh"]:disabled .micro-icon-refresh { animation: micro-refresh-spin 800ms linear infinite; }
+@keyframes micro-refresh-spin { to { transform: rotate(360deg); } }
+.local-glass .option-manager-list {
+  display: flex !important; flex-direction: column; gap: 10px !important;
+  padding: 8px !important; max-height: 280px; overflow-y: auto;
+  border: 1px solid rgba(255,255,255,.9) !important; border-radius: 12px;
+  background: rgba(225,238,237,.4) !important;
+}
+.local-glass .option-manager-row {
+  display: flex !important; align-items: center; justify-content: space-between;
+  gap: 8px; min-height: 41px; padding: 8px 12px !important; margin: 0 !important;
+  border: 0 !important; border-radius: 8px !important; background: rgba(255,255,255,.96) !important;
+  color: #294b54; font-size: 14px; cursor: default !important;
+}
+.local-glass .option-manager-row.dragging { opacity: .5; }
+.option-manager-label { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1; }
+.option-manager-label > span { overflow-wrap: anywhere; min-width: 0; }
+.option-manager-label input { padding: 4px 6px; width: 100%; }
+.option-manager-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.local-glass .option-manager-actions button, .local-glass .option-manager-handle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 24px; height: 24px; min-height: 0; padding: 2px !important; border: 0 !important;
+  background: transparent !important; box-shadow: none !important; flex-shrink: 0;
+}
+.local-glass .option-manager-handle { width: 14px; cursor: grab; color: #527480; font-size: 20px; line-height: 1; touch-action: none; }
+.local-glass .option-manager-actions [data-micro="edit"] .micro-morph { color: #fa886a; }
+.local-glass .option-manager-actions [data-micro="delete"] .micro-icon-trash { color: #fa5684; }
+.local-glass .option-manager-actions [data-micro="delete"] .micro-icon { width: 18px; height: 18px; }
+.local-glass :is(#walletSchemeModal, #documentTypeModal) > :is(.board-card, .document-modal-card) { width: min(400px, 100%); }
+.option-manager-footer { display: flex; gap: 10px; margin-top: 20px; }
+.option-manager-footer button { flex: 1; }
+@media (prefers-reduced-motion: reduce) {
+  .micro-icon-refresh, .micro-icon-manage { transition: none; animation: none !important; }
+}

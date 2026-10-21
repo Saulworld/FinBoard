@@ -152,5 +152,75 @@
     "name": "Digitap",
     "category": "加密金融",
     "path": "/static/images/wallet-brands/digitap.ico"
+  },
+  "trading212": {
+    "file": "trading212.svg",
+    "source": "用户提供的Trading 212实体卡照片，依据卡面标识绘制",
+    "name": "Trading 212",
+    "category": "投资平台",
+    "path": "/static/images/wallet-brands/trading212.svg"
+  },
+  "sumup": {
+    "file": "sumup.svg",
+    "source": "用户提供的SumUp实体卡照片，依据卡面标识绘制",
+    "name": "SumUp",
+    "category": "支付平台",
+    "path": "/static/images/wallet-brands/sumup.svg"
+  },
+  "gate": {
+    "file": "gate.png",
+    "source": "Gate.io官方高清标识 (CoinMarketCap 64x64)，包含Gate经典蓝绿几何环标",
+    "name": "Gate",
+    "category": "加密金融/交易所",
+    "path": "/static/images/wallet-brands/gate.png"
+  },
+  "avalanche": {
+    "file": "avalanche.svg",
+    "source": "https://commons.wikimedia.org/wiki/File:Avalanche_Blockchain_Logo.svg",
+    "name": "Avalanche",
+    "category": "加密金融/U卡",
+    "path": "/static/images/wallet-brands/avalanche.svg"
+  },
+  "peanut": {
+    "file": "peanut.ico",
+    "source": "https://peanut.me/favicon.ico",
+    "name": "Peanut",
+    "category": "加密金融/U卡",
+    "path": "/static/images/wallet-brands/peanut.ico"
+  },
+  "redotpay": {
+    "file": "redotpay.svg",
+    "source": "依据用户提供的RedotPay卡面真图绘制官方矢量标志",
+    "name": "RedotPay",
+    "category": "加密金融/U卡",
+    "path": "/static/images/wallet-brands/redotpay.svg"
+  },
+  "tria": {
+    "file": "tria.ico",
+    "source": "https://app.tria.so/favicon.ico",
+    "name": "Tria",
+    "category": "加密金融/U卡",
+    "path": "/static/images/wallet-brands/tria.ico"
+  },
+  "kolo": {
+    "file": "kolo.svg",
+    "source": "https://kolo.xyz 官方标识与矢量卡面图案",
+    "name": "Kolo",
+    "category": "加密金融/U卡",
+    "path": "/static/images/wallet-brands/kolo.svg"
+  },
+  "metamask": {
+    "file": "metamask.svg",
+    "source": "user-supplied MetaMask card reference (2026-09-30)",
+    "name": "MetaMask",
+    "category": "加密钱包",
+    "path": "/static/images/wallet-brands/metamask.svg"
+  },
+  "maya": {
+    "file": "maya.png",
+    "source": "https://play.google.com/store/apps/details?id=com.paymaya (Google Play official Maya app icon 512x512)",
+    "name": "Maya",
+    "category": "支付钱包",
+    "path": "/static/images/wallet-brands/maya.png"
   }
 }

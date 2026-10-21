@@ -1,6 +1,8 @@
 # FinBoard 项目总览
 
-**当前版本：0.3**
+**当前版本：0.4**
+
+v0.4于2026-10-21发布，包含毛玻璃界面、统一选项管理与分页、卡片尾号搜索、卡面主题和备份保护。AI监控资料按当前数据同步，来源核对日为2026-10-21，含51个模型和126个套餐。公开包只含代码与公开资料，首次运行使用空白个人数据。
 
 FinBoard 是一个运行在 Windows 本机的股票、持仓、每日简报和境外工具管理项目。页面由 FastAPI 和 Jinja2 生成，股票与持仓数据保存在 SQLite，境外工具、卡片、号码和 AI 监控资料保存在本地 JSON 文件。项目默认仅监听 `127.0.0.1`，不应直接暴露到公网。
 
@@ -33,7 +35,7 @@ FinBoard 是一个运行在 Windows 本机的股票、持仓、每日简报和�
 | AI 监控 | `/ai-monitor` | 展示主流 AI 厂商、模型、API 价格、套餐和动态 | `ai_monitor.json` |
 | 个股详情 | `/stock?symbol=...&market=...` | 查看个股基本面、新闻、主流观点和历史简报 | 外部行情源、`portfolio.db` |
 
-## 项目目录是做什么的
+## FinBoard v0.4项目结构
 
 ```text
 FinBoard/
@@ -49,14 +51,15 @@ FinBoard/
 │  ├─ importer.py     每日简报文件导入
 │  ├─ json_store.py   JSON 文件加锁与原子写入
 │  └─ utils.py        共用路径、格式化和辅助函数
-├─ data/                本地数据库与 JSON 资料
-│  └─ backups/        境外工具稳定片备份与恢复脚本
+├─ data/                仅附公开AI资料与数据边界说明；个人文件由首次运行创建
 ├─ docs/                设计说明与代码指南
 ├─ tests/               自动化回归测试
 ├─ .agents/             项目强制数据规则和工作流约束
 ├─ CHANGELOG.md         所有新增、修改、删除和验证记录
 ├─ .env.example         可选数据源和本地配置示例
-├─ requirements.txt     Python 依赖版本
+├─ requirements.txt     Python 依赖清单
+├─ requirements-local.lock.txt  本地启动锁定依赖
+├─ LOCAL_EDITION.json   匿名本地运行标记
 ├─ start_local.ps1      Windows PowerShell 启动脚本
 └─ start_local.bat      Windows 批处理启动入口
 ```
@@ -90,8 +93,8 @@ FinBoard/
 
 - 所有代码、页面、配置和数据新增/修改，都必须在本轮结束前写入 `CHANGELOG.md`。
 - 每条记录需说明日期、变更文件、实际修改、原因和验证结果，作为之后定位与回滚的索引。
-- `data/backups/` 是项目已有的境外工具稳定片备份；`restore_backup.py` 目前只恢复 `cards.json` 和 `card_options.json`。
-- `CHANGELOG.md` 记录“改了什么”，`data/backups/` 保存“可恢复的数据文件”，两者用途不同。
+- 本地备份由启动器和页面维护功能生成，保存于`backups/local/`；公开源码和ZIP不附带个人备份。
+- `CHANGELOG.md`记录公开功能变更，`backups/local/`保存当前电脑运行后产生的恢复快照。
 
 ## 数据源
 
@@ -103,22 +106,20 @@ FinBoard/
 
 ## 启动方式
 
-首次使用：
+首次使用，双击`start_local.bat`；也可以在PowerShell运行：
 
 ```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 .\start_local.ps1
 ```
 
-或手动启动：
+已有虚拟环境时手动启动：
 
 ```powershell
 cd 你的\FinBoard\目录
-.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 18010
+.\.venv\Scripts\python.exe scripts/run_local.py --no-browser
 ```
 
-打开：`http://127.0.0.1:18010`
+打开：`http://127.0.0.1:18011`
 
 ## 本地配置
 
@@ -164,7 +165,7 @@ cd 你的\FinBoard\目录
 - 公开发布请使用 `scripts/export_github.ps1`生成独立脱敏副本，不要直接上传日常使用目录。
 
 完整的安装、使用、GitHub上传和隐私检查步骤见[GitHub发布与使用指南](docs/GITHUB_PUBLISH_GUIDE.md)。
-仓库目录分类见[FinBoard v0.3项目结构](docs/PROJECT_STRUCTURE.md)。
+仓库目录分类见[FinBoard v0.4项目结构](docs/PROJECT_STRUCTURE.md)。
 以后同步新版本时，按[FinBoard后续更新指南](docs/MAINTENANCE.md)执行测试、脱敏、差异检查与推送。
 每次GitHub实际上传时间见[FinBoard上传记录](docs/UPLOAD_HISTORY.md)。
 

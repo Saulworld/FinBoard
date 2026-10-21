@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Gate">
+  <rect width="64" height="64" rx="14" fill="#14171d"/>
+  <path d="M32 12A20 20 0 1 0 52 32h-9A11 11 0 1 1 32 21c3.04 0 5.79 1.23 7.78 3.22l6.36-6.36A19.9 19.9 0 0 0 32 12z" fill="#2354e6"/>
+  <path d="M43 32h9a20 20 0 0 1-20 20v-9a11 11 0 0 0 11-11z" fill="#00c087"/>
+</svg>

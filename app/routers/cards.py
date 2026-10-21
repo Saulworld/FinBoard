@@ -7,12 +7,15 @@ from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from app.json_store import json_file_transaction
 from app.utils import (
     CARDS_FILE,
+    CARD_NOTICES_FILE,
     build_redirect_url,
     capitalize_english,
     load_card_options,
+    load_card_notice_records,
     load_card_records,
     remove_cjk_latin_spaces,
     save_card_options,
+    save_card_notice_records,
     save_card_records,
 )
 
@@ -26,13 +29,59 @@ def _clean(value: str) -> str:
 
 @router.get("/cards", response_class=HTMLResponse)
 def list_cards(request: Request, notice: str | None = None, error: str | None = None):
+    card_notices = sorted(load_card_notice_records(), key=lambda item: int(item.get("id", 0)), reverse=True)
     return request.app.state.templates.TemplateResponse(
         "cards.html",
         {
             "request": request, "active_page": "cards", "page_title": "境外工具",
             "cards": load_card_records(), "options": load_card_options(),
+            "card_notices": card_notices,
             "notice": notice, "error": error,
         },
+    )
+
+
+@router.post("/cards/notices/add")
+def add_card_notice(
+    content: str = Form(...),
+):
+    clean_content = (content or "").strip()
+    if not clean_content:
+        return RedirectResponse(build_redirect_url("/cards", error="注意事项内容不能为空。"), status_code=303)
+    with json_file_transaction(CARD_NOTICES_FILE):
+        notices = load_card_notice_records()
+        next_id = max((int(item.get("id", 0)) for item in notices), default=0) + 1
+        notices.append(
+            {
+                "id": next_id,
+                "content": clean_content,
+                "created_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            }
+        )
+        save_card_notice_records(notices)
+    return RedirectResponse(build_redirect_url("/cards", notice="注意事项已添加。"), status_code=303)
+
+
+@router.post("/cards/notices/{notice_id}/update", response_class=JSONResponse)
+def update_card_notice(notice_id: int, content: str = Form(...)):
+    clean_content = (content or "").strip()
+    if not clean_content:
+        return JSONResponse({"status": "error", "message": "注意事项内容不能为空"}, status_code=400)
+    found = False
+    with json_file_transaction(CARD_NOTICES_FILE):
+        notices = load_card_notice_records()
+        for item in notices:
+            if int(item.get("id", 0)) == notice_id:
+                item["content"] = clean_content
+                item["updated_at"] = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                found = True
+                break
+        if found:
+            save_card_notice_records(notices)
+    return JSONResponse(
+        {"status": "success", "content": clean_content} if found
+        else {"status": "error", "message": "记录不存在"},
+        status_code=200 if found else 404,
     )
 
 

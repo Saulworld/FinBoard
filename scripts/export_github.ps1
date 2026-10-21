@@ -80,7 +80,7 @@ function Convert-ToPublicBrand {
                 ""
             )
             $privateBrand = "Saul" + "money"
-            $publicContent = $publicContent.Replace($privateBrand, "FinBoard").Replace($privateBrand.ToLowerInvariant(), "finboard")
+            $publicContent = $publicContent.Replace($privateBrand, "FinBoard").Replace($privateBrand.ToLowerInvariant(), "finboard").Replace("FINBOARD_", "FINBOARD_")
             if ($publicContent -ne $content) {
                 [System.IO.File]::WriteAllText($_.FullName, $publicContent, $utf8NoBom)
             }
@@ -93,8 +93,21 @@ foreach ($directory in @("app", "tests", ".agents", ".github", "scripts")) {
     Copy-PublicTree -From (Join-Path $source $directory) -To (Join-Path $destination $directory)
 }
 
+# Personal address suggestions belong to the private data set. Keep the
+# shared address-entry behavior while shipping an empty public suggestion list.
+$publicDocumentsRouter = Join-Path $destination "app\routers\overseas_documents.py"
+$documentsSource = [System.IO.File]::ReadAllText($publicDocumentsRouter)
+$privateAddressBlock = '(?s)ADDRESS_OPTIONS = \[.*?\]\s*(?=def _load\()'
+if (-not [System.Text.RegularExpressions.Regex]::IsMatch($documentsSource, $privateAddressBlock)) {
+    throw "无法定位境外证件私人地址默认值，已停止公开导出。"
+}
+$documentsPublic = [System.Text.RegularExpressions.Regex]::Replace(
+    $documentsSource, $privateAddressBlock, "ADDRESS_OPTIONS = []`n`n`n"
+)
+[System.IO.File]::WriteAllText($publicDocumentsRouter, $documentsPublic, [System.Text.UTF8Encoding]::new($false))
+
 New-Item -ItemType Directory -Path (Join-Path $destination "docs") -Force | Out-Null
-foreach ($doc in @("AI_BRIEFING.md", "DESIGN_GUIDELINES.md", "python_codebase_guide.md", "GITHUB_PUBLISH_GUIDE.md", "PROJECT_STRUCTURE.md", "LEGAL.md", "MAINTENANCE.md", "UPLOAD_HISTORY.md")) {
+foreach ($doc in @("AI_BRIEFING.md", "DESIGN_GUIDELINES.md", "python_codebase_guide.md", "GITHUB_PUBLISH_GUIDE.md", "PROJECT_STRUCTURE.md", "LEGAL.md", "MAINTENANCE.md", "UPLOAD_HISTORY.md", "VERSION")) {
     Copy-Item -LiteralPath (Join-Path $source "docs\$doc") -Destination (Join-Path $destination "docs\$doc")
 }
 if (Test-Path -LiteralPath (Join-Path $source "docs\images")) {
@@ -115,10 +128,40 @@ Copy-PublicTree `
     -From $aiSkillSource `
     -To (Join-Path $destination "docs\skills\update-ai-monitor") `
     -IncludeAiMonitorSkill
+$publicAiSkillPath = Join-Path $destination "docs\skills\update-ai-monitor\SKILL.md"
+$publicAiSkill = [System.IO.File]::ReadAllText($publicAiSkillPath)
+$publicAiSkill = [System.Text.RegularExpressions.Regex]::Replace(
+    $publicAiSkill,
+    "新版已迁回[^，。]+，后续直接维护此主项目",
+    "以当前项目目录为唯一维护入口"
+)
+[System.IO.File]::WriteAllText($publicAiSkillPath, $publicAiSkill, [System.Text.UTF8Encoding]::new($false))
 
-foreach ($file in @("README.md", ".env.example", "requirements.txt", "start_local.ps1", "start_local.bat", "AGENTS.md", "LICENSE")) {
+foreach ($file in @(".env.example", "requirements.txt", "requirements-local.lock.txt", "start_local.ps1", "start_local.bat", "LICENSE")) {
     Copy-Item -LiteralPath (Join-Path $source $file) -Destination (Join-Path $destination $file)
 }
+$publicAgentsSource = Join-Path $source "docs\publishing\AGENTS_PUBLIC.md"
+if (-not (Test-Path -LiteralPath $publicAgentsSource)) { $publicAgentsSource = Join-Path $source "AGENTS.md" }
+$publicRulesSource = Join-Path $source "docs\publishing\AGENT_RULES_PUBLIC.md"
+if (-not (Test-Path -LiteralPath $publicRulesSource)) { $publicRulesSource = Join-Path $source ".agents\AGENTS.md" }
+Copy-Item -LiteralPath $publicAgentsSource -Destination (Join-Path $destination "AGENTS.md")
+Copy-Item -LiteralPath $publicRulesSource -Destination (Join-Path $destination ".agents\AGENTS.md")
+
+$publicReadmeSource = Join-Path $source "docs\publishing\README.md"
+if (-not (Test-Path -LiteralPath $publicReadmeSource)) {
+    $publicReadmeSource = Join-Path $source "README.md"
+}
+Copy-Item -LiteralPath $publicReadmeSource -Destination (Join-Path $destination "README.md")
+
+# The public launcher uses the same guarded local runtime, with a portable
+# sentinel in place of the private migration source path.
+$publicMarker = [ordered]@{
+    edition = "local-glass"
+    source_root = "/__finboard_protected_source__"
+    default_port = 18011
+    data_policy = "public-empty-first-run"
+} | ConvertTo-Json
+[System.IO.File]::WriteAllText((Join-Path $destination "LOCAL_EDITION.json"), $publicMarker, [System.Text.UTF8Encoding]::new($false))
 
 $publicChangelogSource = Join-Path $source "docs\publishing\CHANGELOG.md"
 if (-not (Test-Path -LiteralPath $publicChangelogSource)) {

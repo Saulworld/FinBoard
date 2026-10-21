@@ -1,0 +1,6 @@
+{
+  "edition": "local-glass",
+  "source_root": "/__finboard_protected_source__",
+  "default_port": 18011,
+  "data_policy": "public-empty-first-run"
+}

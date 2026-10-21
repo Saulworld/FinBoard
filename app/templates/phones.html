@@ -27,7 +27,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>国家 / 地区</span>
-                    <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="country" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select name="country" id="addPhoneCountry" required style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     {% for opt in options.countries %}
@@ -52,7 +52,7 @@
             <label style="margin: 0;">
                 <span style="display: flex; justify-content: space-between; align-items: center;">
                     <span>到期时长</span>
-                    <button type="button" class="btn-manage-options" data-type="duration" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;">⚙️ 管理</button>
+                    <button type="button" class="btn-manage-options" data-type="duration" style="background: none; border: none; color: #1a73e8; font-size: 12px; cursor: pointer; padding: 0; font-weight: bold; outline: none;" data-micro="manage">⚙️ 管理</button>
                 </span>
                 <select id="addPhoneInterval" style="width: 100%; box-sizing: border-box; height: 38px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line); background-color: white; color: var(--text); font-size: 14px; outline: none;">
                     <option value="custom">自定义</option>
@@ -101,9 +101,9 @@
 
     <!-- Search Input Area -->
     <div style="display: flex; gap: 16px; margin-bottom: 16px; align-items: center; width: 100%; flex-wrap: wrap;">
-        <div style="position: relative; flex: 1; min-width: 250px;">
+        <div data-micro-search-field style="position: relative; flex: 1; min-width: 250px;">
             <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; pointer-events: none;">🔍</span>
-            <input type="text" id="phonesSearchInput" placeholder="输入搜索名称、号码、国家、状态、备注或颜色含义(临期/关闭/待激活)..." style="width: 100%; box-sizing: border-box; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; background: white; outline: none; transition: all 0.2s; box-shadow: var(--shadow-sm);">
+            <input data-micro-search type="text" id="phonesSearchInput" placeholder="输入搜索名称、号码、国家、状态、备注或颜色含义(临期/关闭/待激活)..." style="width: 100%; box-sizing: border-box; padding: 10px 12px 10px 38px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; background: white; outline: none; transition: all 0.2s; box-shadow: var(--shadow-sm);">
         </div>
         <label style="display: flex; align-items: center; gap: 6px; margin: 0; font-size: 14px; color: var(--text); cursor: pointer; font-weight: 500; user-select: none;">
             <input type="checkbox" id="expiryFilterCheckbox" style="width: 16px; height: 16px; cursor: pointer; accent-color: #ff4a3d;">
@@ -143,7 +143,7 @@
                         {% endif %}
                     </td>
                     <td><span style="font-size: 13px; font-weight: 500;">{{ phone.last_recharge_date or '--' }}</span></td>
-                    <td><span style="font-size: 13px; font-weight: 500; color: #ff4a3d;">{{ phone.expiry_date or '--' }}</span></td>
+                    <td class="phone-expiry-cell"><span data-phone-expiry-date style="font-size: 13px; font-weight: 500; color: #ff4a3d;">{{ phone.expiry_date or '--' }}</span></td>
                     <td><span style="font-size: 13px; font-weight: 500;">{{ phone.renewal_method or '--' }}</span></td>
                     <td style="font-size: 13px; color: var(--muted);">{{ phone.note or '--' }}</td>
                     <td style="text-align: center; white-space: nowrap;">
@@ -157,10 +157,10 @@
                                     data-recharge="{{ phone.last_recharge_date or '' }}" 
                                     data-expiry="{{ phone.expiry_date or '' }}"
                                     data-renewal="{{ phone.renewal_method or '' }}"
-                                    data-note="{{ phone.note }}">修改</button>
+                                    data-note="{{ phone.note }}" data-micro="edit">修改</button>
                             <button type="button" class="button-link delete-phone-btn" style="color: #dc2626; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
                                     data-id="{{ phone.id }}" 
-                                    data-name="{{ phone.name }} ({{ phone.phone }})">删除</button>
+                                    data-name="{{ phone.name }} ({{ phone.phone }})" data-micro="delete">删除</button>
                         </div>
                     </td>
                 </tr>
@@ -253,7 +253,7 @@
             </div>
             <div style="display: flex; gap: 12px;">
                 <button type="button" id="cancelDeleteModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer;">取消</button>
-                <button type="submit" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">确认删除</button>
+                <button type="submit" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;" data-micro="delete" data-micro-confirm>确认删除</button>
             </div>
         </form>
     </div>
@@ -278,8 +278,8 @@
             <!-- Option items will be populated dynamically -->
         </div>
         
-        <div style="margin-top: 20px;">
-            <button type="button" id="closeManageModalBtn2" style="width: 100%; background: var(--line); color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">关闭</button>
+        <div class="option-manager-footer">
+            <button type="button" id="closeManageModalBtn2" style="width: 100%; background: var(--line); color: var(--text); border: 1px solid var(--line); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold;">取消</button><button type="button" id="saveManageOptionsBtn">保存</button>
         </div>
     </div>
 </div>
@@ -295,7 +295,7 @@
         </div>
         <div style="display: flex; gap: 12px;">
             <button type="button" id="customConfirmCancelBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">取消</button>
-            <button type="button" id="customConfirmOkBtn" style="flex: 1; background: #dc2626; color: white; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">确认</button>
+            <button type="button" id="customConfirmOkBtn" data-micro="delete" data-micro-confirm style="flex: 1; background: #dc2626; color: white; border: 0; padding: 8px 12px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 14px;">确认</button>
         </div>
     </div>
 </div>
@@ -324,5 +324,5 @@
 </div>
 
 
-<script defer src="/static/js/phones.js?v=1.0.3"></script>
+<script defer src="/static/js/phones.js?v=20260930-3"></script>
 {% endblock %}

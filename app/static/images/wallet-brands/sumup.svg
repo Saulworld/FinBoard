@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="SumUp">
+  <rect width="64" height="64" rx="13" fill="#22151f"/>
+  <path d="M16 31a16 16 0 0 1 28-10L30 36a13 13 0 0 0-14-5Z" fill="#d5389f"/>
+  <path d="M48 33a16 16 0 0 1-28 10l14-15a13 13 0 0 0 14 5Z" fill="#d5389f"/>
+</svg>

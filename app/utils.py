@@ -6,7 +6,7 @@ from urllib.parse import urlencode
 
 import httpx
 
-from .config import PROJECT_ROOT
+from .config import PROJECT_ROOT, DATA_DIR
 from .json_store import json_file_transaction, load_json, save_json_atomic, update_json
 
 MARKET_LABELS = {
@@ -16,11 +16,12 @@ MARKET_LABELS = {
     "CN": "A股",
 }
 
-CARDS_FILE = PROJECT_ROOT / "data" / "cards.json"
-CARD_OPTIONS_FILE = PROJECT_ROOT / "data" / "card_options.json"
-WALLET_CARDS_FILE = PROJECT_ROOT / "data" / "wallet_cards.json"
-PHONES_FILE = PROJECT_ROOT / "data" / "phones.json"
-PHONE_OPTIONS_FILE = PROJECT_ROOT / "data" / "phone_options.json"
+CARDS_FILE = DATA_DIR / "cards.json"
+CARD_OPTIONS_FILE = DATA_DIR / "card_options.json"
+CARD_NOTICES_FILE = DATA_DIR / "card_notices.json"
+WALLET_CARDS_FILE = DATA_DIR / "wallet_cards.json"
+PHONES_FILE = DATA_DIR / "phones.json"
+PHONE_OPTIONS_FILE = DATA_DIR / "phone_options.json"
 
 
 def format_market_label(market: str | None) -> str:
@@ -29,18 +30,19 @@ def format_market_label(market: str | None) -> str:
 
 
 def get_preferred_providers(request) -> dict[str, str]:
-    global_pref = request.cookies.get("preferred_provider") or "auto"
-    us_pref = request.cookies.get("preferred_provider_us") or global_pref
+    global_pref = request.cookies.get("glass_preferred_provider") or "auto"
+    us_pref = request.cookies.get("glass_preferred_provider_us") or global_pref
     return {
         "US": us_pref,
         "ETF": us_pref,
-        "CN": request.cookies.get("preferred_provider_cn") or global_pref,
-        "HK": request.cookies.get("preferred_provider_hk") or global_pref,
+        "CN": request.cookies.get("glass_preferred_provider_cn") or global_pref,
+        "HK": request.cookies.get("glass_preferred_provider_hk") or global_pref,
     }
 
 
 def register_jinja_globals(environment) -> None:
     from .config import get_settings
+
     settings = get_settings()
     environment.globals.update(
         format_money=format_money,
@@ -105,7 +107,9 @@ def market_example(market: str) -> str:
         "HK": "0700 / 9988 / 1810 / 3690 / 9618 / 9888",
         "CN": "600519 / 000858 / 300750 / 601318 / 600036 / 600900",
     }
-    return examples.get(normalize_market(market), "AAPL / MSFT / NVDA / TSLA / AMZN / GOOGL / META")
+    return examples.get(
+        normalize_market(market), "AAPL / MSFT / NVDA / TSLA / AMZN / GOOGL / META"
+    )
 
 
 def safe_float(value: Any) -> float | None:
@@ -140,7 +144,9 @@ def get_currency_symbol(currency: str | None) -> str:
     return currency
 
 
-def format_money(value: float | None, currency: str | None = None, digits: int = 2) -> str:
+def format_money(
+    value: float | None, currency: str | None = None, digits: int = 2
+) -> str:
     if value is None:
         return "--"
     symbol = get_currency_symbol(currency)
@@ -185,7 +191,7 @@ def format_large_number(value: float | None, currency: str | None = None) -> str
     elif absolute >= 1_000:
         scaled = absolute / 1_000
         suffix = "K"
-    
+
     sign = "-" if is_negative else ""
     symbol = get_currency_symbol(currency)
     if symbol in ("$", "¥", "HK$"):
@@ -204,7 +210,9 @@ def format_datetime(value: datetime | None) -> str:
     return local.strftime("%Y-%m-%d %H:%M")
 
 
-def calculate_phone_status(expiry_date: str | None, duration_days: Any = None) -> dict[str, Any]:
+def calculate_phone_status(
+    expiry_date: str | None, duration_days: Any = None
+) -> dict[str, Any]:
     """Return a stable expiry status used by the dashboard and phone page."""
     if not expiry_date:
         return {"status": "normal", "days_remaining": None, "status_label": ""}
@@ -214,9 +222,17 @@ def calculate_phone_status(expiry_date: str | None, duration_days: Any = None) -
         return {"status": "normal", "days_remaining": None, "status_label": ""}
     days_remaining = (expiry - datetime.now().date()).days
     if days_remaining < 0:
-        return {"status": "expired", "days_remaining": days_remaining, "status_label": "已过期"}
+        return {
+            "status": "expired",
+            "days_remaining": days_remaining,
+            "status_label": "已过期",
+        }
     if days_remaining <= 15:
-        return {"status": "expiring_soon", "days_remaining": days_remaining, "status_label": "临期"}
+        return {
+            "status": "expiring_soon",
+            "days_remaining": days_remaining,
+            "status_label": "临期",
+        }
     return {"status": "normal", "days_remaining": days_remaining, "status_label": ""}
 
 
@@ -227,7 +243,9 @@ def build_redirect_url(path: str, **params: str | None) -> str:
     return f"{path}?{urlencode(payload)}"
 
 
-def parse_holdings_text(text: str, default_market: str = "US") -> tuple[list[dict[str, Any]], list[str]]:
+def parse_holdings_text(
+    text: str, default_market: str = "US"
+) -> tuple[list[dict[str, Any]], list[str]]:
     rows: list[dict[str, Any]] = []
     errors: list[str] = []
     default_market = normalize_market(default_market)
@@ -236,7 +254,9 @@ def parse_holdings_text(text: str, default_market: str = "US") -> tuple[list[dic
         line = raw_line.strip()
         if not line:
             continue
-        parts = [part.strip() for part in line.replace("|", ",").replace(";", ",").split(",")]
+        parts = [
+            part.strip() for part in line.replace("|", ",").replace(";", ",").split(",")
+        ]
         if len(parts) == 1:
             parts = [part.strip() for part in line.split("\t")]
         parts = [part for part in parts if part != ""]
@@ -279,10 +299,12 @@ def parse_holdings_text(text: str, default_market: str = "US") -> tuple[list[dic
 
 _translation_client = None
 
+
 def _get_translation_client():
     global _translation_client
     if _translation_client is None:
         from .config import get_settings
+
         settings = get_settings()
         proxy = settings.proxy if settings.proxy else None
         _translation_client = httpx.Client(timeout=4.0, proxy=proxy)
@@ -299,7 +321,7 @@ def translate_text(text: str, target_lang: str = "zh-CN") -> str:
             "sl": "auto",
             "tl": target_lang,
             "dt": "t",
-            "q": text
+            "q": text,
         }
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -318,12 +340,8 @@ def translate_text(text: str, target_lang: str = "zh-CN") -> str:
 
 
 def load_card_records() -> list[dict[str, Any]]:
-    CARDS_FILE.parent.mkdir(parents=True, exist_ok=True)
     if not CARDS_FILE.exists():
-        # A fresh checkout must not create personal sample accounts implicitly.
-        default_data: list[dict[str, Any]] = []
-        save_card_records(default_data)
-        return default_data
+        return []
     data = load_json(CARDS_FILE, [])
     for card in data:
         card.setdefault("color", "")
@@ -333,6 +351,14 @@ def load_card_records() -> list[dict[str, Any]]:
 
 def save_card_records(records: list[dict[str, Any]]) -> None:
     save_json_atomic(CARDS_FILE, records)
+
+
+def load_card_notice_records() -> list[dict[str, Any]]:
+    return load_json(CARD_NOTICES_FILE, [])
+
+
+def save_card_notice_records(records: list[dict[str, Any]]) -> None:
+    save_json_atomic(CARD_NOTICES_FILE, records)
 
 
 def load_wallet_card_records() -> list[dict[str, Any]]:
@@ -348,29 +374,46 @@ def load_card_options() -> dict:
     default_options = {
         "kyc_methods": ["CNID", "CN护照"],
         "types": [
-            "U卡", "虚拟卡", "银行", "交易所", "加密钱包", "支付钱包", "汇款", 
-            "券商", "电话卡", "IP购买", "浏览器模拟", "支付", "钱包", "电话", 
-            "税号", "金融软件", "私募交易"
+            "U卡",
+            "虚拟卡",
+            "银行",
+            "交易所",
+            "加密钱包",
+            "支付钱包",
+            "汇款",
+            "券商",
+            "电话卡",
+            "IP购买",
+            "浏览器模拟",
+            "支付",
+            "钱包",
+            "电话",
+            "税号",
+            "金融软件",
+            "私募交易",
         ],
         "countries": [
-            "中国", "中国香港", "英国", "德国", "爱沙尼亚", "美国", "菲律宾", "日本", "奥地利"
+            "中国",
+            "中国香港",
+            "英国",
+            "德国",
+            "爱沙尼亚",
+            "美国",
+            "菲律宾",
+            "日本",
+            "奥地利",
         ],
-        "login_methods": [
-            "未绑定", "--"
-        ],
+        "login_methods": ["未绑定", "--"],
         "phones": ["--"],
-        "account_providers": [
-            "Lead Bank", "--"
-        ],
+        "account_providers": ["Lead Bank", "--"],
         "colors": [
             {"name": "红色", "value": "#fff5f5"},
             {"name": "黄色", "value": "#fefbeb"},
             {"name": "绿色", "value": "#f0fdf4"},
-            {"name": "蓝色", "value": "#eff6ff"}
-        ]
+            {"name": "蓝色", "value": "#eff6ff"},
+        ],
     }
     if not CARD_OPTIONS_FILE.exists():
-        save_json_atomic(CARD_OPTIONS_FILE, default_options)
         return default_options
     data = load_json(CARD_OPTIONS_FILE, dict(default_options))
     updated = False
@@ -378,8 +421,6 @@ def load_card_options() -> dict:
         if key not in data:
             data[key] = value
             updated = True
-    if updated:
-        save_json_atomic(CARD_OPTIONS_FILE, data)
     return data
 
 
@@ -396,12 +437,11 @@ def load_phone_options() -> dict:
             {"name": "3个月", "days": 90},
             {"name": "4个月", "days": 120},
             {"name": "6个月", "days": 180},
-            {"name": "12个月 / 1年", "days": 360}
+            {"name": "12个月 / 1年", "days": 360},
         ],
-        "phones": ["--"]
+        "phones": ["--"],
     }
     if not PHONE_OPTIONS_FILE.exists():
-        save_json_atomic(PHONE_OPTIONS_FILE, default_options)
         return default_options
     data = load_json(PHONE_OPTIONS_FILE, dict(default_options))
     updated = False
@@ -409,8 +449,6 @@ def load_phone_options() -> dict:
         if key not in data:
             data[key] = value
             updated = True
-    if updated:
-        save_json_atomic(PHONE_OPTIONS_FILE, data)
     return data
 
 
@@ -418,16 +456,15 @@ def save_phone_options(options: dict[str, list[str]]) -> None:
     save_json_atomic(PHONE_OPTIONS_FILE, options)
 
 
-
-
 def remove_cjk_latin_spaces(text: str) -> str:
     if not text:
         return text
     import re
+
     # Pattern 1: Chinese char followed by space followed by English letter/digit/parenthesis
-    text = re.sub(r'([\u4e00-\u9fa5])\s+([a-zA-Z0-9\(\)\[\]])', r'\1\2', text)
+    text = re.sub(r"([\u4e00-\u9fa5])\s+([a-zA-Z0-9\(\)\[\]])", r"\1\2", text)
     # Pattern 2: English/Digit/parenthesis followed by space followed by Chinese char
-    text = re.sub(r'([a-zA-Z0-9\(\)\[\]])\s+([\u4e00-\u9fa5])', r'\1\2', text)
+    text = re.sub(r"([a-zA-Z0-9\(\)\[\]])\s+([\u4e00-\u9fa5])", r"\1\2", text)
     return text
 
 
@@ -437,7 +474,8 @@ def capitalize_english(text: str) -> str:
     if "@" in text:
         return text
     import re
-    return re.sub(r'[a-zA-Z]+', lambda m: m.group(0)[0].upper() + m.group(0)[1:], text)
+
+    return re.sub(r"[a-zA-Z]+", lambda m: m.group(0)[0].upper() + m.group(0)[1:], text)
 
 
 def load_phone_records() -> list[dict]:

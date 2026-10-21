@@ -7,14 +7,7 @@
     const schemeModal = document.getElementById("walletSchemeModal");
     let schemeDraft = [];
     function renderSchemes() {
-        const list = document.getElementById("walletSchemeList"); list.replaceChildren();
-        schemeDraft.forEach((name, index) => {
-            const row = document.createElement("div"); row.className = "wallet-scheme-row";
-            const label = document.createElement("span"); label.textContent = name;
-            const remove = document.createElement("button"); remove.type = "button"; remove.textContent = "移除";
-            remove.addEventListener("click", () => { schemeDraft.splice(index, 1); renderSchemes(); });
-            row.append(label, remove); list.append(row);
-        });
+        window.saulRenderOptionList(document.getElementById("walletSchemeList"), schemeDraft, values => { schemeDraft = values; renderSchemes(); }, message => { document.getElementById("walletSchemeError").textContent = message; });
     }
     page.querySelectorAll(".wallet-manage-schemes").forEach(button => button.addEventListener("click", async () => {
         openModal(schemeModal);
@@ -27,6 +20,7 @@
         if (name && !schemeDraft.includes(name)) { schemeDraft.push(name); input.value = ""; renderSchemes(); }
     });
     document.getElementById("walletSaveSchemes").addEventListener("click", async (event) => {
+        if (document.getElementById("walletSchemeList").commitOptionEdit?.() === false) return;
         event.currentTarget.disabled = true;
         try {
             const r = await fetch('/api/wallet-card-options', {method:'POST', headers:{'Content-Type':'application/json'},body:JSON.stringify({schemes:schemeDraft})});
@@ -81,12 +75,9 @@
 
     function setFormExpanded(expanded) {
         if (!addForm || !toggleFormButton) return;
-        addForm.classList.toggle("is-collapsed", !expanded);
+        window.saulSetFormExpanded(addForm, expanded);
         toggleFormButton.setAttribute("aria-expanded", String(expanded));
         toggleFormButton.textContent = expanded ? "收起" : "添加卡片";
-        if (expanded) {
-            window.setTimeout(() => addForm.querySelector("input")?.focus(), 220);
-        }
     }
 
     toggleFormButton?.addEventListener("click", () => {
@@ -191,6 +182,7 @@
         if (toggleCvcButton) toggleCvcButton.textContent = "显示";
         setText("walletDetailHolder", card.holder_name);
         setText("walletDetailVariant", card.card_variant);
+        setText("walletDetailBinCountry", card.bin_info_display || "--");
         setText("walletDetailAddress", card.billing_address);
         setText("walletDetailCountry", card.country);
         setText("walletDetailPhone", card.phone);

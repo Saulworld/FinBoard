@@ -6,50 +6,11 @@
 {% with expiry_alerts=phone_alerts(), alert_title='境外号码到期提醒', alert_link='/phones', alert_action='去续费', alert_kind='phone', alert_collapsible=true %}{% include 'expiry_alert_panel.html' %}{% endwith %}
 {% with expiry_alerts=wallet_alerts(), alert_title='境外卡到期提醒', alert_link='/wallet-cards', alert_action='更新有效期', alert_kind='wallet', alert_collapsible=true %}{% include 'expiry_alert_panel.html' %}{% endwith %}
 
-<section class="metric-strip two">
-    <div class="metric-box">
-        <span>分析范围</span>
-        <strong>基本面 / 新闻 / 主流观点</strong>
-    </div>
-    <div class="metric-box">
-        <span>支持市场</span>
-        <strong>美股 / ETF / 港股 / A股</strong>
-    </div>
-</section>
 
-<section class="content-split">
-    <section class="board-card">
-        <div class="card-head">
-            <div>
-                <h2>自选管理</h2>
-            </div>
-        </div>
-        <form action="/watchlist" method="post" class="sidebar-form">
-            <label>
-                <span>市场</span>
-                <select name="market">
-                    {% for market_code, market_name in market_labels.items() %}
-                    <option value="{{ market_code }}">{{ market_name }}</option>
-                    {% endfor %}
-                </select>
-            </label>
-            <label>
-                <span>股票代码</span>
-                <input type="text" name="symbol" placeholder="AAPL / 600519 / 0700" required>
-            </label>
-            <label>
-                <span>备注名</span>
-                <input type="text" name="name" placeholder="可留空，自动补公司名">
-            </label>
-            <label>
-                <span>备注</span>
-                <input type="text" name="note" placeholder="例如：财报前观察">
-            </label>
-            <button type="submit">加入自选</button>
-        </form>
-    </section>
 
-    <section class="board-card">
+
+<div class="dashboard-grid">
+<section class="board-card market-card">
         <div class="card-head">
             <div>
                 <h2>大盘指数</h2>
@@ -128,9 +89,37 @@
             </li>
         </ul>
     </section>
-</section>
-
-<section class="board-card">
+<section class="board-card dashboard-add">
+        <div class="card-head">
+            <div>
+                <h2>自选管理</h2>
+            </div>
+        </div>
+        <form action="/watchlist" method="post" class="sidebar-form">
+            <label>
+                <span>市场</span>
+                <select name="market">
+                    {% for market_code, market_name in market_labels.items() %}
+                    <option value="{{ market_code }}">{{ market_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                <span>股票代码</span>
+                <input type="text" name="symbol" placeholder="AAPL / 600519 / 0700" required>
+            </label>
+            <label>
+                <span>备注名</span>
+                <input type="text" name="name" placeholder="可留空，自动补公司名">
+            </label>
+            <label>
+                <span>备注</span>
+                <input type="text" name="note" placeholder="例如：财报前观察">
+            </label>
+            <button type="submit">加入自选</button>
+        </form>
+    </section>
+<section class="board-card watchlist-card">
     <div class="card-head">
         <div>
             <h2>实时涨跌</h2>
@@ -171,7 +160,7 @@
                         <button type="button" class="button-link remove-watchlist-btn" style="color: #dc2626; font-weight: bold; background: transparent; border: 0; padding: 0; cursor: pointer;"
                                 data-id="{{ row.id }}" 
                                 data-name="{{ row.name }}" 
-                                data-symbol="{{ row.symbol }}">移除</button>
+                                data-symbol="{{ row.symbol }}" data-micro="delete">移除</button>
                     </td>
                 </tr>
                 {% endfor %}
@@ -182,6 +171,9 @@
     <div class="empty-state">还没有自选股票。先在上面加入你要跟踪的股票。</div>
     {% endif %}
 </section>
+
+</div>
+
 
 <!-- Remove Watchlist Modal -->
 <div id="removeWatchlistModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4); backdrop-filter: blur(4px); align-items: center; justify-content: center;">
@@ -194,7 +186,7 @@
             <p style="margin: 0; line-height: 1.6; color: var(--text);">确定要将 <strong id="removeWatchlistStockName" style="color: var(--accent);"></strong> 从自选股列表中移除吗？</p>
             <div style="display: flex; gap: 12px;">
                 <button type="button" id="cancelRemoveModalBtn" style="flex: 1; background: #e5e7eb; color: var(--text); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; cursor: pointer; font-weight: bold;">取消</button>
-                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; border: 0; border-radius: 14px; padding: 12px 16px; cursor: pointer; font-weight: bold;">确认移除</button>
+                <button type="submit" style="flex: 1; background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); color: white; border: 0; border-radius: 14px; padding: 12px 16px; cursor: pointer; font-weight: bold;" data-micro="delete" data-micro-confirm>确认移除</button>
             </div>
         </form>
     </div>
@@ -242,39 +234,52 @@ document.addEventListener("DOMContentLoaded", function() {
         }, 3000);
     }
 
-    async function reloadDashboardPage(toastMsg) {
-        const scrollPos = window.scrollY;
-        try {
-            const response = await fetch(window.location.href);
-            if (!response.ok) throw new Error("Failed to reload dashboard");
-            const html = await response.text();
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, "text/html");
-
-            // Swap main content area
-            const newContent = doc.querySelector(".content-area");
-            const contentArea = document.querySelector(".content-area");
-            if (newContent && contentArea) {
-                contentArea.innerHTML = newContent.innerHTML;
-                
-                // Re-evaluate page script
-                const scripts = contentArea.querySelectorAll("script");
-                scripts.forEach(oldScript => {
-                    const newScript = document.createElement("script");
-                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-                    oldScript.parentNode.replaceChild(newScript, oldScript);
-                });
-            }
-
-            // Restore scroll
-            window.scrollTo(0, scrollPos);
-            showToast(toastMsg);
-        } catch (e) {
-            console.error("Error reloading dashboard:", e);
-            window.location.reload();
+    const watchlistCard = document.querySelector(".watchlist-card");
+    async function updateWatchlist(response, toastMsg) {
+        if (!response.ok) throw new Error("保存失败，请重试。");
+        const doc = new DOMParser().parseFromString(await response.text(), "text/html");
+        const fresh = doc.querySelector(".watchlist-card");
+        if (!fresh) throw new Error("列表更新失败，请稍后重试。");
+        if (!watchlistCard.isConnected) return;
+        const shell = document.querySelector(".main-shell");
+        const scrollTop = shell.scrollTop;
+        const headers = [...watchlistCard.querySelectorAll("thead th")];
+        const sortedIndex = headers.findIndex(th => ["ascending", "descending"].includes(th.getAttribute("aria-sort")));
+        const descending = headers[sortedIndex]?.getAttribute("aria-sort") === "descending";
+        const existingQuotes = new Map([...watchlistCard.querySelectorAll("tr[data-quote-symbol]")].map(row => [row.dataset.quoteSymbol + ":" + row.dataset.quoteMarket, row]));
+        fresh.querySelectorAll("tr[data-quote-symbol]").forEach(row => {
+            const previous = existingQuotes.get(row.dataset.quoteSymbol + ":" + row.dataset.quoteMarket);
+            if (previous) row.querySelectorAll("[data-value]").forEach(cell => {
+                const old = previous.querySelector(`[data-value="${cell.dataset.value}"]`);
+                if (old) { cell.innerHTML = old.innerHTML; cell.className = old.className; }
+            });
+        });
+        watchlistCard.innerHTML = fresh.innerHTML;
+        makeTableSortable("watchlistTable");
+        if (sortedIndex >= 0) {
+            const header = watchlistCard.querySelectorAll("thead th")[sortedIndex];
+            header?.click();
+            if (descending) header?.click();
         }
+        paginateTable("watchlistTable", 5);
+        shell.scrollTop = scrollTop;
+        showToast(toastMsg);
+        if (typeof refreshAllQuotes === "function") refreshAllQuotes();
     }
+    const addWatchlistForm = document.querySelector('.dashboard-add form');
+    addWatchlistForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const button = addWatchlistForm.querySelector('[type="submit"]');
+        if (button.disabled) return;
+        button.disabled = true;
+        try {
+            const response = await fetch(addWatchlistForm.action, { method: "POST", body: new FormData(addWatchlistForm) });
+            sessionStorage.setItem("page_watchlistTable", "1");
+            await updateWatchlist(response, "已保存自选。");
+            for (const name of ["symbol", "name", "note"]) addWatchlistForm.elements[name].value = "";
+        } catch (error) { showToast(error.message, true); }
+        finally { button.disabled = false; }
+    });
 
     function makeTableSortable(tableId) {
         const table = document.getElementById(tableId);
@@ -381,19 +386,12 @@ document.addEventListener("DOMContentLoaded", function() {
     const cancelRemoveBtn = document.getElementById("cancelRemoveModalBtn");
     const removeStockNameSpan = document.getElementById("removeWatchlistStockName");
 
-    document.querySelectorAll(".remove-watchlist-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-            const id = btn.dataset.id;
-            const name = btn.dataset.name;
-            const symbol = btn.dataset.symbol;
-
-            // Fill form action and stock name
-            removeForm.action = `/watchlist/${id}/delete`;
-            removeStockNameSpan.textContent = `${name} (${symbol})`;
-
-            // Show modal
-            removeModal.style.display = "flex";
-        });
+    watchlistCard.addEventListener("click", (event) => {
+        const btn = event.target.closest(".remove-watchlist-btn");
+        if (!btn) return;
+        removeForm.action = `/watchlist/${btn.dataset.id}/delete`;
+        removeStockNameSpan.textContent = `${btn.dataset.name} (${btn.dataset.symbol})`;
+        removeModal.style.display = "flex";
     });
 
     function hideRemoveModal() {
@@ -412,7 +410,7 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             if (!response.ok) throw new Error("HTTP error " + response.status);
             hideRemoveModal();
-            await reloadDashboardPage("自选股已成功移除");
+            await updateWatchlist(response, "自选股已成功移除");
         } catch (error) {
             console.error("移除自选股失败:", error);
             showToast("移除自选股失败: " + error.message, true);

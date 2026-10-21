@@ -1,0 +1,1106 @@
+/* Local glass edition. Existing business components and status colors are preserved. */
+:root {
+  --bg: rgba(241, 247, 247, 0.28);
+  --panel: rgba(237, 246, 247, 0.35);
+  --card: rgba(247, 251, 250, 0.48);
+  --line: rgba(255, 255, 255, 0.58);
+  --line-soft: rgba(255, 255, 255, 0.3);
+  --text: #173442;
+  --muted: #49616b;
+  --accent: #386d64;
+  --shadow: 0 8px 28px rgba(29, 62, 75, 0.075);
+  --up: #b5412f;
+  --down: #267660;
+  --radius-panel: 18px;
+  --radius-control: 10px;
+  --glass-blur: 22px;
+}
+html {
+  background: #bad5df;
+  scroll-behavior: auto;
+}
+.local-glass {
+  background: transparent;
+  font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.landscape-stage {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+  background: #bad5df;
+}
+.landscape-layer {
+  position: absolute;
+  inset: 0;
+  background-image: url("/static/images/landscapes/panoramas.png");
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 2400ms cubic-bezier(0.45, 0, 0.3, 1);
+  will-change: opacity;
+}
+.landscape-a {
+  opacity: 1;
+}
+.landscape-wash {
+  position: absolute;
+  inset: 0;
+  background: rgba(231, 243, 246, 0.13);
+}
+.local-glass .app-shell {
+  height: 100dvh;
+  padding: 22px;
+  gap: 22px;
+  grid-template-columns: 232px minmax(0, 1fr);
+  max-width: none;
+}
+.local-glass .sidebar {
+  position: relative;
+  top: auto;
+  height: calc(100dvh - 44px);
+  padding: 22px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(237, 247, 248, 0.36);
+  backdrop-filter: blur(var(--glass-blur)) saturate(112%);
+  box-shadow: var(--shadow);
+}
+.local-glass .main-shell {
+  height: calc(100dvh - 44px);
+  min-width: 0;
+  padding: 0 6px 28px 0;
+  background: transparent;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #43627444 transparent;
+}
+.local-glass .brand {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 29px;
+  color: #19423f;
+  letter-spacing: -0.7px;
+}
+.local-glass .sidebar-head {
+  padding: 0 7px;
+  margin-bottom: 24px;
+}
+.local-glass .sidebar-nav {
+  position: relative;
+  gap: 5px;
+  margin-bottom: 22px;
+}
+.local-glass .sidebar-nav a {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  min-height: 43px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  box-shadow: none;
+  color: #244452;
+  font-size: 14px;
+  z-index: 1;
+  transition:
+    color 0.22s,
+    background 0.22s;
+}
+.local-glass .sidebar-nav a.active {
+  background: rgba(55, 106, 96, 0.74);
+  color: #fff;
+}
+.local-glass .sidebar-nav a:hover:not(.active) {
+  background: rgba(255, 255, 255, 0.23);
+}
+.nav-icon {
+  height: 20px;
+  width: 20px;
+  flex: 0 0 20px;
+}
+.local-glass .sidebar-nav.is-animated a.active {
+  background: transparent;
+}
+.nav-selection {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: rgba(55, 106, 96, 0.75);
+  border-radius: 10px;
+  transition:
+    transform 300ms cubic-bezier(0.22, 0.82, 0.25, 1.02),
+    height 300ms;
+  z-index: 0;
+  pointer-events: none;
+}
+.local-glass .sidebar-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 16px 2px 4px;
+  margin: 0 0 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.4);
+}
+.local-glass .sidebar-card-head h3 {
+  font-size: 14px;
+  font-weight: 600;
+}
+.local-glass .sidebar-form {
+  gap: 10px;
+  margin-top: 12px;
+}
+.local-glass .sidebar-form label {
+  font-size: 12px;
+  gap: 5px;
+}
+.local-glass .sidebar-form input,
+.local-glass .sidebar-form select {
+  font-size: 12px;
+  padding: 9px 10px;
+}
+.local-glass .sidebar-form button {
+  font-size: 12px;
+  padding: 10px;
+}
+.sidebar-utility summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sidebar-utility summary:after {
+  content: "⌄";
+  transition: transform 0.12s ease-out;
+}
+.sidebar-utility[open]:not([data-expanded="false"]) summary:after,
+.sidebar-utility[data-expanded="true"] summary:after {
+  transform: rotate(180deg);
+}
+.expiry-disclosure[data-expanded="false"] > summary::after { transform: rotate(45deg); }
+.expiry-disclosure[data-expanded="true"] > summary::after { transform: rotate(225deg); }
+.sidebar-footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
+}
+.local-glass .sidebar-footer button {
+  font-size: 11px;
+  padding: 9px 6px;
+  background: rgba(255, 255, 255, 0.24);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+.maintenance-link {
+  grid-column: 1/-1;
+  display: block;
+  text-align: center;
+  font-size: 12px;
+  padding: 9px;
+  color: #254f59;
+}
+.workspace-caption {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding: 7px 8px;
+  color: #375762;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+.local-glass .page-topbar {
+  position: relative;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  min-height: 139px;
+  padding: 24px 8px 26px;
+  gap: 18px;
+  align-items: center;
+  margin: 0;
+}
+.local-glass .page-title {
+  font-size: 38px;
+  line-height: 1.3;
+  font-family: "Songti SC", SimSun, serif;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: #163e45;
+}
+.local-glass .page-topbar-actions {
+  margin-left: auto;
+  background: rgba(249, 252, 250, 0.5);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 12px;
+  backdrop-filter: blur(16px);
+}
+.local-glass .content-area {
+  gap: 16px;
+  padding: 0;
+  min-width: 0;
+}
+.local-glass .content-area.pjax-loading {
+  pointer-events: none;
+  cursor: progress;
+}
+.local-glass
+  :is(
+    .board-card,
+    .metric-box,
+    .tone-card,
+    .mini-stat,
+    .quote-hero,
+    .summary-board,
+    .ai-stat-card,
+    .briefing-dates-aside,
+    .briefing-header-bar,
+    .briefing-card,
+    .report-card,
+    .ai-plan-card,
+    .ai-update-item
+  ) {
+  border: 1px solid var(--line) !important;
+  border-radius: var(--radius-panel) !important;
+  background: var(--card) !important;
+  box-shadow: var(--shadow) !important;
+  backdrop-filter: blur(var(--glass-blur)) saturate(112%);
+}
+.local-glass .board-card {
+  padding: 20px;
+}
+.local-glass .card-head h2,
+.local-glass .ai-section-head h2 {
+  font-size: 19px;
+  color: var(--text);
+  font-weight: 650;
+}
+.local-glass .card-head {
+  margin-bottom: 14px;
+}
+.local-glass .metric-box {
+  padding: 12px 16px;
+}
+.local-glass .metric-box strong {
+  font-size: 19px;
+}
+.local-glass .metric-box span {
+  color: var(--muted);
+}
+.local-glass
+  input:not([type="checkbox"]):not([type="radio"]):not([type="color"]),
+.local-glass select,
+.local-glass textarea {
+  background: rgba(248, 252, 250, 0.38) !important;
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
+  border-radius: var(--radius-control) !important;
+  color: var(--text);
+  box-shadow: inset 0 1px 0 #ffffff24;
+  transition:
+    border-color 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.local-glass input::placeholder,
+.local-glass textarea::placeholder {
+  color: #647982;
+  opacity: 1;
+}
+.local-glass select option {
+  background: #f0f6f5;
+  color: #173442;
+}
+.local-glass :is(input, select, textarea):focus {
+  outline: none;
+  border-color: #4a8179 !important;
+  box-shadow: 0 0 0 3px #47776e1a;
+}
+.local-glass textarea {
+  resize: none;
+}
+.local-glass button {
+  border-radius: var(--radius-control) !important;
+  background: rgba(44, 99, 88, 0.87);
+  transition:
+    transform 0.18s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+.local-glass button:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.local-glass button:disabled {
+  opacity: 0.52;
+  cursor: not-allowed;
+}
+.local-glass button:focus-visible,
+.local-glass a:focus-visible,
+.local-glass summary:focus-visible {
+  outline: 2px solid #2f756c;
+  outline-offset: 3px;
+}
+.local-glass button[style*="linear-gradient"] {
+  background: rgba(44, 99, 88, 0.88) !important;
+}
+.local-glass
+  :is(
+    .button-link,
+    .modal-close-btn,
+    .btn-manage-options,
+    .wallet-manage-schemes,
+    .edit-card-notice-btn,
+    [class*="-modal-close"],
+    #clearHistoryBtn
+  ) {
+  background: transparent !important;
+}
+.local-glass .button-link {
+  color: #326268;
+}
+.local-glass .edit-card-notice-btn {
+  color: #245ea8;
+}
+.local-glass .wallet-manage-schemes {
+  border: 0;
+  padding: 0;
+  color: #1a73e8;
+  box-shadow: none;
+}
+.local-glass :is(.wallet-copy-btn, .card-notice-cancel-btn),
+.local-glass #walletCardDeleteModal .wallet-delete-actions [data-wallet-modal-close] {
+  background: rgba(240, 248, 247, 0.9) !important;
+  color: #294b54 !important;
+}
+.local-glass .wallet-danger-btn {
+  background: #fff7f7 !important;
+  color: #b23e31 !important;
+  border-color: #fecaca;
+}
+.local-glass
+  :is(
+    .delete-card-btn,
+    .delete-phone-btn,
+    [id*="Delete"][type="submit"],
+    .wallet-danger-btn
+  ) {
+  color: #b23e31 !important;
+}
+.local-glass button[type="submit"][style*="#dc2626"] {
+  background: #b34739 !important;
+  color: #fff !important;
+}
+.local-glass :is(.form-toggle-btn, .wallet-secondary-btn, .page-btn) {
+  background: rgba(255, 255, 255, 0.28) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--text) !important;
+  box-shadow: none !important;
+}
+.local-glass .page-btn.active {
+  background: #3b7367d9 !important;
+  color: #fff !important;
+}
+.local-glass .page-btn {
+  border-radius: 10px !important;
+}
+.local-glass .pagination-container {
+  margin-top: 18px;
+}
+.local-glass table {
+  background: transparent;
+}
+.local-glass thead th {
+  background: rgba(225, 239, 240, 0.45) !important;
+  color: #35525c !important;
+  border-bottom: 1px solid var(--line) !important;
+}
+.local-glass tbody td {
+  border-bottom-color: rgba(255, 255, 255, 0.36);
+}
+.local-glass :is(.table-wrap, .ai-table-wrap) {
+  background: transparent !important;
+  border-color: var(--line-soft) !important;
+  border-radius: 12px;
+}
+.local-glass tbody tr:hover {
+  background: rgba(255, 255, 255, 0.23);
+}
+.local-glass .stock-link {
+  color: #245f78;
+}
+.local-glass .quote-up {
+  color: var(--up) !important;
+}
+.local-glass .quote-down {
+  color: var(--down) !important;
+}
+.local-glass .quote-flat {
+  color: var(--muted);
+}
+.local-glass .sort-indicator[data-direction="asc"],
+.local-glass .sort-indicator[data-direction="desc"] {
+  color: var(--accent) !important;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 1201px) {
+  .local-glass[data-page="dashboard"] .content-area {
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100dvh - 96px);
+  }
+  .local-glass[data-page="dashboard"] .dashboard-grid {
+    flex: 1;
+    align-items: stretch;
+    grid-template-rows: auto auto minmax(min-content, 1fr);
+  }
+  .local-glass .watchlist-card {
+    display: flex;
+    flex-direction: column;
+  }
+  .local-glass .watchlist-card .table-wrap { flex: 1; }
+  .local-glass .dashboard-add {
+    display: grid;
+    grid-template-columns: 105px minmax(0, 1fr);
+    gap: 20px;
+    align-items: center;
+  }
+  .local-glass .dashboard-add > .card-head { margin: 0; }
+  .local-glass .dashboard-add > .card-head h2 { font-size: 18px; white-space: nowrap; }
+  .local-glass .dashboard-add .sidebar-form {
+    display: grid;
+    margin-top: 0;
+    grid-template-columns: 120px minmax(160px, 1fr) minmax(140px, 1fr) minmax(160px, 1.1fr) auto;
+    gap: 14px;
+    align-items: end;
+  }
+  .local-glass .dashboard-add .sidebar-form label { gap: 4px; }
+  .local-glass .dashboard-add .sidebar-form :is(input, select, button) { height: 38px; padding-block: 6px; }
+  .local-glass .dashboard-add .sidebar-form button { padding-inline: 20px; white-space: nowrap; }
+}
+.dashboard-grid .market-card {
+  grid-column: 1/-1;
+  grid-row: 1;
+}
+.dashboard-grid .watchlist-card {
+  grid-column: 1;
+  grid-row: 3;
+}
+.dashboard-grid .dashboard-add {
+  grid-column: 1;
+  grid-row: 2;
+}
+.local-glass .market-card .sidebar-list {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px !important;
+  margin: 0 !important;
+}
+.local-glass .market-card li {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start !important;
+  border-right: 1px solid var(--line-soft);
+  gap: 8px;
+  padding: 4px 10px !important;
+  min-width: 0;
+}
+.local-glass .market-card li > div {
+  align-items: flex-start !important;
+}
+.local-glass .market-card li strong {
+  font-size: 16px !important;
+}
+.local-glass .market-card li span {
+  font-size: 13px !important;
+}
+.local-glass .market-card li [data-value="price"] {
+  font-size: 18px !important;
+  line-height: 1.45;
+}
+.local-glass .market-card li [data-value="change_percent"] {
+  font-size: 14px !important;
+}
+.local-glass .dashboard-grid .card-head h2 {
+  font-size: 21px;
+}
+.local-glass .dashboard-add .sidebar-form {
+  gap: 10px;
+}
+.local-glass .dashboard-add {
+  padding: 10px 16px;
+}
+.local-glass .watchlist-card .table-wrap {
+  overflow-x: auto;
+  height: auto;
+  min-height: var(--paged-table-full-height, 0px);
+  scrollbar-gutter: auto;
+}
+.local-glass .table-wrap:has(> :is(#holdingsTable, #transactionsTable)) {
+  height: auto;
+  min-height: var(--paged-table-full-height, 0px);
+  scrollbar-gutter: auto;
+  overflow: auto;
+}
+.local-glass .watchlist-card th,
+.local-glass .watchlist-card td {
+  padding: 13px 9px;
+  font-size: 14px;
+  white-space: nowrap;
+}
+.local-glass .watchlist-card td :is(span, button, .stock-link) {
+  font-size: 14px !important;
+}
+.local-glass .dashboard-add .sidebar-form :is(input, select, button, label > span) {
+  font-size: 14px;
+}
+.local-glass :is(.ai-hero, .briefing-stats-bar) {
+  background: rgba(225, 242, 240, 0.55) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 18px !important;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(22px);
+}
+.local-glass .ai-hero:before {
+  display: none;
+}
+.local-glass .ai-hero :is(h2, p, .ai-hero-meta, .ai-live-dot) {
+  color: var(--text);
+}
+.local-glass .ai-hero-mark {
+  background: rgba(70, 122, 109, 0.13);
+  color: #396d66;
+  border-radius: 16px;
+  transform: none;
+}
+.local-glass :is(.ai-view-tabs, .view-tabs, .ai-source-note) {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  color: #385f63;
+}
+.local-glass
+  :is(.ai-view-tabs button.active, .tab-btn.active, .date-link.active) {
+  background: rgba(46, 104, 92, 0.85) !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+.local-glass .ai-stat-card {
+  padding: 12px 16px;
+}
+.local-glass .ai-stat-icon {
+  border-radius: 12px;
+}
+.local-glass .ai-plan-card,
+.local-glass .ai-update-item {
+  backdrop-filter: none;
+}
+.local-glass .briefing-dates-aside {
+  padding: 16px;
+}
+.local-glass .date-link {
+  background: transparent;
+  border-radius: 10px;
+}
+.local-glass .briefing-container {
+  background: transparent;
+}
+.local-glass .briefing-content {
+  min-width: 0;
+}
+.local-glass .briefing-card {
+  background: rgba(247, 251, 250, 0.72) !important;
+}
+.local-glass .stat-pill {
+  border-radius: 10px !important;
+}
+.local-glass .ai-price-table td {
+  background: transparent;
+}
+.local-glass :is(.expiry-alert-panel, .card-notices-panel) {
+  background: rgba(251, 247, 233, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
+}
+.local-glass :is(.wallet-card-grid, .wallet-cards-page) {
+  background: transparent;
+}
+.local-glass .wallet-card {
+  border-radius: 18px !important;
+}
+.local-glass .history-item {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-radius: 10px !important;
+}
+.local-glass :is(.modal, .modal-overlay, .wallet-modal) {
+  background: rgba(24, 48, 58, 0.22) !important;
+  backdrop-filter: blur(7px) !important;
+}
+.local-glass
+  :is(
+    .modal .board-card,
+    .modal-dialog-card,
+    .wallet-modal-dialog,
+    .wallet-modal-content,
+    .card-notice-modal-content
+  ) {
+  background: rgba(237, 248, 247, 0.88) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 18px !important;
+  backdrop-filter: blur(28px);
+  box-shadow: 0 22px 70px rgba(17, 43, 56, 0.18);
+}
+.local-glass :is(.modal-card-header, .wallet-modal-header) {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
+.local-glass :is(.banner-notice, .banner-error) {
+  background: rgba(246, 252, 250, 0.88);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+}
+.local-glass .skeleton {
+  background: linear-gradient(90deg, #eff6f233, #e1eeed99, #eff6f233);
+  background-size: 200% 100%;
+  animation: glass-shimmer 1.5s infinite;
+  border-radius: 6px;
+  display: inline-block;
+  color: transparent !important;
+}
+.skeleton-text {
+  height: 14px;
+  margin: 6px 0;
+  width: 100%;
+}
+.skeleton-title {
+  height: 24px;
+  margin: 10px 0;
+  width: 60%;
+}
+.skeleton-block {
+  display: block;
+  height: 120px;
+  width: 100%;
+}
+.skeleton-inline {
+  width: 60px;
+  height: 16px;
+}
+.skeleton-btn {
+  width: 100px;
+  height: 36px;
+}
+@keyframes glass-shimmer {
+  to {
+    background-position: -200% 0;
+  }
+}
+@media (min-width: 1201px) {
+  .local-glass .market-card .sidebar-list {
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (max-width: 1200px) {
+  .local-glass .app-shell {
+    grid-template-columns: 208px minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+  }
+  .local-glass .sidebar,
+  .local-glass .main-shell {
+    height: calc(100dvh - 32px);
+  }
+  .local-glass .sidebar {
+    padding: 20px 12px;
+  }
+  .dashboard-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dashboard-grid .dashboard-add {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .local-glass .dashboard-add .sidebar-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .local-glass .dashboard-add .sidebar-form button {
+    grid-column: 1/-1;
+  }
+  .local-glass .page-title {
+    font-size: 32px;
+  }
+  .local-glass .board-card {
+    padding: 16px;
+  }
+}
+@media (max-width: 820px) {
+  .local-glass .app-shell {
+    display: block;
+    padding: 14px;
+    overflow: hidden;
+  }
+  .local-glass .sidebar {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    bottom: 12px;
+    width: 264px;
+    height: calc(100dvh - 24px);
+    z-index: 80;
+    transform: translateX(-115%);
+    transition: transform 0.32s cubic-bezier(0.2, 0.85, 0.25, 1);
+    background: rgba(229, 244, 245, 0.8);
+  }
+  .local-glass .sidebar.is-open {
+    transform: translateX(0);
+  }
+  .local-glass .sidebar-backdrop.is-visible {
+    display: block;
+    z-index: 70;
+    background: #19383f33;
+    backdrop-filter: blur(3px);
+  }
+  .local-glass .main-shell {
+    height: calc(100dvh - 28px);
+    padding-right: 2px;
+  }
+  .local-glass .sidebar-toggle {
+    display: inline-flex;
+    background: rgba(246, 252, 250, 0.45) !important;
+    color: var(--text);
+    border: 1px solid var(--line);
+    padding: 9px 11px;
+  }
+  .local-glass .page-topbar {
+    min-height: 106px;
+    padding: 18px 2px;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .local-glass .page-title {
+    font-size: 29px;
+  }
+  .local-glass .page-topbar-actions {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+  .workspace-caption {
+    font-size: 10px;
+    padding: 4px 2px;
+  }
+  .local-glass .board-card {
+    padding: 14px;
+  }
+  .local-glass .market-card .sidebar-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .local-glass .metric-strip {
+    gap: 10px;
+  }
+  .local-glass .metric-box strong {
+    font-size: 16px;
+  }
+  .local-glass .briefing-layout {
+    grid-template-columns: 1fr;
+  }
+  .local-glass .briefing-dates-aside {
+    width: auto;
+  }
+  .local-glass .ai-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .local-glass .sidebar-form input {
+    min-width: 0;
+  }
+}
+@media (max-width: 480px) {
+  .local-glass .market-card .sidebar-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .local-glass .market-card li > div {
+    text-align: left !important;
+  }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  .local-glass
+    :is(.sidebar, .board-card, .metric-box, .briefing-card, .ai-stat-card) {
+    background: rgba(244, 249, 247, 0.94) !important;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .local-glass *,
+  .local-glass *:before,
+  .local-glass *:after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  .landscape-layer {
+    will-change: auto;
+  }
+}
+.local-glass .nav-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.65;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.local-glass :is(.ai-view-tabs button, .view-tabs .tab-btn):not(.active) {
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #365960 !important;
+}
+.dashboard-scope {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+  padding: 0;
+  flex-wrap: wrap;
+}
+.local-glass .market-card > .card-head {
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+.local-glass .dashboard-scope .metric-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  background: rgba(240, 250, 249, 0.25) !important;
+  border: 1px solid rgba(255, 255, 255, 0.36) !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+  backdrop-filter: none;
+  padding: 7px 11px !important;
+}
+.local-glass .dashboard-scope .metric-box span {
+  font-size: 13px;
+  letter-spacing: 0.06em;
+}
+.local-glass .dashboard-scope .metric-box strong {
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0.055em;
+}
+.local-glass .expiry-alert-panel {
+  padding: 12px 16px !important;
+}
+.local-glass .expiry-alert-panel .card-head {
+  margin-bottom: 0;
+}
+.local-glass :is(.stat-pill, .filter-btn, .refresh-btn-aside) {
+  background: rgba(255, 255, 255, 0.3) !important;
+  border: 1px solid var(--line) !important;
+  color: var(--text) !important;
+}
+.local-glass :is(.stat-pill.active, .filter-btn.active) {
+  background: rgba(71, 124, 109, 0.22) !important;
+  border-color: rgba(53, 104, 89, 0.5) !important;
+  color: #214c43 !important;
+}
+.local-glass .briefing-item-card {
+  background: rgba(242, 249, 248, 0.67) !important;
+  backdrop-filter: blur(18px);
+  border-radius: 16px !important;
+  box-shadow: var(--shadow);
+}
+.local-glass .report-collapsed-card {
+  background: rgba(242, 249, 248, 0.56) !important;
+  backdrop-filter: blur(18px);
+  border-radius: 16px !important;
+  border: 1px solid var(--line);
+}
+.local-glass :is(.card-price-row, .card-footer) {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Compact page chrome; keep the heading available to assistive navigation. */
+.local-glass .page-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.local-glass .page-topbar {
+  display: none;
+  min-height: 0;
+  padding: 0;
+}
+.local-glass .page-topbar:has(.page-topbar-actions) {
+  display: flex;
+  padding: 4px 0 12px;
+}
+.local-glass .overseas-add-panel > .card-head {
+  margin-bottom: 0;
+  min-height: 36px;
+}
+.local-glass .wallet-card-form-panel {
+  padding: 14px 20px;
+}
+.local-glass .overseas-add-panel {
+  padding: 10px 18px;
+}
+.local-glass .overseas-add-panel > .card-head h2 {
+  font-size: 17px;
+}
+.local-glass :is(.collapsible-add-form, .wallet-card-form) {
+  max-height: none;
+  height: auto;
+  transition: none;
+}
+.local-glass :is(.collapsible-add-form, .wallet-card-form).is-collapsed {
+  max-height: none;
+  height: 0;
+}
+.local-glass #phonesTable tbody tr[data-row-color]:not([data-row-color=""]),
+.local-glass #cardsTable tbody tr[data-color]:not([data-color=""]) {
+  clip-path: inset(2px 0 round 10px);
+}
+.local-glass :is(.overseas-add-panel, .card-notices-panel) > .card-head:has(.form-toggle-btn) {
+  position: relative;
+  min-height: 36px;
+  padding-right: 28px;
+}
+.local-glass :is(.overseas-add-panel, .card-notices-panel) > .card-head > .form-toggle-btn {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  font-size: 0;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.local-glass :is(.overseas-add-panel, .card-notices-panel) > .card-head > .form-toggle-btn::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: calc(50% - 5px);
+  width: 7px;
+  height: 7px;
+  border-right: 1.5px solid #7c929b;
+  border-bottom: 1.5px solid #7c929b;
+  transform: rotate(45deg);
+  transition: transform 0.3s ease;
+}
+.local-glass :is(.overseas-add-panel, .card-notices-panel) > .card-head > .form-toggle-btn[aria-expanded="true"]::after {
+  transform: translateY(4px) rotate(225deg);
+}
+.local-glass .ai-update-list {
+  gap: 10px;
+}
+.local-glass .ai-update-item {
+  padding: 14px 16px;
+  gap: 12px;
+  border-radius: 12px !important;
+}
+.local-glass .ai-update-meta {
+  flex-wrap: wrap;
+  row-gap: 5px;
+}
+.local-glass .ai-update-meta time {
+  white-space: nowrap;
+}
+.local-glass .ai-update-body h3 {
+  overflow-wrap: anywhere;
+}
+.local-glass #walletSchemeModal .wallet-delete-dialog {
+  width: min(460px, 92vw);
+}
+.local-glass #walletNewScheme {
+  flex: 1;
+  min-width: 0;
+  width: 0;
+}
+.local-glass #walletSchemeModal button {
+  white-space: nowrap;
+  word-break: normal;
+}
+.local-glass #walletAddScheme {
+  flex: 0 0 72px;
+  padding: 10px 16px;
+  color: #fff !important;
+}
+.local-glass #walletSaveSchemes {
+  color: #fff !important;
+  background: #3d7166 !important;
+}
+.local-glass #walletSchemeModal .wallet-delete-actions [data-wallet-modal-close] {
+  color: #294b54 !important;
+  background: rgba(240, 248, 247, 0.85) !important;
+}
+.local-glass #walletSchemeModal .card-head [data-wallet-modal-close] {
+  background: transparent !important;
+  color: #355762 !important;
+}
+.local-glass #walletSchemeList button {
+  padding: 5px 10px;
+  color: #9c352e !important;
+  background: rgba(255, 242, 240, 0.85) !important;
+  border: 1px solid rgba(156, 53, 46, 0.18);
+  border-radius: 7px;
+  font-size: 12px;
+}
+.local-glass .background-settings-trigger {
+  margin-top: 18px;
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(239, 248, 247, 0.28) !important;
+  border: 1px solid var(--line);
+  color: var(--text);
+}
+.background-dialog {
+  width: min(620px, calc(100vw - 48px));
+  max-height: 80vh;
+  overflow: auto;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: rgba(226, 239, 238, 0.94);
+  backdrop-filter: blur(22px);
+  color: var(--text);
+  box-shadow: 0 18px 70px rgba(20, 45, 52, 0.2);
+}
+.background-dialog::backdrop { background: rgba(20, 40, 50, 0.24); }
+.background-dialog .card-head { display: flex; align-items: center; justify-content: space-between; }
+.background-dialog p { line-height: 1.6; }
+.background-dialog small { color: var(--muted); }
+.local-glass #closeBackgroundSettings { background: transparent !important; color: var(--text); font-size: 24px; padding: 0 4px; }
+.background-actions { display: flex; gap: 10px; }
+.local-glass #chooseBackgrounds { color: #fff; }
+.local-glass #restoreDefaultBackgrounds { background: rgba(255, 255, 255, 0.65) !important; color: var(--text); }
+.background-preview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.background-preview figure { margin: 0; min-width: 0; }
+.background-preview img { display: block; width: 100%; aspect-ratio: 16/10; object-fit: cover; border-radius: 8px; }
+.background-preview figcaption { margin-top: 5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; }
+@media (max-width: 820px) {
+  .local-glass .page-topbar,
+  .local-glass .page-topbar:has(.page-topbar-actions) {
+    display: flex;
+    min-height: 44px;
+    padding: 0 0 12px;
+  }
+  .local-glass .wallet-card-form-panel {
+    padding: 12px 14px;
+  }
+}

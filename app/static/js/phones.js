@@ -3,10 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const togglePhoneAddForm = document.getElementById("togglePhoneAddForm");
     togglePhoneAddForm?.addEventListener("click", () => {
         const expanded = phoneAddForm?.classList.contains("is-collapsed") ?? false;
-        phoneAddForm?.classList.toggle("is-collapsed", !expanded);
+        window.saulSetFormExpanded(phoneAddForm, expanded);
         togglePhoneAddForm.setAttribute("aria-expanded", String(expanded));
         togglePhoneAddForm.textContent = expanded ? "收起" : "添加号码";
-        if (expanded) window.setTimeout(() => phoneAddForm?.querySelector("input")?.focus(), 220);
     });
 
     // Date helpers
@@ -221,9 +220,10 @@ document.addEventListener("DOMContentLoaded", () => {
         optionsContainer.innerHTML = "";
         const list = activeOptionType === "country" ? currentOptions.countries : currentOptions.durations;
         
+        optionsContainer.classList.add("option-manager-list");
         list.forEach((item, index) => {
             const row = document.createElement("div");
-            row.className = "draggable-option-item";
+            row.className = "draggable-option-item option-manager-row";
             row.draggable = true;
             row.style.display = "flex";
             row.style.justifyContent = "space-between";
@@ -245,64 +245,16 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             // Drag event listeners
-            row.addEventListener("dragstart", (e) => {
-                row.classList.add("dragging");
-                e.dataTransfer.effectAllowed = "move";
-                setTimeout(() => {
-                    row.style.opacity = "0.4";
-                    row.style.background = "var(--bg)";
-                }, 0);
-            });
-
-            row.addEventListener("dragend", () => {
-                row.classList.remove("dragging");
-                row.style.opacity = "";
-                row.style.background = "white";
-                reorderOptionsFromDOM();
-            });
-
-            // Touch event listeners for mobile drag
-            row.addEventListener("touchstart", (e) => {
-                row.classList.add("dragging");
-                row.style.opacity = "0.4";
-                row.style.background = "var(--bg)";
-            });
-
-            row.addEventListener("touchmove", (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                const draggingElement = document.querySelector(".dragging");
-                if (!draggingElement) return;
-
-                const elementAtTouch = document.elementFromPoint(touch.clientX, touch.clientY);
-                if (!elementAtTouch) return;
-                
-                const targetRow = elementAtTouch.closest(".draggable-option-item");
-                if (targetRow && targetRow !== draggingElement && targetRow.parentNode === optionsContainer) {
-                    const bounding = targetRow.getBoundingClientRect();
-                    const offset = touch.clientY - bounding.top - bounding.height / 2;
-                    if (offset < 0) {
-                        optionsContainer.insertBefore(draggingElement, targetRow);
-                    } else {
-                        optionsContainer.insertBefore(draggingElement, targetRow.nextSibling);
-                    }
-                }
-            });
-
-            row.addEventListener("touchend", () => {
-                row.classList.remove("dragging");
-                row.style.opacity = "";
-                row.style.background = "white";
-                reorderOptionsFromDOM();
-            });
-            
             const leftPart = document.createElement("div");
+            leftPart.className = "option-manager-label";
             leftPart.style.display = "flex";
             leftPart.style.alignItems = "center";
             leftPart.style.gap = "10px";
 
-            const handle = document.createElement("span");
-            handle.textContent = "☰";
+            const handle = document.createElement("button");
+            handle.type = "button";
+            handle.className = "option-manager-handle";
+            handle.textContent = "≡";
             handle.style.color = "var(--muted)";
             handle.style.cursor = "grab";
             handle.style.userSelect = "none";
@@ -319,6 +271,7 @@ document.addEventListener("DOMContentLoaded", () => {
             row.appendChild(leftPart);
             
             const actions = document.createElement("div");
+            actions.className = "option-manager-actions";
             actions.style.display = "flex";
             actions.style.gap = "8px";
             
@@ -330,6 +283,8 @@ document.addEventListener("DOMContentLoaded", () => {
             editBtn.style.cursor = "pointer";
             editBtn.style.padding = "2px";
             editBtn.title = "重命名";
+            editBtn.dataset.micro = "edit";
+            editBtn.setAttribute("aria-label", "修改选项名称");
             editBtn.addEventListener("click", async () => {
                 if (activeOptionType === "country") {
                     const newName = await showCustomPrompt("修改国家名称", "国家名称：", item);
@@ -362,6 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
             delBtn.style.cursor = "pointer";
             delBtn.style.padding = "2px";
             delBtn.title = "删除";
+            delBtn.dataset.micro = "delete";
             delBtn.addEventListener("click", async () => {
                 const nameToDelete = activeOptionType === "country" ? item : item.name;
                 const ok = await showCustomConfirm("删除确认", `确定要删除此选项 "${nameToDelete}" 吗？`);
@@ -379,6 +335,7 @@ document.addEventListener("DOMContentLoaded", () => {
             row.appendChild(actions);
             optionsContainer.appendChild(row);
         });
+        window.saulBindOptionOrder(optionsContainer, () => { reorderOptionsFromDOM(); renderManageOptionsList(); });
     }
 
     function reorderOptionsFromDOM() {
@@ -396,7 +353,11 @@ document.addEventListener("DOMContentLoaded", () => {
         saveOptionsToServer(true);
     }
 
-    async function saveOptionsToServer(skipRender = false) {
+    async function saveOptionsToServer(skipRender = false, persist = false) {
+        if (!persist) {
+            if (!skipRender) renderManageOptionsList();
+            return;
+        }
         try {
             const res = await fetch("/api/phones/options", {
                 method: "POST",
@@ -410,10 +371,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             updateAllDOMSelects();
             showToast("选项已更新");
+            document.getElementById("manageOptionsModal").style.display = "none";
         } catch (err) {
             showToast("保存选项失败: " + err.message, true);
         }
     }
+
+    document.getElementById("saveManageOptionsBtn").addEventListener("click", async event => {
+        const button = event.currentTarget;
+        button.disabled = true;
+        try { await saveOptionsToServer(false, true); }
+        finally { button.disabled = false; }
+    });
 
     function updateAllDOMSelects() {
         if (activeOptionType === "country") {
@@ -518,17 +487,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (closeManageBtn) closeManageBtn.addEventListener("click", hideManageModal);
     if (closeManageBtn2) closeManageBtn2.addEventListener("click", hideManageModal);
 
-    optionsContainer.addEventListener("dragover", (e) => {
-        e.preventDefault();
-        const draggingElement = document.querySelector(".dragging");
-        if (!draggingElement) return;
-        const afterElement = getDragAfterElement(optionsContainer, e.clientY);
-        if (afterElement == null) {
-            optionsContainer.appendChild(draggingElement);
-        } else {
-            optionsContainer.insertBefore(draggingElement, afterElement);
-        }
-    });
+
 
     function getDragAfterElement(container, y) {
         const draggableElements = [...container.querySelectorAll(".draggable-option-item:not(.dragging)")];
@@ -632,20 +591,17 @@ document.addEventListener("DOMContentLoaded", () => {
         if (statusCell === "已关闭" || statusCell === "关闭") return null;
         
         const expiryTd = tds[5];
-        const dateSpan = expiryTd.querySelector("span");
+        const dateSpan = expiryTd.querySelector("[data-phone-expiry-date]") || expiryTd.querySelector("span:not(.expiry-badge)");
         const expiryCell = dateSpan ? dateSpan.textContent.trim() : expiryTd.textContent.trim();
         if (!expiryCell || expiryCell === "--") return null;
         
-        const expiryDate = new Date(expiryCell);
-        if (isNaN(expiryDate.getTime())) return null;
-        
+        const parts = /^(\d{4})-(\d{2})-(\d{2})$/.exec(expiryCell);
+        if (!parts) return null;
+        // Compare calendar dates without UTC parsing/local-time/DST offsets.
+        const expiry = Date.UTC(Number(parts[1]), Number(parts[2]) - 1, Number(parts[3]));
         const today = new Date();
-        today.setHours(0,0,0,0);
-        expiryDate.setHours(0,0,0,0);
-        
-        const diffTime = expiryDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays;
+        const start = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+        return Math.round((expiry - start) / 86400000);
     }
 
     function updateTable() {
@@ -682,7 +638,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 const badge = document.createElement("span");
                 badge.className = "expiry-badge";
                 if (days < 0) {
-                    badge.textContent = "已过期";
+                    badge.textContent = `已过期${-days}天`;
+                } else if (days === 0) {
+                    badge.textContent = "今天到期";
                 } else {
                     badge.textContent = `临期 (${days}天)`;
                 }
@@ -694,7 +652,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 badge.style.padding = "1px 6px";
                 badge.style.borderRadius = "4px";
                 badge.style.fontWeight = "bold";
-                expiryTd.appendChild(badge);
+                // The layout observer owns this wrapper. Adding beside it would
+                // create a second wrapper and clip the badge below its 41px height.
+                (expiryTd.querySelector(".stable-cell-content") || expiryTd).appendChild(badge);
             }
         });
 

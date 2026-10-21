@@ -43,3 +43,214 @@
     font-size: 12px;
     font-weight: bold;
 }
+
+.card-notices-panel {
+    padding: 14px 18px;
+    border: 1px solid rgba(255, 74, 61, 0.22);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 245, 243, 0.72), rgba(255, 255, 255, 0.96));
+}
+
+.card-notices-head {
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 0;
+}
+
+.card-notices-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.card-notices-heading h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.card-notices-icon {
+    font-size: 18px;
+}
+
+.card-notices-count {
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.card-notices-count {
+    padding: 3px 8px;
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+.card-notices-panel > .card-notices-head > .form-toggle-btn {
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+}
+
+.card-notice-form {
+    margin-top: 14px;
+    gap: 12px;
+}
+
+.card-notice-form.collapsible-add-form,
+.card-notice-form.collapsible-add-form.is-collapsed {
+    transition: none;
+}
+
+.card-notice-content-field {
+    margin: 0;
+}
+
+.card-notice-content-field textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card-notice-submit {
+    border-radius: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    border: 0;
+    color: white;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff6b57, #ff4a3d);
+}
+
+.card-notice-submit {
+    width: 100%;
+}
+
+.card-notices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 320px));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.card-notice-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+    padding: 10px 12px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow-sm);
+}
+
+.card-notice-bullet {
+    display: inline-flex;
+    flex: 0 0 20px;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    color: #dc2626;
+    background: #fee2e2;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.card-notice-content {
+    flex: 1;
+    min-width: 0;
+    color: var(--text);
+    font-size: 13px;
+    line-height: 20px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.edit-card-notice-btn {
+    display: none;
+    flex: 0 0 auto;
+    align-self: center;
+    padding: 2px 0;
+    border: 0;
+    color: #1a73e8;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.card-notices-panel.is-managing .edit-card-notice-btn {
+    display: inline-flex;
+}
+
+/* Collapsed state takes priority over shared button/icon layout styles. */
+.card-notices-panel:not(.is-managing) .edit-card-notice-btn {
+    display: none;
+}
+
+.card-notice-edit-dialog {
+    width: min(90%, 520px);
+    margin: auto;
+    padding: 22px;
+    border-radius: 18px;
+    animation: modalFadeIn 0.3s;
+}
+
+.card-notice-edit-dialog textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card-notice-modal-close {
+    padding: 0;
+    border: 0;
+    color: var(--muted);
+    background: transparent;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.card-notice-modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.card-notice-cancel-btn,
+.card-notice-save-btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.card-notice-cancel-btn {
+    border: 1px solid var(--line);
+    color: var(--text);
+    background: #e5e7eb;
+}
+
+.card-notice-save-btn {
+    border: 0;
+    color: white;
+    background: linear-gradient(135deg, #ff6b57, #ff4a3d);
+    font-weight: 700;
+}
+
+.card-notices-empty {
+    margin-top: 12px;
+    padding: 12px 14px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+    border: 1px dashed var(--line);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.72);
+}
+
+@media (max-width: 640px) {
+    .card-notices-head {
+        align-items: center;
+    }
+}
